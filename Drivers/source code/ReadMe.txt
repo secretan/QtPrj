@@ -1,5 +1,6 @@
 ====== CYPRESS USBSUITE SOURCE CODE ==========
-============================================== 
+==============================================
+Version 1.3.2 
 Following projects source code is included in this package.
 
 1. CyAPI C++ Static Library.

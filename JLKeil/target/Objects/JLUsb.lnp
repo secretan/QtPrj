@@ -1,0 +1,10 @@
+".\Objects\bulkloop.obj",
+".\Objects\fw.obj",
+".\Objects\FX2LPSerial.obj",
+".\Objects\dscr.obj",
+"..\lib\EZUSB.LIB",
+"..\lib\USBJmpTb.OBJ" 
+TO ".\Objects\JLUsb" 
+PRINT(".\Listings\JLUsb.m51") RAMSIZE(256) 
+CODE( 0x80-0x0FFF )
+XDATA( 0x1000 )

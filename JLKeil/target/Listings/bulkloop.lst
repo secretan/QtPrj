@@ -1,0 +1,2996 @@
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE BULKLOOP
+OBJECT MODULE PLACED IN .\Objects\bulkloop.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\src\bulkloop.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND CODE LISTI
+                    -NCLUDE SYMBOLS PRINT(.\Listings\bulkloop.lst) TABS(2) PREPRINT(.\Listings\bulkloop.i) OBJECT(.\Objects\bulkloop.obj)
+
+line level    source
+
+   1          //-----------------------------------------------------------------------------
+   2          //   File:      bulkloop.c
+   3          //   Contents:  Hooks required to implement USB peripheral function.
+   4          //
+   5          // $Archive: /USB/Examples/FX2LP/bulkloop/bulkloop.c $
+   6          // $Date: 3/23/05 2:55p $
+   7          // $Revision: 4 $
+   8          //
+   9          //-----------------------------------------------------------------------------
+  10          // Copyright 2013, Cypress Semiconductor Corporation
+  11          //-----------------------------------------------------------------------------
+  12          //
+  13          //Project Objective
+  14          //  This project illustrates the configuration of the FX2LP to accept bulk data from 
+  15          //  the host and loop it back to the host
+  16          //
+  17          //Overview
+  18          //  This project demonstrates a bulkloop operation using the FX2LP. The project 
+  19          //  illustrates the configuration of the endpoints and the interface to carry out 
+  20          //  the bulkloop operation. Two endpoints are configured to handle bulk transfer, 
+  21          //  one OUT endpoint and one IN endpoint. Data sent from the host is stored in an 
+  22          //  OUT endpoint. This data is transferred to the IN endpoint and then sent back to 
+  23          //  the host on request. 
+  24          //
+  25          //Operation:
+  26          //  The descriptor file for this project defines two endpoints to the host. 
+  27          //  BULK Endpoint 2-OUT receives host data.
+  28          //  BULK Endpoint 6-IN sends the same data back to the host.
+  29          //  These endpoints are configured in TD_Init using the EP2CFG and EP6CFG registers.
+  30          //  Both endpoints are set for double-buffering, using two 1024-byte FIFOS. 
+  31          //  The IFCONFIG register is not written, so it uses the default 8051 PORTS mode.
+  32          //
+  33          //  Once configured, the OUT endpoints are "armed" to accept data from the host. 
+  34          //  An OUT endpoint is said to be armed if it is ready to accept data from the host. 
+  35          //  Each endpoint is configured as double buffered. 
+  36          //
+  37          //  The function TD_Poll is where the bulkloop operation takes place.
+  38          //
+  39          //  If data is available with endpoint 2 and if endpoint 6 is ready to accept 
+  40          //  new data, the data is transferred to endpoint 6 and it is committed by writing
+  41          //  the number of bytes to the byte count registers. Endpoint 2 is then rearmed to 
+  42          //  accept a new packet from the host
+  43          //
+  44          //Code Snippets:
+  45          //
+  46          //  Descriptor:
+  47          //      The interface descriptor defines the number of endpoints to the host. 
+  48          //    The two BULK endpoint descriptors report EP2-OUT and EP6-IN for the host. 
+  49          //    The maximum packet size is reported as 512 bytes. 
+  50          //    Descriptors are included for both high-speed and full-speed configurations. 
+  51          //
+  52          //  Initialization:
+  53          //    FX2LP is initialized in the TD_Init function, which is called once at startup.
+  54          //    The two endpoints defined in the descriptor file are be configured using these statements:
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 2   
+
+  55          //
+  56          //    EP2CFG = 0xA2;  // EP2 is BULK-OUT, double-buffered
+  57          //    SYNCDELAY;                    
+  58          //    EP6CFG = 0xE2;  // EP6 is BULK-IN, double-buffered  
+  59          //    SYNCDELAY;                    
+  60          //    
+  61          //    Writing to these registers typically takes more than 2 clock cycles needed for a MOVX instruction. 
+  62          //    Hence the SYNCDELAY macro is used. The list of registers which need this delay 
+  63          //    function when writing to it is given in the TRM
+  64          //
+  65          //    The OUT endpoints, once configured, need to be armed to accept packets from the host. 
+  66          //    Since they are double buffered, they need to be armed by writing their byte count twice. 
+  67          //
+  68          //    By writing a 1 to bit7 of the byte count register the packet is made available to the 8051
+  69          //    instead of automatically routing it to the output FIFO. This is called a "skip".  
+  70          // 
+  71          //    EP2BCL = 0x80;                // arm EP2OUT by writing byte count w/skip.
+  72          //    SYNCDELAY;                    
+  73          //    EP2BCL = 0x80;
+  74          //    SYNCDELAY;                    
+  75          //
+  76          //    AUTOPTRSETUP |= 0x01;
+  77          //    This enables the AUTO pointer used for data transfer in the TD_Poll function. 
+  78          //
+  79          //  Enumeration:
+  80          //    Every time the FX2LP receives a setup command request, an interrupt is triggered where the 
+  81          //    GotSUD flag is asserted. The Setup Command function services various set up requests from the host. 
+  82          //    The Set up Command is executed through a switch case where the information desired by 
+  83          //    the host is serviced.     
+  84          //    Summing up, the enumeration process is done by repeated calling of the function SetupCommand().
+  85          //
+  86          //  Bulk Loop Implementation:
+  87          //    The bulk loop implementation is carried out in the TD_Poll function which is called repeatedly 
+  88          //    during device operation. 
+  89          //
+  90          //    Endpoint 2 is armed to accept data from the host. This data is transferred to endpoint 6.
+  91          //      To implement this, first, endpoint 2 is checked if it has data. 
+  92          //    This is done by reading the endpoint 2 empty bit in the endpoint status register (EP2468STAT). 
+  93          //    If endpoint 2 has data (that is sent from the host), the capability of endpoint 6 to receive 
+  94          //    the data is checked. This is done by reading the endpoint 6 Full bit in the endpoint status register. 
+  95          //    If endpoint 6 is not full, then the data is transferred.
+  96          //
+  97          //
+  98          //    Data Transfer implementation:
+  99          //      The data pointers are initialized to the corresponding buffers.
+ 100          //      The first auto-pointer is initialized to the first byte of the endpoint 2 FIFO buffer. 
+ 101          //      The second auto-pointer is initialized to the first byte of the endpoint 6 FIFO buffer. 
+ 102          //      
+ 103          //      The number of bytes to be transferred is read from the byte count registers of Endpoint 2.
+ 104          //      The registers EP2BCL, EP2BCH contain the number of bytes written into the FIFO buffer 
+ 105          //      by the host. These two registers give the byte count of the data transferred to the FIFO 
+ 106          //      in an OUT transaction as long as the data is not committed to the peripheral side (Skip bit set). 
+ 107          //
+ 108          //      This data pointer initialization and loading of the count is done in the following statements. 
+ 109          //      APTR1H = MSB( &EP2FIFOBUF );    // Initializing the first data pointer
+ 110          //      APTR1L = LSB( &EP2FIFOBUF );
+ 111          //
+ 112          //      AUTOPTRH2 = MSB( &EP6FIFOBUF ); // Initializing the second data pointer        
+ 113          //      AUTOPTRL2 = LSB( &EP6FIFOBUF );
+ 114          //
+ 115          //      count = (EP2BCH << 8) + EP2BCL; // The count value is loaded from the byte 
+ 116          //                                      // count registers
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 3   
+
+ 117          //
+ 118          //      The data transfer is carried out by the execution of the loop below. 
+ 119          //
+ 120          //      for( i = 0x0000; i < count; i++ )
+ 121          //        {
+ 122          //         // setup to transfer EP2OUT buffer to EP6IN buffer using AUTOPOINTER(s)
+ 123          //         EXTAUTODAT2 = EXTAUTODAT1;
+ 124          //        }
+ 125          //
+ 126          //      As auto pointers have been enabled, the pointers increment automatically, and the statement 
+ 127          //
+ 128          //      EXTAUTODAT2 = EXTAUTODAT1;
+ 129          //
+ 130          //      transfers data from endpoint 2 to endpoint 6. Each time the above statement is executed 
+ 131          //      each auto pointer is incremented. The above statement repeatedly executes to 
+ 132          //      transfer each byte from endpoint 2 to 6. 
+ 133          //      Once the data is transferred, endpoint 2 has to be "re-armed" to accept a new packet from the host. 
+ 134          //      Endpoint 6 has to be "committed", that is, make the FIFO buffers available to the host for reading 
+ 135          //      data from the Endpoint 6.
+ 136          //
+ 137          //      This is accomplished by the following statements. 
+ 138          //
+ 139          //      EP6BCH = EP2BCH;  
+ 140          //      SYNCDELAY;  
+ 141          //      EP6BCL = EP2BCL;        // commit EP6IN by specifying the number of bytes the host can read from EP6
+ 142          //      SYNCDELAY;                    
+ 143          //      EP2BCL = 0x80;          // arm EP2OUT w. SKIP bit set.
+ 144          //
+ 145          //----------------------------------------------------------------------------
+ 146          // Code below
+ 147          //----------------------------------------------------------------------------
+ 148          
+ 149          #pragma NOIV               // Do not generate interrupt vectors
+ 150          
+ 151          #include "fx2.h"
+   1      =1  //-----------------------------------------------------------------------------
+   2      =1  //   File:      FX2.h
+   3      =1  //   Contents:  EZ-USB FX2/FX2LP/FX1 constants, macros, datatypes, globals, and library
+   4      =1  //              function prototypes.
+   5      =1  //
+   6      =1  // $Archive: /USB/Target/Inc/Fx2.h $
+   7      =1  // $Date: 3/23/05 2:30p $
+   8      =1  // $Revision: 16 $
+   9      =1  //
+  10      =1  //   Copyright (c) 2005 Cypress Semiconductor, All rights reserved
+  11      =1  //-----------------------------------------------------------------------------
+  12      =1  #ifndef FX2_H     //Header sentry
+  13      =1  #define FX2_H
+  14      =1  
+  15      =1  #define INTERNAL_DSCR_ADDR 0x0080   // Relocate Descriptors to 0x80
+  16      =1  #define bmSTRETCH 0x07
+  17      =1  #define FW_STRETCH_VALUE 0x0      // Set stretch to 0 in frameworks
+  18      =1  
+  19      =1  #define ENABLE_7_SEG_DISPLAY
+  20      =1  extern int start_7_seg_display;
+  21      =1  
+  22      =1  //-----------------------------------------------------------------------------
+  23      =1  // Constants
+  24      =1  //-----------------------------------------------------------------------------
+  25      =1  #define   TRUE    1
+  26      =1  #define FALSE   0
+  27      =1  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 4   
+
+  28      =1  #define bmBIT0   0x01
+  29      =1  #define bmBIT1   0x02
+  30      =1  #define bmBIT2   0x04
+  31      =1  #define bmBIT3   0x08
+  32      =1  #define bmBIT4   0x10
+  33      =1  #define bmBIT5   0x20
+  34      =1  #define bmBIT6   0x40
+  35      =1  #define bmBIT7   0x80
+  36      =1  
+  37      =1  #define DEVICE_DSCR      0x01      // Descriptor type: Device
+  38      =1  #define CONFIG_DSCR      0x02      // Descriptor type: Configuration
+  39      =1  #define STRING_DSCR      0x03      // Descriptor type: String
+  40      =1  #define INTRFC_DSCR      0x04      // Descriptor type: Interface
+  41      =1  #define ENDPNT_DSCR      0x05      // Descriptor type: End Point
+  42      =1  #define DEVQUAL_DSCR     0x06      // Descriptor type: Device Qualifier
+  43      =1  #define OTHERSPEED_DSCR  0x07      // Descriptor type: Other Speed Configuration
+  44      =1  
+  45      =1  #define bmBUSPWR  bmBIT7         // Config. attribute: Bus powered
+  46      =1  #define bmSELFPWR bmBIT6         // Config. attribute: Self powered
+  47      =1  #define bmRWU     bmBIT5         // Config. attribute: Remote Wakeup
+  48      =1  
+  49      =1  #define bmEPOUT   bmBIT7
+  50      =1  #define bmEPIN    0x00
+  51      =1  
+  52      =1  #define EP_CONTROL   0x00        // End Point type: Control
+  53      =1  #define EP_ISO       0x01        // End Point type: Isochronous
+  54      =1  #define EP_BULK      0x02        // End Point type: Bulk
+  55      =1  #define EP_INT       0x03        // End Point type: Interrupt
+  56      =1  
+  57      =1  #define SUD_SIZE            8      // Setup data packet size
+  58      =1  
+  59      =1  //////////////////////////////////////////////////////////////////////////////
+  60      =1  //Added for HID
+  61      =1  
+  62      =1  #define SETUP_MASK        0x60  //Used to mask off request type
+  63      =1  #define SETUP_STANDARD_REQUEST  0   //Standard Request
+  64      =1  #define SETUP_CLASS_REQUEST   0x20  //Class Request
+  65      =1  #define SETUP_VENDOR_REQUEST  0x40  //Vendor Request
+  66      =1  #define SETUP_RESERVED_REQUEST  0x60  //Reserved or illegal request
+  67      =1  
+  68      =1  //////////////////////////////////////////////////////////////////////////////
+  69      =1  
+  70      =1  
+  71      =1  #define SC_GET_STATUS         0x00   // Setup command: Get Status
+  72      =1  #define SC_CLEAR_FEATURE      0x01   // Setup command: Clear Feature
+  73      =1  #define SC_RESERVED            0x02   // Setup command: Reserved
+  74      =1  #define SC_SET_FEATURE         0x03   // Setup command: Set Feature
+  75      =1  #define SC_SET_ADDRESS         0x05   // Setup command: Set Address
+  76      =1  #define SC_GET_DESCRIPTOR      0x06   // Setup command: Get Descriptor
+  77      =1  #define SC_SET_DESCRIPTOR      0x07   // Setup command: Set Descriptor
+  78      =1  #define SC_GET_CONFIGURATION   0x08   // Setup command: Get Configuration
+  79      =1  #define SC_SET_CONFIGURATION   0x09   // Setup command: Set Configuration
+  80      =1  #define SC_GET_INTERFACE      0x0a   // Setup command: Get Interface
+  81      =1  #define SC_SET_INTERFACE      0x0b   // Setup command: Set Interface
+  82      =1  #define SC_SYNC_FRAME         0x0c   // Setup command: Sync Frame
+  83      =1  #define SC_ANCHOR_LOAD         0xa0   // Setup command: Anchor load
+  84      =1     
+  85      =1  #define GD_DEVICE          0x01  // Get descriptor: Device
+  86      =1  #define GD_CONFIGURATION   0x02  // Get descriptor: Configuration
+  87      =1  #define GD_STRING          0x03  // Get descriptor: String
+  88      =1  #define GD_INTERFACE       0x04  // Get descriptor: Interface
+  89      =1  #define GD_ENDPOINT        0x05  // Get descriptor: Endpoint
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 5   
+
+  90      =1  #define GD_DEVICE_QUALIFIER 0x06  // Get descriptor: Device Qualifier
+  91      =1  #define GD_OTHER_SPEED_CONFIGURATION 0x07  // Get descriptor: Other Configuration
+  92      =1  #define GD_INTERFACE_POWER 0x08  // Get descriptor: Interface Power
+  93      =1  #define GD_HID              0x21  // Get descriptor: HID
+  94      =1  #define GD_REPORT          0x22 // Get descriptor: Report
+  95      =1  
+  96      =1  #define GS_DEVICE          0x80  // Get Status: Device
+  97      =1  #define GS_INTERFACE       0x81  // Get Status: Interface
+  98      =1  #define GS_ENDPOINT        0x82  // Get Status: End Point
+  99      =1  
+ 100      =1  #define FT_DEVICE          0x00  // Feature: Device
+ 101      =1  #define FT_ENDPOINT        0x02  // Feature: End Point
+ 102      =1  
+ 103      =1  #define I2C_IDLE              0     // I2C Status: Idle mode
+ 104      =1  #define I2C_SENDING           1     // I2C Status: I2C is sending data
+ 105      =1  #define I2C_RECEIVING         2     // I2C Status: I2C is receiving data
+ 106      =1  #define I2C_PRIME             3     // I2C Status: I2C is receiving the first byte of a string
+ 107      =1  #define I2C_STOP              5     // I2C Status: I2C waiting for stop completion
+ 108      =1  #define I2C_BERROR            6     // I2C Status: I2C error; Bit Error
+ 109      =1  #define I2C_NACK              7     // I2C Status: I2C error; No Acknowledge
+ 110      =1  #define I2C_OK                8     // I2C positive return code
+ 111      =1  #define I2C_WAITSTOP          9     // I2C Status: Wait for STOP complete
+ 112      =1  
+ 113      =1  /*-----------------------------------------------------------------------------
+ 114      =1     Macros
+ 115      =1  -----------------------------------------------------------------------------*/
+ 116      =1  
+ 117      =1  #define MSB(word)      (BYTE)(((WORD)(word) >> 8) & 0xff)
+ 118      =1  #define LSB(word)      (BYTE)((WORD)(word) & 0xff)
+ 119      =1  
+ 120      =1  #define SWAP_ENDIAN(word)   ((BYTE*)&word)[0] ^= ((BYTE*)&word)[1];\
+ 121      =1                       ((BYTE*)&word)[1] ^= ((BYTE*)&word)[0];\
+ 122      =1                       ((BYTE*)&word)[0] ^= ((BYTE*)&word)[1]
+ 123      =1  
+ 124      =1  #define EZUSB_IRQ_ENABLE()   EUSB = 1
+ 125      =1  #define EZUSB_IRQ_DISABLE()   EUSB = 0
+ 126      =1  #define EZUSB_IRQ_CLEAR()   EXIF &= ~0x10      // IE2_
+ 127      =1  
+ 128      =1  #define EZUSB_STALL_EP0()            EP0CS |= bmEPSTALL
+ 129      =1  
+ 130      =1  // WRITEDELAY() has been replaced by SYNCDELAY; macro in fx2sdly.h
+ 131      =1  // ...it is here for backwards compatibility...
+ 132      =1  
+ 133      =1  // the WRITEDELAY macro compiles to the time equivalent of 3 NOPs.
+ 134      =1  // It is used in the frameworks to allow for write recovery time
+ 135      =1  // requirements of certain registers.  This is only necessary for
+ 136      =1  // EZ-USB FX parts.  See the EZ-USB FX TRM for
+ 137      =1  // more information on write recovery time issues.
+ 138      =1  #define WRITEDELAY() {char writedelaydummy = 0;}
+ 139      =1  // if this firmware will never run on an EZ-USB FX part replace
+ 140      =1  // with:
+ 141      =1  // #define WRITEDELAY()
+ 142      =1  
+ 143      =1  // macro to reset and endpoint data toggle
+ 144      =1  #define EZUSB_RESET_DATA_TOGGLE(ep)     TOGCTL = (((ep & 0x80) >> 3) + (ep & 0x0F));\
+ 145      =1                                          TOGCTL |= bmRESETTOGGLE
+ 146      =1  
+ 147      =1  
+ 148      =1  #define EZUSB_ENABLE_RSMIRQ()      (EICON |= 0x20)      // Enable Resume Interrupt (EPFI_)
+ 149      =1  #define EZUSB_DISABLE_RSMIRQ()      (EICON &= ~0x20)   // Disable Resume Interrupt (EPFI_)
+ 150      =1  #define EZUSB_CLEAR_RSMIRQ()      (EICON &= ~0x10)   // Clear Resume Interrupt Flag (PFI_)
+ 151      =1  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 6   
+
+ 152      =1  #define EZUSB_GETI2CSTATUS()      (I2CPckt.status)
+ 153      =1  #define EZUSB_CLEARI2CSTATUS()      if((I2CPckt.status == I2C_BERROR) || (I2CPckt.status == I2C_NACK))\
+ 154      =1                                I2CPckt.status = I2C_IDLE;
+ 155      =1  
+ 156      =1  #define EZUSB_ENABLEBP()         (BREAKPT |= bmBPEN)
+ 157      =1  #define EZUSB_DISABLEBP()         (BREAKPT &= ~bmBPEN)
+ 158      =1  #define EZUSB_CLEARBP()            (BREAKPT |= bmBREAK)
+ 159      =1  #define EZUSB_BP(addr)            BPADDRH = (BYTE)(((WORD)addr >> 8) & 0xff);\      
+ 160      =1                                    BPADDRL = (BYTE)addr
+ 161      =1  
+ 162      =1  #define EZUSB_EXTWAKEUP()      (((WAKEUPCS & bmWU2) && (WAKEUPCS & bmWU2EN)) ||\
+ 163      =1                                  ((WAKEUPCS & bmWU) &&  (WAKEUPCS & bmWUEN)))
+ 164      =1  
+ 165      =1  #define EZUSB_HIGHSPEED()      (USBCS & bmHSM)
+ 166      =1  
+ 167      =1  //-----------------------------------------------------------------------------
+ 168      =1  // Datatypes
+ 169      =1  //-----------------------------------------------------------------------------
+ 170      =1  typedef unsigned char   BYTE;
+ 171      =1  typedef unsigned short   WORD;
+ 172      =1  typedef unsigned long   DWORD;
+ 173      =1  typedef bit            BOOL;
+ 174      =1  
+ 175      =1  #define  INT0_VECT   0
+ 176      =1  #define  TMR0_VECT   1
+ 177      =1  #define  INT1_VECT   2
+ 178      =1  #define  TMR1_VECT   3
+ 179      =1  #define  COM0_VECT   4
+ 180      =1  #define  TMR2_VECT   5
+ 181      =1  #define  WKUP_VECT   6
+ 182      =1  #define  COM1_VECT   7
+ 183      =1  #define  USB_VECT    8
+ 184      =1  #define  I2C_VECT    9
+ 185      =1  #define  INT4_VECT   10
+ 186      =1  #define  INT5_VECT   11
+ 187      =1  #define  INT6_VECT   12
+ 188      =1  
+ 189      =1  
+ 190      =1  typedef struct
+ 191      =1  {
+ 192      =1     BYTE   length;
+ 193      =1     BYTE   type;
+ 194      =1  }DSCR;
+ 195      =1  
+ 196      =1  typedef struct            // Device Descriptor
+ 197      =1  {
+ 198      =1     BYTE   length;         // Descriptor length ( = sizeof(DEVICEDSCR) )
+ 199      =1     BYTE   type;         // Decriptor type (Device = 1)
+ 200      =1     BYTE   spec_ver_minor;   // Specification Version (BCD) minor
+ 201      =1     BYTE   spec_ver_major;   // Specification Version (BCD) major
+ 202      =1     BYTE   dev_class;      // Device class
+ 203      =1     BYTE   sub_class;      // Device sub-class
+ 204      =1     BYTE   protocol;      // Device sub-sub-class
+ 205      =1     BYTE   max_packet;      // Maximum packet size
+ 206      =1     WORD   vendor_id;      // Vendor ID
+ 207      =1     WORD   product_id;      // Product ID
+ 208      =1     WORD   version_id;      // Product version ID
+ 209      =1     BYTE   mfg_str;      // Manufacturer string index
+ 210      =1     BYTE   prod_str;      // Product string index
+ 211      =1     BYTE   serialnum_str;   // Serial number string index
+ 212      =1     BYTE   configs;      // Number of configurations
+ 213      =1  }DEVICEDSCR;
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 7   
+
+ 214      =1  
+ 215      =1  typedef struct            // Device Qualifier Descriptor
+ 216      =1  {
+ 217      =1     BYTE   length;         // Descriptor length ( = sizeof(DEVICEQUALDSCR) )
+ 218      =1     BYTE   type;         // Decriptor type (Device Qualifier = 6)
+ 219      =1     BYTE   spec_ver_minor;   // Specification Version (BCD) minor
+ 220      =1     BYTE   spec_ver_major;   // Specification Version (BCD) major
+ 221      =1     BYTE   dev_class;      // Device class
+ 222      =1     BYTE   sub_class;      // Device sub-class
+ 223      =1     BYTE   protocol;      // Device sub-sub-class
+ 224      =1     BYTE   max_packet;      // Maximum packet size
+ 225      =1     BYTE   configs;      // Number of configurations
+ 226      =1     BYTE  reserved0;
+ 227      =1  }DEVICEQUALDSCR;
+ 228      =1  
+ 229      =1  typedef struct
+ 230      =1  {
+ 231      =1     BYTE   length;         // Configuration length ( = sizeof(CONFIGDSCR) )
+ 232      =1     BYTE   type;         // Descriptor type (Configuration = 2)
+ 233      =1     WORD   config_len;      // Configuration + End Points length
+ 234      =1     BYTE   interfaces;      // Number of interfaces
+ 235      =1     BYTE   index;         // Configuration number
+ 236      =1     BYTE   config_str;      // Configuration string
+ 237      =1     BYTE   attrib;         // Attributes (b7 - buspwr, b6 - selfpwr, b5 - rwu
+ 238      =1     BYTE   power;         // Power requirement (div 2 ma)
+ 239      =1  }CONFIGDSCR;
+ 240      =1  
+ 241      =1  typedef struct
+ 242      =1  {
+ 243      =1     BYTE   length;         // Interface descriptor length ( - sizeof(INTRFCDSCR) )
+ 244      =1     BYTE   type;         // Descriptor type (Interface = 4)
+ 245      =1     BYTE   index;         // Zero-based index of this interface
+ 246      =1     BYTE   alt_setting;   // Alternate setting
+ 247      =1     BYTE   ep_cnt;         // Number of end points 
+ 248      =1     BYTE   class;         // Interface class
+ 249      =1     BYTE   sub_class;      // Interface sub class
+ 250      =1     BYTE   protocol;      // Interface sub sub class
+ 251      =1     BYTE   interface_str;   // Interface descriptor string index
+ 252      =1  }INTRFCDSCR;
+ 253      =1  
+ 254      =1  typedef struct
+ 255      =1  {
+ 256      =1     BYTE   length;         // End point descriptor length ( = sizeof(ENDPNTDSCR) )
+ 257      =1     BYTE   type;         // Descriptor type (End point = 5)
+ 258      =1     BYTE   addr;         // End point address
+ 259      =1     BYTE   ep_type;      // End point type
+ 260      =1     BYTE   mp_L;         // Maximum packet size
+ 261      =1     BYTE   mp_H;
+ 262      =1     BYTE   interval;      // Interrupt polling interval
+ 263      =1  }ENDPNTDSCR;
+ 264      =1  
+ 265      =1  typedef struct
+ 266      =1  {
+ 267      =1     BYTE   length;         // String descriptor length
+ 268      =1     BYTE   type;         // Descriptor type
+ 269      =1  }STRINGDSCR;
+ 270      =1  
+ 271      =1  typedef struct
+ 272      =1  {
+ 273      =1     BYTE   cntrl;         // End point control register
+ 274      =1     BYTE   bytes;         // End point buffer byte count
+ 275      =1  }EPIOC;
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 8   
+
+ 276      =1  
+ 277      =1  typedef struct 
+ 278      =1  {
+ 279      =1     BYTE   length;
+ 280      =1     BYTE   *dat;
+ 281      =1     BYTE   count;
+ 282      =1     BYTE   status;
+ 283      =1  }I2CPCKT;
+ 284      =1  
+ 285      =1  //-----------------------------------------------------------------------------
+ 286      =1  // Globals
+ 287      =1  //-----------------------------------------------------------------------------
+ 288      =1  extern code BYTE   USB_AutoVector;
+ 289      =1  
+ 290      =1  extern WORD   pDeviceDscr;
+ 291      =1  extern WORD   pDeviceQualDscr;
+ 292      =1  extern WORD   pHighSpeedConfigDscr;
+ 293      =1  extern WORD   pFullSpeedConfigDscr; 
+ 294      =1  extern WORD   pConfigDscr;
+ 295      =1  extern WORD   pOtherConfigDscr;
+ 296      =1  extern WORD   pStringDscr;
+ 297      =1  
+ 298      =1  extern code DEVICEDSCR        DeviceDscr;
+ 299      =1  extern code DEVICEQUALDSCR    DeviceQualDscr;
+ 300      =1  extern code CONFIGDSCR        HighSpeedConfigDscr;
+ 301      =1  extern code CONFIGDSCR        FullSpeedConfigDscr;
+ 302      =1  extern code STRINGDSCR        StringDscr;
+ 303      =1  extern code DSCR              UserDscr;
+ 304      =1  
+ 305      =1  extern I2CPCKT   I2CPckt;
+ 306      =1  
+ 307      =1  //-----------------------------------------------------------------------------
+ 308      =1  // Function Prototypes
+ 309      =1  //-----------------------------------------------------------------------------
+ 310      =1  
+ 311      =1  extern void EZUSB_Renum(void);
+ 312      =1  extern void EZUSB_Discon(BOOL renum);
+ 313      =1  
+ 314      =1  extern void EZUSB_Susp(void);
+ 315      =1  extern void EZUSB_Resume(void);
+ 316      =1  
+ 317      =1  extern void EZUSB_Delay1ms(void);
+ 318      =1  extern void EZUSB_Delay(WORD ms);
+ 319      =1  
+ 320      =1  extern CONFIGDSCR xdata*   EZUSB_GetConfigDscr(BYTE ConfigIdx);
+ 321      =1  extern INTRFCDSCR xdata*   EZUSB_GetIntrfcDscr(BYTE ConfigIdx, BYTE IntrfcIdx, BYTE AltSetting);
+ 322      =1  extern STRINGDSCR xdata*   EZUSB_GetStringDscr(BYTE StrIdx);
+ 323      =1  extern DSCR xdata*      EZUSB_GetDscr(BYTE index, DSCR* dscr, BYTE type);
+ 324      =1  
+ 325      =1  extern void EZUSB_InitI2C(void);
+ 326      =1  extern BOOL EZUSB_WriteI2C_(BYTE addr, BYTE length, BYTE xdata *dat);
+ 327      =1  extern BOOL EZUSB_ReadI2C_(BYTE addr, BYTE length, BYTE xdata *dat);
+ 328      =1  extern BOOL EZUSB_WriteI2C(BYTE addr, BYTE length, BYTE xdata *dat);
+ 329      =1  extern BOOL EZUSB_ReadI2C(BYTE addr, BYTE length, BYTE xdata *dat);
+ 330      =1  extern void EZUSB_WaitForEEPROMWrite(BYTE addr);
+ 331      =1  
+ 332      =1  extern void modify_endpoint_stall(BYTE epid, BYTE stall);
+ 333      =1  
+ 334      =1  #endif   // FX2_H
+ 152          #include "fx2regs.h"
+   1      =1  //-----------------------------------------------------------------------------
+   2      =1  //   File:      FX2regs.h
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 9   
+
+   3      =1  //   Contents:   EZ-USB FX2/FX2LP/FX1 register declarations and bit mask definitions.
+   4      =1  //
+   5      =1  // $Archive: /USB/Target/Inc/fx2regs.h $
+   6      =1  // $Date: 4/13/05 4:29p $
+   7      =1  // $Revision: 42 $
+   8      =1  //
+   9      =1  //
+  10      =1  //   Copyright (c) 2005 Cypress Semiconductor, All rights reserved
+  11      =1  //-----------------------------------------------------------------------------
+  12      =1  
+  13      =1  #ifndef FX2REGS_H   /* Header Sentry */
+  14      =1  #define FX2REGS_H
+  15      =1  
+  16      =1  //-----------------------------------------------------------------------------
+  17      =1  // FX2/FX2LP/FX1 Related Register Assignments
+  18      =1  //-----------------------------------------------------------------------------
+  19      =1  
+  20      =1  // The Ez-USB FX2/FX2LP/FX1 registers are defined here. We use fx2regs.h for register 
+  21      =1  // address allocation by using "#define ALLOCATE_EXTERN". 
+  22      =1  // When using "#define ALLOCATE_EXTERN", you get (for instance): 
+  23      =1  // xdata volatile BYTE OUT7BUF[64]   _at_   0x7B40;
+  24      =1  // Such lines are created from FX2.h by using the preprocessor. 
+  25      =1  // Incidently, these lines will not generate any space in the resulting hex 
+  26      =1  // file; they just bind the symbols to the addresses for compilation. 
+  27      =1  // You just need to put "#define ALLOCATE_EXTERN" in your main program file; 
+  28      =1  // i.e. fw.c or a stand-alone C source file. 
+  29      =1  // Without "#define ALLOCATE_EXTERN", you just get the external reference: 
+  30      =1  // extern xdata volatile BYTE OUT7BUF[64]   ;//   0x7B40;
+  31      =1  // This uses the concatenation operator "##" to insert a comment "//" 
+  32      =1  // to cut off the end of the line, "_at_   0x7B40;", which is not wanted.
+  33      =1  
+  34      =1  #ifdef ALLOCATE_EXTERN
+           =1 #define EXTERN
+           =1 #define _AT_ _at_
+           =1 #else
+  38      =1  #define EXTERN extern
+  39      =1  #define _AT_ ;/ ## /
+  40      =1  #endif
+  41      =1  
+  42      =1  EXTERN xdata volatile BYTE GPIF_WAVE_DATA    _AT_ 0xE400;
+  43      =1  EXTERN xdata volatile BYTE RES_WAVEDATA_END  _AT_ 0xE480;
+  44      =1  
+  45      =1  // General Configuration
+  46      =1  
+  47      =1  EXTERN xdata volatile BYTE CPUCS             _AT_ 0xE600;  // Control & Status
+  48      =1  EXTERN xdata volatile BYTE IFCONFIG          _AT_ 0xE601;  // Interface Configuration
+  49      =1  EXTERN xdata volatile BYTE PINFLAGSAB        _AT_ 0xE602;  // FIFO FLAGA and FLAGB Assignments
+  50      =1  EXTERN xdata volatile BYTE PINFLAGSCD        _AT_ 0xE603;  // FIFO FLAGC and FLAGD Assignments
+  51      =1  EXTERN xdata volatile BYTE FIFORESET         _AT_ 0xE604;  // Restore FIFOS to default state
+  52      =1  EXTERN xdata volatile BYTE BREAKPT           _AT_ 0xE605;  // Breakpoint
+  53      =1  EXTERN xdata volatile BYTE BPADDRH           _AT_ 0xE606;  // Breakpoint Address H
+  54      =1  EXTERN xdata volatile BYTE BPADDRL           _AT_ 0xE607;  // Breakpoint Address L
+  55      =1  EXTERN xdata volatile BYTE UART230           _AT_ 0xE608;  // 230 Kbaud clock for T0,T1,T2
+  56      =1  EXTERN xdata volatile BYTE FIFOPINPOLAR      _AT_ 0xE609;  // FIFO polarities
+  57      =1  EXTERN xdata volatile BYTE REVID             _AT_ 0xE60A;  // Chip Revision
+  58      =1  EXTERN xdata volatile BYTE REVCTL            _AT_ 0xE60B;  // Chip Revision Control
+  59      =1  
+  60      =1  // Endpoint Configuration
+  61      =1  
+  62      =1  EXTERN xdata volatile BYTE EP1OUTCFG         _AT_ 0xE610;  // Endpoint 1-OUT Configuration
+  63      =1  EXTERN xdata volatile BYTE EP1INCFG          _AT_ 0xE611;  // Endpoint 1-IN Configuration
+  64      =1  EXTERN xdata volatile BYTE EP2CFG            _AT_ 0xE612;  // Endpoint 2 Configuration
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 10  
+
+  65      =1  EXTERN xdata volatile BYTE EP4CFG            _AT_ 0xE613;  // Endpoint 4 Configuration
+  66      =1  EXTERN xdata volatile BYTE EP6CFG            _AT_ 0xE614;  // Endpoint 6 Configuration
+  67      =1  EXTERN xdata volatile BYTE EP8CFG            _AT_ 0xE615;  // Endpoint 8 Configuration
+  68      =1  EXTERN xdata volatile BYTE EP2FIFOCFG        _AT_ 0xE618;  // Endpoint 2 FIFO configuration
+  69      =1  EXTERN xdata volatile BYTE EP4FIFOCFG        _AT_ 0xE619;  // Endpoint 4 FIFO configuration
+  70      =1  EXTERN xdata volatile BYTE EP6FIFOCFG        _AT_ 0xE61A;  // Endpoint 6 FIFO configuration
+  71      =1  EXTERN xdata volatile BYTE EP8FIFOCFG        _AT_ 0xE61B;  // Endpoint 8 FIFO configuration
+  72      =1  EXTERN xdata volatile BYTE EP2AUTOINLENH     _AT_ 0xE620;  // Endpoint 2 Packet Length H (IN only)
+  73      =1  EXTERN xdata volatile BYTE EP2AUTOINLENL     _AT_ 0xE621;  // Endpoint 2 Packet Length L (IN only)
+  74      =1  EXTERN xdata volatile BYTE EP4AUTOINLENH     _AT_ 0xE622;  // Endpoint 4 Packet Length H (IN only)
+  75      =1  EXTERN xdata volatile BYTE EP4AUTOINLENL     _AT_ 0xE623;  // Endpoint 4 Packet Length L (IN only)
+  76      =1  EXTERN xdata volatile BYTE EP6AUTOINLENH     _AT_ 0xE624;  // Endpoint 6 Packet Length H (IN only)
+  77      =1  EXTERN xdata volatile BYTE EP6AUTOINLENL     _AT_ 0xE625;  // Endpoint 6 Packet Length L (IN only)
+  78      =1  EXTERN xdata volatile BYTE EP8AUTOINLENH     _AT_ 0xE626;  // Endpoint 8 Packet Length H (IN only)
+  79      =1  EXTERN xdata volatile BYTE EP8AUTOINLENL     _AT_ 0xE627;  // Endpoint 8 Packet Length L (IN only)
+  80      =1  EXTERN xdata volatile BYTE EP2FIFOPFH        _AT_ 0xE630;  // EP2 Programmable Flag trigger H
+  81      =1  EXTERN xdata volatile BYTE EP2FIFOPFL        _AT_ 0xE631;  // EP2 Programmable Flag trigger L
+  82      =1  EXTERN xdata volatile BYTE EP4FIFOPFH        _AT_ 0xE632;  // EP4 Programmable Flag trigger H
+  83      =1  EXTERN xdata volatile BYTE EP4FIFOPFL        _AT_ 0xE633;  // EP4 Programmable Flag trigger L
+  84      =1  EXTERN xdata volatile BYTE EP6FIFOPFH        _AT_ 0xE634;  // EP6 Programmable Flag trigger H
+  85      =1  EXTERN xdata volatile BYTE EP6FIFOPFL        _AT_ 0xE635;  // EP6 Programmable Flag trigger L
+  86      =1  EXTERN xdata volatile BYTE EP8FIFOPFH        _AT_ 0xE636;  // EP8 Programmable Flag trigger H
+  87      =1  EXTERN xdata volatile BYTE EP8FIFOPFL        _AT_ 0xE637;  // EP8 Programmable Flag trigger L
+  88      =1  EXTERN xdata volatile BYTE EP2ISOINPKTS      _AT_ 0xE640;  // EP2 (if ISO) IN Packets per frame (1-3)
+  89      =1  EXTERN xdata volatile BYTE EP4ISOINPKTS      _AT_ 0xE641;  // EP4 (if ISO) IN Packets per frame (1-3)
+  90      =1  EXTERN xdata volatile BYTE EP6ISOINPKTS      _AT_ 0xE642;  // EP6 (if ISO) IN Packets per frame (1-3)
+  91      =1  EXTERN xdata volatile BYTE EP8ISOINPKTS      _AT_ 0xE643;  // EP8 (if ISO) IN Packets per frame (1-3)
+  92      =1  EXTERN xdata volatile BYTE INPKTEND          _AT_ 0xE648;  // Force IN Packet End
+  93      =1  EXTERN xdata volatile BYTE OUTPKTEND         _AT_ 0xE649;  // Force OUT Packet End
+  94      =1  
+  95      =1  // Interrupts
+  96      =1  
+  97      =1  EXTERN xdata volatile BYTE EP2FIFOIE         _AT_ 0xE650;  // Endpoint 2 Flag Interrupt Enable
+  98      =1  EXTERN xdata volatile BYTE EP2FIFOIRQ        _AT_ 0xE651;  // Endpoint 2 Flag Interrupt Request
+  99      =1  EXTERN xdata volatile BYTE EP4FIFOIE         _AT_ 0xE652;  // Endpoint 4 Flag Interrupt Enable
+ 100      =1  EXTERN xdata volatile BYTE EP4FIFOIRQ        _AT_ 0xE653;  // Endpoint 4 Flag Interrupt Request
+ 101      =1  EXTERN xdata volatile BYTE EP6FIFOIE         _AT_ 0xE654;  // Endpoint 6 Flag Interrupt Enable
+ 102      =1  EXTERN xdata volatile BYTE EP6FIFOIRQ        _AT_ 0xE655;  // Endpoint 6 Flag Interrupt Request
+ 103      =1  EXTERN xdata volatile BYTE EP8FIFOIE         _AT_ 0xE656;  // Endpoint 8 Flag Interrupt Enable
+ 104      =1  EXTERN xdata volatile BYTE EP8FIFOIRQ        _AT_ 0xE657;  // Endpoint 8 Flag Interrupt Request
+ 105      =1  EXTERN xdata volatile BYTE IBNIE             _AT_ 0xE658;  // IN-BULK-NAK Interrupt Enable
+ 106      =1  EXTERN xdata volatile BYTE IBNIRQ            _AT_ 0xE659;  // IN-BULK-NAK interrupt Request
+ 107      =1  EXTERN xdata volatile BYTE NAKIE             _AT_ 0xE65A;  // Endpoint Ping NAK interrupt Enable
+ 108      =1  EXTERN xdata volatile BYTE NAKIRQ            _AT_ 0xE65B;  // Endpoint Ping NAK interrupt Request
+ 109      =1  EXTERN xdata volatile BYTE USBIE             _AT_ 0xE65C;  // USB Int Enables
+ 110      =1  EXTERN xdata volatile BYTE USBIRQ            _AT_ 0xE65D;  // USB Interrupt Requests
+ 111      =1  EXTERN xdata volatile BYTE EPIE              _AT_ 0xE65E;  // Endpoint Interrupt Enables
+ 112      =1  EXTERN xdata volatile BYTE EPIRQ             _AT_ 0xE65F;  // Endpoint Interrupt Requests
+ 113      =1  EXTERN xdata volatile BYTE GPIFIE            _AT_ 0xE660;  // GPIF Interrupt Enable
+ 114      =1  EXTERN xdata volatile BYTE GPIFIRQ           _AT_ 0xE661;  // GPIF Interrupt Request
+ 115      =1  EXTERN xdata volatile BYTE USBERRIE          _AT_ 0xE662;  // USB Error Interrupt Enables
+ 116      =1  EXTERN xdata volatile BYTE USBERRIRQ         _AT_ 0xE663;  // USB Error Interrupt Requests
+ 117      =1  EXTERN xdata volatile BYTE ERRCNTLIM         _AT_ 0xE664;  // USB Error counter and limit
+ 118      =1  EXTERN xdata volatile BYTE CLRERRCNT         _AT_ 0xE665;  // Clear Error Counter EC[3..0]
+ 119      =1  EXTERN xdata volatile BYTE INT2IVEC          _AT_ 0xE666;  // Interupt 2 (USB) Autovector
+ 120      =1  EXTERN xdata volatile BYTE INT4IVEC          _AT_ 0xE667;  // Interupt 4 (FIFOS & GPIF) Autovector
+ 121      =1  EXTERN xdata volatile BYTE INTSETUP          _AT_ 0xE668;  // Interrupt 2&4 Setup
+ 122      =1  
+ 123      =1  // Input/Output
+ 124      =1  
+ 125      =1  EXTERN xdata volatile BYTE PORTACFG          _AT_ 0xE670;  // I/O PORTA Alternate Configuration
+ 126      =1  EXTERN xdata volatile BYTE PORTCCFG          _AT_ 0xE671;  // I/O PORTC Alternate Configuration
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 11  
+
+ 127      =1  EXTERN xdata volatile BYTE PORTECFG          _AT_ 0xE672;  // I/O PORTE Alternate Configuration
+ 128      =1  EXTERN xdata volatile BYTE I2CS              _AT_ 0xE678;  // Control & Status
+ 129      =1  EXTERN xdata volatile BYTE I2DAT             _AT_ 0xE679;  // Data
+ 130      =1  EXTERN xdata volatile BYTE I2CTL             _AT_ 0xE67A;  // I2C Control
+ 131      =1  EXTERN xdata volatile BYTE XAUTODAT1         _AT_ 0xE67B;  // Autoptr1 MOVX access
+ 132      =1  EXTERN xdata volatile BYTE XAUTODAT2         _AT_ 0xE67C;  // Autoptr2 MOVX access
+ 133      =1  
+ 134      =1  #define EXTAUTODAT1 XAUTODAT1
+ 135      =1  #define EXTAUTODAT2 XAUTODAT2
+ 136      =1  
+ 137      =1  // USB Control
+ 138      =1  
+ 139      =1  EXTERN xdata volatile BYTE USBCS             _AT_ 0xE680;  // USB Control & Status
+ 140      =1  EXTERN xdata volatile BYTE SUSPEND           _AT_ 0xE681;  // Put chip into suspend
+ 141      =1  EXTERN xdata volatile BYTE WAKEUPCS          _AT_ 0xE682;  // Wakeup source and polarity
+ 142      =1  EXTERN xdata volatile BYTE TOGCTL            _AT_ 0xE683;  // Toggle Control
+ 143      =1  EXTERN xdata volatile BYTE USBFRAMEH         _AT_ 0xE684;  // USB Frame count H
+ 144      =1  EXTERN xdata volatile BYTE USBFRAMEL         _AT_ 0xE685;  // USB Frame count L
+ 145      =1  EXTERN xdata volatile BYTE MICROFRAME        _AT_ 0xE686;  // Microframe count, 0-7
+ 146      =1  EXTERN xdata volatile BYTE FNADDR            _AT_ 0xE687;  // USB Function address
+ 147      =1  
+ 148      =1  // Endpoints
+ 149      =1  
+ 150      =1  EXTERN xdata volatile BYTE EP0BCH            _AT_ 0xE68A;  // Endpoint 0 Byte Count H
+ 151      =1  EXTERN xdata volatile BYTE EP0BCL            _AT_ 0xE68B;  // Endpoint 0 Byte Count L
+ 152      =1  EXTERN xdata volatile BYTE EP1OUTBC          _AT_ 0xE68D;  // Endpoint 1 OUT Byte Count
+ 153      =1  EXTERN xdata volatile BYTE EP1INBC           _AT_ 0xE68F;  // Endpoint 1 IN Byte Count
+ 154      =1  EXTERN xdata volatile BYTE EP2BCH            _AT_ 0xE690;  // Endpoint 2 Byte Count H
+ 155      =1  EXTERN xdata volatile BYTE EP2BCL            _AT_ 0xE691;  // Endpoint 2 Byte Count L
+ 156      =1  EXTERN xdata volatile BYTE EP4BCH            _AT_ 0xE694;  // Endpoint 4 Byte Count H
+ 157      =1  EXTERN xdata volatile BYTE EP4BCL            _AT_ 0xE695;  // Endpoint 4 Byte Count L
+ 158      =1  EXTERN xdata volatile BYTE EP6BCH            _AT_ 0xE698;  // Endpoint 6 Byte Count H
+ 159      =1  EXTERN xdata volatile BYTE EP6BCL            _AT_ 0xE699;  // Endpoint 6 Byte Count L
+ 160      =1  EXTERN xdata volatile BYTE EP8BCH            _AT_ 0xE69C;  // Endpoint 8 Byte Count H
+ 161      =1  EXTERN xdata volatile BYTE EP8BCL            _AT_ 0xE69D;  // Endpoint 8 Byte Count L
+ 162      =1  EXTERN xdata volatile BYTE EP0CS             _AT_ 0xE6A0;  // Endpoint  Control and Status
+ 163      =1  EXTERN xdata volatile BYTE EP1OUTCS          _AT_ 0xE6A1;  // Endpoint 1 OUT Control and Status
+ 164      =1  EXTERN xdata volatile BYTE EP1INCS           _AT_ 0xE6A2;  // Endpoint 1 IN Control and Status
+ 165      =1  EXTERN xdata volatile BYTE EP2CS             _AT_ 0xE6A3;  // Endpoint 2 Control and Status
+ 166      =1  EXTERN xdata volatile BYTE EP4CS             _AT_ 0xE6A4;  // Endpoint 4 Control and Status
+ 167      =1  EXTERN xdata volatile BYTE EP6CS             _AT_ 0xE6A5;  // Endpoint 6 Control and Status
+ 168      =1  EXTERN xdata volatile BYTE EP8CS             _AT_ 0xE6A6;  // Endpoint 8 Control and Status
+ 169      =1  EXTERN xdata volatile BYTE EP2FIFOFLGS       _AT_ 0xE6A7;  // Endpoint 2 Flags
+ 170      =1  EXTERN xdata volatile BYTE EP4FIFOFLGS       _AT_ 0xE6A8;  // Endpoint 4 Flags
+ 171      =1  EXTERN xdata volatile BYTE EP6FIFOFLGS       _AT_ 0xE6A9;  // Endpoint 6 Flags
+ 172      =1  EXTERN xdata volatile BYTE EP8FIFOFLGS       _AT_ 0xE6AA;  // Endpoint 8 Flags
+ 173      =1  EXTERN xdata volatile BYTE EP2FIFOBCH        _AT_ 0xE6AB;  // EP2 FIFO total byte count H
+ 174      =1  EXTERN xdata volatile BYTE EP2FIFOBCL        _AT_ 0xE6AC;  // EP2 FIFO total byte count L
+ 175      =1  EXTERN xdata volatile BYTE EP4FIFOBCH        _AT_ 0xE6AD;  // EP4 FIFO total byte count H
+ 176      =1  EXTERN xdata volatile BYTE EP4FIFOBCL        _AT_ 0xE6AE;  // EP4 FIFO total byte count L
+ 177      =1  EXTERN xdata volatile BYTE EP6FIFOBCH        _AT_ 0xE6AF;  // EP6 FIFO total byte count H
+ 178      =1  EXTERN xdata volatile BYTE EP6FIFOBCL        _AT_ 0xE6B0;  // EP6 FIFO total byte count L
+ 179      =1  EXTERN xdata volatile BYTE EP8FIFOBCH        _AT_ 0xE6B1;  // EP8 FIFO total byte count H
+ 180      =1  EXTERN xdata volatile BYTE EP8FIFOBCL        _AT_ 0xE6B2;  // EP8 FIFO total byte count L
+ 181      =1  EXTERN xdata volatile BYTE SUDPTRH           _AT_ 0xE6B3;  // Setup Data Pointer high address byte
+ 182      =1  EXTERN xdata volatile BYTE SUDPTRL           _AT_ 0xE6B4;  // Setup Data Pointer low address byte
+ 183      =1  EXTERN xdata volatile BYTE SUDPTRCTL         _AT_ 0xE6B5;  // Setup Data Pointer Auto Mode
+ 184      =1  EXTERN xdata volatile BYTE SETUPDAT[8]       _AT_ 0xE6B8;  // 8 bytes of SETUP data
+ 185      =1  
+ 186      =1  // GPIF
+ 187      =1  
+ 188      =1  EXTERN xdata volatile BYTE GPIFWFSELECT      _AT_ 0xE6C0;  // Waveform Selector
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 12  
+
+ 189      =1  EXTERN xdata volatile BYTE GPIFIDLECS        _AT_ 0xE6C1;  // GPIF Done, GPIF IDLE drive mode
+ 190      =1  EXTERN xdata volatile BYTE GPIFIDLECTL       _AT_ 0xE6C2;  // Inactive Bus, CTL states
+ 191      =1  EXTERN xdata volatile BYTE GPIFCTLCFG        _AT_ 0xE6C3;  // CTL OUT pin drive
+ 192      =1  EXTERN xdata volatile BYTE GPIFADRH          _AT_ 0xE6C4;  // GPIF Address H
+ 193      =1  EXTERN xdata volatile BYTE GPIFADRL          _AT_ 0xE6C5;  // GPIF Address L
+ 194      =1  
+ 195      =1  EXTERN xdata volatile BYTE GPIFTCB3          _AT_ 0xE6CE;  // GPIF Transaction Count Byte 3
+ 196      =1  EXTERN xdata volatile BYTE GPIFTCB2          _AT_ 0xE6CF;  // GPIF Transaction Count Byte 2
+ 197      =1  EXTERN xdata volatile BYTE GPIFTCB1          _AT_ 0xE6D0;  // GPIF Transaction Count Byte 1
+ 198      =1  EXTERN xdata volatile BYTE GPIFTCB0          _AT_ 0xE6D1;  // GPIF Transaction Count Byte 0
+ 199      =1  
+ 200      =1  #define EP2GPIFTCH GPIFTCB1   // these are here for backwards compatibility
+ 201      =1  #define EP2GPIFTCL GPIFTCB0   // 
+ 202      =1  #define EP4GPIFTCH GPIFTCB1   // these are here for backwards compatibility
+ 203      =1  #define EP4GPIFTCL GPIFTCB0   // 
+ 204      =1  #define EP6GPIFTCH GPIFTCB1   // these are here for backwards compatibility
+ 205      =1  #define EP6GPIFTCL GPIFTCB0   // 
+ 206      =1  #define EP8GPIFTCH GPIFTCB1   // these are here for backwards compatibility
+ 207      =1  #define EP8GPIFTCL GPIFTCB0   // 
+ 208      =1  
+ 209      =1  EXTERN xdata volatile BYTE EP2GPIFFLGSEL     _AT_ 0xE6D2;  // EP2 GPIF Flag select
+ 210      =1  EXTERN xdata volatile BYTE EP2GPIFPFSTOP     _AT_ 0xE6D3;  // Stop GPIF EP2 transaction on prog. flag
+ 211      =1  EXTERN xdata volatile BYTE EP2GPIFTRIG       _AT_ 0xE6D4;  // EP2 FIFO Trigger
+ 212      =1  EXTERN xdata volatile BYTE EP4GPIFFLGSEL     _AT_ 0xE6DA;  // EP4 GPIF Flag select
+ 213      =1  EXTERN xdata volatile BYTE EP4GPIFPFSTOP     _AT_ 0xE6DB;  // Stop GPIF EP4 transaction on prog. flag
+ 214      =1  EXTERN xdata volatile BYTE EP4GPIFTRIG       _AT_ 0xE6DC;  // EP4 FIFO Trigger
+ 215      =1  EXTERN xdata volatile BYTE EP6GPIFFLGSEL     _AT_ 0xE6E2;  // EP6 GPIF Flag select
+ 216      =1  EXTERN xdata volatile BYTE EP6GPIFPFSTOP     _AT_ 0xE6E3;  // Stop GPIF EP6 transaction on prog. flag
+ 217      =1  EXTERN xdata volatile BYTE EP6GPIFTRIG       _AT_ 0xE6E4;  // EP6 FIFO Trigger
+ 218      =1  EXTERN xdata volatile BYTE EP8GPIFFLGSEL     _AT_ 0xE6EA;  // EP8 GPIF Flag select
+ 219      =1  EXTERN xdata volatile BYTE EP8GPIFPFSTOP     _AT_ 0xE6EB;  // Stop GPIF EP8 transaction on prog. flag
+ 220      =1  EXTERN xdata volatile BYTE EP8GPIFTRIG       _AT_ 0xE6EC;  // EP8 FIFO Trigger
+ 221      =1  EXTERN xdata volatile BYTE XGPIFSGLDATH      _AT_ 0xE6F0;  // GPIF Data H (16-bit mode only)
+ 222      =1  EXTERN xdata volatile BYTE XGPIFSGLDATLX     _AT_ 0xE6F1;  // Read/Write GPIF Data L & trigger transac
+ 223      =1  EXTERN xdata volatile BYTE XGPIFSGLDATLNOX   _AT_ 0xE6F2;  // Read GPIF Data L, no transac trigger
+ 224      =1  EXTERN xdata volatile BYTE GPIFREADYCFG      _AT_ 0xE6F3;  // Internal RDY,Sync/Async, RDY5CFG
+ 225      =1  EXTERN xdata volatile BYTE GPIFREADYSTAT     _AT_ 0xE6F4;  // RDY pin states
+ 226      =1  EXTERN xdata volatile BYTE GPIFABORT         _AT_ 0xE6F5;  // Abort GPIF cycles
+ 227      =1  
+ 228      =1  // UDMA
+ 229      =1  
+ 230      =1  EXTERN xdata volatile BYTE FLOWSTATE         _AT_  0xE6C6; //Defines GPIF flow state
+ 231      =1  EXTERN xdata volatile BYTE FLOWLOGIC         _AT_  0xE6C7; //Defines flow/hold decision criteria
+ 232      =1  EXTERN xdata volatile BYTE FLOWEQ0CTL        _AT_  0xE6C8; //CTL states during active flow state
+ 233      =1  EXTERN xdata volatile BYTE FLOWEQ1CTL        _AT_  0xE6C9; //CTL states during hold flow state
+ 234      =1  EXTERN xdata volatile BYTE FLOWHOLDOFF       _AT_  0xE6CA;
+ 235      =1  EXTERN xdata volatile BYTE FLOWSTB           _AT_  0xE6CB; //CTL/RDY Signal to use as master data strobe 
+ 236      =1  EXTERN xdata volatile BYTE FLOWSTBEDGE       _AT_  0xE6CC; //Defines active master strobe edge
+ 237      =1  EXTERN xdata volatile BYTE FLOWSTBHPERIOD    _AT_  0xE6CD; //Half Period of output master strobe
+ 238      =1  EXTERN xdata volatile BYTE GPIFHOLDAMOUNT    _AT_  0xE60C; //Data delay shift 
+ 239      =1  EXTERN xdata volatile BYTE UDMACRCH          _AT_  0xE67D; //CRC Upper byte
+ 240      =1  EXTERN xdata volatile BYTE UDMACRCL          _AT_  0xE67E; //CRC Lower byte
+ 241      =1  EXTERN xdata volatile BYTE UDMACRCQUAL       _AT_  0xE67F; //UDMA In only, host terminated use only
+ 242      =1  
+ 243      =1  
+ 244      =1  // Debug/Test
+ 245      =1  // The following registers are for Cypress's internal testing purposes only.
+ 246      =1  // These registers are not documented in the datasheet or the Technical Reference
+ 247      =1  // Manual as they were not designed for end user application usage 
+ 248      =1  EXTERN xdata volatile BYTE DBUG              _AT_ 0xE6F8;  // Debug
+ 249      =1  EXTERN xdata volatile BYTE TESTCFG           _AT_ 0xE6F9;  // Test configuration
+ 250      =1  EXTERN xdata volatile BYTE USBTEST           _AT_ 0xE6FA;  // USB Test Modes
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 13  
+
+ 251      =1  EXTERN xdata volatile BYTE CT1               _AT_ 0xE6FB;  // Chirp Test--Override
+ 252      =1  EXTERN xdata volatile BYTE CT2               _AT_ 0xE6FC;  // Chirp Test--FSM
+ 253      =1  EXTERN xdata volatile BYTE CT3               _AT_ 0xE6FD;  // Chirp Test--Control Signals
+ 254      =1  EXTERN xdata volatile BYTE CT4               _AT_ 0xE6FE;  // Chirp Test--Inputs
+ 255      =1  
+ 256      =1  // Endpoint Buffers
+ 257      =1  
+ 258      =1  EXTERN xdata volatile BYTE EP0BUF[64]        _AT_ 0xE740;  // EP0 IN-OUT buffer
+ 259      =1  EXTERN xdata volatile BYTE EP1OUTBUF[64]     _AT_ 0xE780;  // EP1-OUT buffer
+ 260      =1  EXTERN xdata volatile BYTE EP1INBUF[64]      _AT_ 0xE7C0;  // EP1-IN buffer
+ 261      =1  EXTERN xdata volatile BYTE EP2FIFOBUF[1024]  _AT_ 0xF000;  // 512/1024-byte EP2 buffer (IN or OUT)
+ 262      =1  EXTERN xdata volatile BYTE EP4FIFOBUF[1024]  _AT_ 0xF400;  // 512 byte EP4 buffer (IN or OUT)
+ 263      =1  EXTERN xdata volatile BYTE EP6FIFOBUF[1024]  _AT_ 0xF800;  // 512/1024-byte EP6 buffer (IN or OUT)
+ 264      =1  EXTERN xdata volatile BYTE EP8FIFOBUF[1024]  _AT_ 0xFC00;  // 512 byte EP8 buffer (IN or OUT)
+ 265      =1  
+ 266      =1  // Error Correction Code (ECC) Registers (FX2LP/FX1 only)
+ 267      =1  
+ 268      =1  EXTERN xdata volatile BYTE ECCCFG            _AT_ 0xE628;  // ECC Configuration
+ 269      =1  EXTERN xdata volatile BYTE ECCRESET          _AT_ 0xE629;  // ECC Reset
+ 270      =1  EXTERN xdata volatile BYTE ECC1B0            _AT_ 0xE62A;  // ECC1 Byte 0
+ 271      =1  EXTERN xdata volatile BYTE ECC1B1            _AT_ 0xE62B;  // ECC1 Byte 1
+ 272      =1  EXTERN xdata volatile BYTE ECC1B2            _AT_ 0xE62C;  // ECC1 Byte 2
+ 273      =1  EXTERN xdata volatile BYTE ECC2B0            _AT_ 0xE62D;  // ECC2 Byte 0
+ 274      =1  EXTERN xdata volatile BYTE ECC2B1            _AT_ 0xE62E;  // ECC2 Byte 1
+ 275      =1  EXTERN xdata volatile BYTE ECC2B2            _AT_ 0xE62F;  // ECC2 Byte 2
+ 276      =1  
+ 277      =1  // Feature Registers  (FX2LP/FX1 only)
+ 278      =1  EXTERN xdata volatile BYTE GPCR2             _AT_ 0xE50D;  // Chip Features
+ 279      =1  
+ 280      =1  #undef EXTERN
+ 281      =1  #undef _AT_
+ 282      =1  
+ 283      =1  /*-----------------------------------------------------------------------------
+ 284      =1     Special Function Registers (SFRs)
+ 285      =1     The byte registers and bits defined in the following list are based
+ 286      =1     on the Synopsis definition of the 8051 Special Function Registers for EZ-USB. 
+ 287      =1      If you modify the register definitions below, please regenerate the file 
+ 288      =1      "ezregs.inc" which includes the same basic information for assembly inclusion.
+ 289      =1  -----------------------------------------------------------------------------*/
+ 290      =1  
+ 291      =1  sfr IOA     = 0x80;
+ 292      =1           /*  IOA  */
+ 293      =1           sbit PA0    = 0x80 + 0;
+ 294      =1           sbit PA1    = 0x80 + 1;
+ 295      =1           sbit PA2    = 0x80 + 2;
+ 296      =1           sbit PA3    = 0x80 + 3;
+ 297      =1  
+ 298      =1           sbit PA4    = 0x80 + 4;
+ 299      =1           sbit PA5    = 0x80 + 5;
+ 300      =1           sbit PA6    = 0x80 + 6;
+ 301      =1           sbit PA7    = 0x80 + 7;
+ 302      =1  sfr SP      = 0x81;
+ 303      =1  sfr DPL     = 0x82;
+ 304      =1  sfr DPH     = 0x83;
+ 305      =1  sfr DPL1    = 0x84;
+ 306      =1  sfr DPH1    = 0x85;
+ 307      =1  sfr DPS     = 0x86;
+ 308      =1           /*  DPS  */
+ 309      =1           // sbit SEL   = 0x86+0;
+ 310      =1  sfr PCON    = 0x87;
+ 311      =1           /*  PCON  */
+ 312      =1           //sbit IDLE   = 0x87+0;
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 14  
+
+ 313      =1           //sbit STOP   = 0x87+1;
+ 314      =1           //sbit GF0    = 0x87+2;
+ 315      =1           //sbit GF1    = 0x87+3;
+ 316      =1           //sbit SMOD0  = 0x87+7;
+ 317      =1  sfr TCON    = 0x88;
+ 318      =1           /*  TCON  */
+ 319      =1           sbit IT0    = 0x88+0;
+ 320      =1           sbit IE0    = 0x88+1;
+ 321      =1           sbit IT1    = 0x88+2;
+ 322      =1           sbit IE1    = 0x88+3;
+ 323      =1           sbit TR0    = 0x88+4;
+ 324      =1           sbit TF0    = 0x88+5;
+ 325      =1           sbit TR1    = 0x88+6;
+ 326      =1           sbit TF1    = 0x88+7;
+ 327      =1  sfr TMOD    = 0x89;
+ 328      =1           /*  TMOD  */
+ 329      =1           //sbit M00    = 0x89+0;
+ 330      =1           //sbit M10    = 0x89+1;
+ 331      =1           //sbit CT0    = 0x89+2;
+ 332      =1           //sbit GATE0  = 0x89+3;
+ 333      =1           //sbit M01    = 0x89+4;
+ 334      =1           //sbit M11    = 0x89+5;
+ 335      =1           //sbit CT1    = 0x89+6;
+ 336      =1           //sbit GATE1  = 0x89+7;
+ 337      =1  sfr TL0     = 0x8A;
+ 338      =1  sfr TL1     = 0x8B;
+ 339      =1  sfr TH0     = 0x8C;
+ 340      =1  sfr TH1     = 0x8D;
+ 341      =1  sfr CKCON   = 0x8E;
+ 342      =1           /*  CKCON  */
+ 343      =1           //sbit MD0    = 0x89+0;
+ 344      =1           //sbit MD1    = 0x89+1;
+ 345      =1           //sbit MD2    = 0x89+2;
+ 346      =1           //sbit T0M    = 0x89+3;
+ 347      =1           //sbit T1M    = 0x89+4;
+ 348      =1           //sbit T2M    = 0x89+5;
+ 349      =1  sfr SPC_FNC = 0x8F; // Was WRS in Reg320
+ 350      =1           /*  CKCON  */
+ 351      =1           //sbit WRS    = 0x8F+0;
+ 352      =1  sfr IOB     = 0x90;
+ 353      =1           /*  IOB  */
+ 354      =1           sbit PB0    = 0x90 + 0;
+ 355      =1           sbit PB1    = 0x90 + 1;
+ 356      =1           sbit PB2    = 0x90 + 2;
+ 357      =1           sbit PB3    = 0x90 + 3;
+ 358      =1  
+ 359      =1           sbit PB4    = 0x90 + 4;
+ 360      =1           sbit PB5    = 0x90 + 5;
+ 361      =1           sbit PB6    = 0x90 + 6;
+ 362      =1           sbit PB7    = 0x90 + 7;
+ 363      =1  sfr EXIF    = 0x91; // EXIF Bit Values differ from Reg320
+ 364      =1           /*  EXIF  */
+ 365      =1           //sbit USBINT = 0x91+4;
+ 366      =1           //sbit I2CINT = 0x91+5;
+ 367      =1           //sbit IE4    = 0x91+6;
+ 368      =1           //sbit IE5    = 0x91+7;
+ 369      =1  sfr MPAGE  = 0x92;
+ 370      =1  sfr SCON0  = 0x98;
+ 371      =1           /*  SCON0  */
+ 372      =1           sbit RI    = 0x98+0;
+ 373      =1           sbit TI    = 0x98+1;
+ 374      =1           sbit RB8   = 0x98+2;
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 15  
+
+ 375      =1           sbit TB8   = 0x98+3;
+ 376      =1           sbit REN   = 0x98+4;
+ 377      =1           sbit SM2   = 0x98+5;
+ 378      =1           sbit SM1   = 0x98+6;
+ 379      =1           sbit SM0   = 0x98+7;
+ 380      =1  sfr SBUF0  = 0x99;
+ 381      =1  
+ 382      =1  #define AUTOPTR1H AUTOPTRH1 // for backwards compatibility with examples
+ 383      =1  #define AUTOPTR1L AUTOPTRL1 // for backwards compatibility with examples
+ 384      =1  #define APTR1H AUTOPTRH1 // for backwards compatibility with examples
+ 385      =1  #define APTR1L AUTOPTRL1 // for backwards compatibility with examples
+ 386      =1  
+ 387      =1  // this is how they are defined in the TRM
+ 388      =1  sfr AUTOPTRH1     = 0x9A; 
+ 389      =1  sfr AUTOPTRL1     = 0x9B; 
+ 390      =1  sfr AUTOPTRH2     = 0x9D;
+ 391      =1  sfr AUTOPTRL2     = 0x9E; 
+ 392      =1  
+ 393      =1  sfr IOC        = 0xA0;
+ 394      =1           /*  IOC  */
+ 395      =1           sbit PC0    = 0xA0 + 0;
+ 396      =1           sbit PC1    = 0xA0 + 1;
+ 397      =1           sbit PC2    = 0xA0 + 2;
+ 398      =1           sbit PC3    = 0xA0 + 3;
+ 399      =1  
+ 400      =1           sbit PC4    = 0xA0 + 4;
+ 401      =1           sbit PC5    = 0xA0 + 5;
+ 402      =1           sbit PC6    = 0xA0 + 6;
+ 403      =1           sbit PC7    = 0xA0 + 7;
+ 404      =1  sfr INT2CLR    = 0xA1;
+ 405      =1  sfr INT4CLR    = 0xA2;
+ 406      =1  
+ 407      =1  sfr IE     = 0xA8;
+ 408      =1           /*  IE  */
+ 409      =1           sbit EX0   = 0xA8+0;
+ 410      =1           sbit ET0   = 0xA8+1;
+ 411      =1           sbit EX1   = 0xA8+2;
+ 412      =1           sbit ET1   = 0xA8+3;
+ 413      =1           sbit ES0   = 0xA8+4;
+ 414      =1           sbit ET2   = 0xA8+5;
+ 415      =1           sbit ES1   = 0xA8+6;
+ 416      =1           sbit EA    = 0xA8+7;
+ 417      =1  
+ 418      =1  sfr EP2468STAT     = 0xAA;
+ 419      =1           /* EP2468STAT */
+ 420      =1           //sbit EP2E   = 0xAA+0;
+ 421      =1           //sbit EP2F   = 0xAA+1;
+ 422      =1           //sbit EP4E   = 0xAA+2;
+ 423      =1           //sbit EP4F   = 0xAA+3;
+ 424      =1           //sbit EP6E   = 0xAA+4;
+ 425      =1           //sbit EP6F   = 0xAA+5;
+ 426      =1           //sbit EP8E   = 0xAA+6;
+ 427      =1           //sbit EP8F   = 0xAA+7;
+ 428      =1  
+ 429      =1  sfr EP24FIFOFLGS   = 0xAB;
+ 430      =1  sfr EP68FIFOFLGS   = 0xAC;
+ 431      =1  sfr AUTOPTRSETUP  = 0xAF;
+ 432      =1           /* AUTOPTRSETUP */
+ 433      =1           //   sbit EXTACC  = 0xAF+0;
+ 434      =1           //   sbit APTR1FZ = 0xAF+1;
+ 435      =1           //   sbit APTR2FZ = 0xAF+2;
+ 436      =1  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 16  
+
+ 437      =1  sfr IOD     = 0xB0;
+ 438      =1           /*  IOD  */
+ 439      =1           sbit PD0    = 0xB0 + 0;
+ 440      =1           sbit PD1    = 0xB0 + 1;
+ 441      =1           sbit PD2    = 0xB0 + 2;
+ 442      =1           sbit PD3    = 0xB0 + 3;
+ 443      =1  
+ 444      =1           sbit PD4    = 0xB0 + 4;
+ 445      =1           sbit PD5    = 0xB0 + 5;
+ 446      =1           sbit PD6    = 0xB0 + 6;
+ 447      =1           sbit PD7    = 0xB0 + 7;
+ 448      =1  sfr IOE     = 0xB1;
+ 449      =1  sfr OEA     = 0xB2;
+ 450      =1  sfr OEB     = 0xB3;
+ 451      =1  sfr OEC     = 0xB4;
+ 452      =1  sfr OED     = 0xB5;
+ 453      =1  sfr OEE     = 0xB6;
+ 454      =1  
+ 455      =1  sfr IP     = 0xB8;
+ 456      =1           /*  IP  */
+ 457      =1           sbit PX0   = 0xB8+0;
+ 458      =1           sbit PT0   = 0xB8+1;
+ 459      =1           sbit PX1   = 0xB8+2;
+ 460      =1           sbit PT1   = 0xB8+3;
+ 461      =1           sbit PS0   = 0xB8+4;
+ 462      =1           sbit PT2   = 0xB8+5;
+ 463      =1           sbit PS1   = 0xB8+6;
+ 464      =1  
+ 465      =1  sfr EP01STAT    = 0xBA;
+ 466      =1  sfr GPIFTRIG    = 0xBB;
+ 467      =1                  
+ 468      =1  sfr GPIFSGLDATH     = 0xBD;
+ 469      =1  sfr GPIFSGLDATLX    = 0xBE;
+ 470      =1  sfr GPIFSGLDATLNOX  = 0xBF;
+ 471      =1  
+ 472      =1  sfr SCON1  = 0xC0;
+ 473      =1           /*  SCON1  */
+ 474      =1           sbit RI1   = 0xC0+0;
+ 475      =1           sbit TI1   = 0xC0+1;
+ 476      =1           sbit RB81  = 0xC0+2;
+ 477      =1           sbit TB81  = 0xC0+3;
+ 478      =1           sbit REN1  = 0xC0+4;
+ 479      =1           sbit SM21  = 0xC0+5;
+ 480      =1           sbit SM11  = 0xC0+6;
+ 481      =1           sbit SM01  = 0xC0+7;
+ 482      =1  sfr SBUF1  = 0xC1;
+ 483      =1  sfr T2CON  = 0xC8;
+ 484      =1           /*  T2CON  */
+ 485      =1           sbit CP_RL2 = 0xC8+0;
+ 486      =1           sbit C_T2  = 0xC8+1;
+ 487      =1           sbit TR2   = 0xC8+2;
+ 488      =1           sbit EXEN2 = 0xC8+3;
+ 489      =1           sbit TCLK  = 0xC8+4;
+ 490      =1           sbit RCLK  = 0xC8+5;
+ 491      =1           sbit EXF2  = 0xC8+6;
+ 492      =1           sbit TF2   = 0xC8+7;
+ 493      =1  sfr RCAP2L = 0xCA;
+ 494      =1  sfr RCAP2H = 0xCB;
+ 495      =1  sfr TL2    = 0xCC;
+ 496      =1  sfr TH2    = 0xCD;
+ 497      =1  sfr PSW    = 0xD0;
+ 498      =1           /*  PSW  */
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 17  
+
+ 499      =1           sbit P     = 0xD0+0;
+ 500      =1           sbit FL    = 0xD0+1;
+ 501      =1           sbit OV    = 0xD0+2;
+ 502      =1           sbit RS0   = 0xD0+3;
+ 503      =1           sbit RS1   = 0xD0+4;
+ 504      =1           sbit F0    = 0xD0+5;
+ 505      =1           sbit AC    = 0xD0+6;
+ 506      =1           sbit CY    = 0xD0+7;
+ 507      =1  sfr EICON  = 0xD8; // Was WDCON in DS80C320; Bit Values differ from Reg320
+ 508      =1           /*  EICON  */
+ 509      =1           sbit INT6  = 0xD8+3;
+ 510      =1           sbit RESI  = 0xD8+4;
+ 511      =1           sbit ERESI = 0xD8+5;
+ 512      =1           sbit SMOD1 = 0xD8+7;
+ 513      =1  sfr ACC    = 0xE0;
+ 514      =1  sfr EIE    = 0xE8; // EIE Bit Values differ from Reg320
+ 515      =1           /*  EIE  */
+ 516      =1           sbit EUSB    = 0xE8+0;
+ 517      =1           sbit EI2C    = 0xE8+1;
+ 518      =1           sbit EIEX4   = 0xE8+2;
+ 519      =1           sbit EIEX5   = 0xE8+3;
+ 520      =1           sbit EIEX6   = 0xE8+4;
+ 521      =1  sfr B      = 0xF0;
+ 522      =1  sfr EIP    = 0xF8; // EIP Bit Values differ from Reg320
+ 523      =1           /*  EIP  */
+ 524      =1           sbit PUSB    = 0xF8+0;
+ 525      =1           sbit PI2C    = 0xF8+1;
+ 526      =1           sbit EIPX4   = 0xF8+2;
+ 527      =1           sbit EIPX5   = 0xF8+3;
+ 528      =1           sbit EIPX6   = 0xF8+4;
+ 529      =1  
+ 530      =1  /*-----------------------------------------------------------------------------
+ 531      =1     Bit Masks
+ 532      =1  -----------------------------------------------------------------------------*/
+ 533      =1  
+ 534      =1  /* CPU Control & Status Register (CPUCS) */
+ 535      =1  #define bmPRTCSTB    bmBIT5
+ 536      =1  #define bmCLKSPD     (bmBIT4 | bmBIT3)
+ 537      =1  #define bmCLKSPD1    bmBIT4
+ 538      =1  #define bmCLKSPD0    bmBIT3
+ 539      =1  #define bmCLKINV     bmBIT2
+ 540      =1  #define bmCLKOE      bmBIT1
+ 541      =1  #define bm8051RES    bmBIT0
+ 542      =1  /* Port Alternate Configuration Registers */
+ 543      =1  /* Port A (PORTACFG) */
+ 544      =1  #define bmFLAGD      bmBIT7
+ 545      =1  #define bmINT1       bmBIT1
+ 546      =1  #define bmINT0       bmBIT0
+ 547      =1  /* Port C (PORTCCFG) */
+ 548      =1  #define bmGPIFA7     bmBIT7
+ 549      =1  #define bmGPIFA6     bmBIT6
+ 550      =1  #define bmGPIFA5     bmBIT5
+ 551      =1  #define bmGPIFA4     bmBIT4
+ 552      =1  #define bmGPIFA3     bmBIT3
+ 553      =1  #define bmGPIFA2     bmBIT2
+ 554      =1  #define bmGPIFA1     bmBIT1
+ 555      =1  #define bmGPIFA0     bmBIT0
+ 556      =1  /* Port E (PORTECFG) */
+ 557      =1  #define bmGPIFA8     bmBIT7
+ 558      =1  #define bmT2EX       bmBIT6
+ 559      =1  #define bmINT6       bmBIT5
+ 560      =1  #define bmRXD1OUT    bmBIT4
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 18  
+
+ 561      =1  #define bmRXD0OUT    bmBIT3
+ 562      =1  #define bmT2OUT      bmBIT2
+ 563      =1  #define bmT1OUT      bmBIT1
+ 564      =1  #define bmT0OUT      bmBIT0
+ 565      =1  
+ 566      =1  /* I2C Control & Status Register (I2CS) */
+ 567      =1  #define bmSTART      bmBIT7
+ 568      =1  #define bmSTOP       bmBIT6
+ 569      =1  #define bmLASTRD     bmBIT5
+ 570      =1  #define bmID         (bmBIT4 | bmBIT3)
+ 571      =1  #define bmBERR       bmBIT2
+ 572      =1  #define bmACK        bmBIT1
+ 573      =1  #define bmDONE       bmBIT0
+ 574      =1  /* I2C Control Register (I2CTL) */
+ 575      =1  #define bmSTOPIE     bmBIT1
+ 576      =1  #define bm400KHZ     bmBIT0
+ 577      =1  /* Interrupt 2 (USB) Autovector Register (INT2IVEC) */
+ 578      =1  #define bmIV4        bmBIT6
+ 579      =1  #define bmIV3        bmBIT5
+ 580      =1  #define bmIV2        bmBIT4
+ 581      =1  #define bmIV1        bmBIT3
+ 582      =1  #define bmIV0        bmBIT2
+ 583      =1  /* USB Interrupt Request & Enable Registers (USBIE/USBIRQ) */
+ 584      =1  #define bmEP0ACK     bmBIT6
+ 585      =1  #define bmHSGRANT    bmBIT5
+ 586      =1  #define bmURES       bmBIT4
+ 587      =1  #define bmSUSP       bmBIT3
+ 588      =1  #define bmSUTOK      bmBIT2
+ 589      =1  #define bmSOF        bmBIT1
+ 590      =1  #define bmSUDAV      bmBIT0
+ 591      =1  /* Breakpoint register (BREAKPT) */
+ 592      =1  #define bmBREAK      bmBIT3
+ 593      =1  #define bmBPPULSE    bmBIT2
+ 594      =1  #define bmBPEN       bmBIT1
+ 595      =1  /* Interrupt 2 & 4 Setup (INTSETUP) */
+ 596      =1  #define bmAV2EN      bmBIT3
+ 597      =1  #define INT4IN       bmBIT1
+ 598      =1  #define bmAV4EN      bmBIT0
+ 599      =1  /* USB Control & Status Register (USBCS) */
+ 600      =1  #define bmHSM        bmBIT7
+ 601      =1  #define bmDISCON     bmBIT3
+ 602      =1  #define bmNOSYNSOF   bmBIT2
+ 603      =1  #define bmRENUM      bmBIT1
+ 604      =1  #define bmSIGRESUME  bmBIT0
+ 605      =1  /* Wakeup Control and Status Register (WAKEUPCS) */
+ 606      =1  #define bmWU2        bmBIT7
+ 607      =1  #define bmWU         bmBIT6
+ 608      =1  #define bmWU2POL     bmBIT5
+ 609      =1  #define bmWUPOL      bmBIT4
+ 610      =1  #define bmDPEN       bmBIT2
+ 611      =1  #define bmWU2EN      bmBIT1
+ 612      =1  #define bmWUEN       bmBIT0
+ 613      =1  /* End Point 0 Control & Status Register (EP0CS) */
+ 614      =1  #define bmHSNAK      bmBIT7
+ 615      =1  /* End Point 0-1 Control & Status Registers (EP0CS/EP1OUTCS/EP1INCS) */
+ 616      =1  #define bmEPBUSY     bmBIT1
+ 617      =1  #define bmEPSTALL    bmBIT0
+ 618      =1  /* End Point 2-8 Control & Status Registers (EP2CS/EP4CS/EP6CS/EP8CS) */
+ 619      =1  #define bmNPAK       (bmBIT6 | bmBIT5 | bmBIT4)
+ 620      =1  #define bmEPFULL     bmBIT3
+ 621      =1  #define bmEPEMPTY    bmBIT2
+ 622      =1  /* Endpoint Status (EP2468STAT) SFR bits */
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 19  
+
+ 623      =1  #define bmEP8FULL    bmBIT7
+ 624      =1  #define bmEP8EMPTY   bmBIT6
+ 625      =1  #define bmEP6FULL    bmBIT5
+ 626      =1  #define bmEP6EMPTY   bmBIT4
+ 627      =1  #define bmEP4FULL    bmBIT3
+ 628      =1  #define bmEP4EMPTY   bmBIT2
+ 629      =1  #define bmEP2FULL    bmBIT1
+ 630      =1  #define bmEP2EMPTY   bmBIT0
+ 631      =1  /* SETUP Data Pointer Auto Mode (SUDPTRCTL) */
+ 632      =1  #define bmSDPAUTO    bmBIT0
+ 633      =1  /* Endpoint Data Toggle Control (TOGCTL) */
+ 634      =1  #define bmQUERYTOGGLE  bmBIT7
+ 635      =1  #define bmSETTOGGLE    bmBIT6
+ 636      =1  #define bmRESETTOGGLE  bmBIT5
+ 637      =1  #define bmTOGCTLEPMASK bmBIT3 | bmBIT2 | bmBIT1 | bmBIT0
+ 638      =1  /* IBN (In Bulk Nak) enable and request bits (IBNIE/IBNIRQ) */
+ 639      =1  #define bmEP8IBN     bmBIT5
+ 640      =1  #define bmEP6IBN     bmBIT4
+ 641      =1  #define bmEP4IBN     bmBIT3
+ 642      =1  #define bmEP2IBN     bmBIT2
+ 643      =1  #define bmEP1IBN     bmBIT1
+ 644      =1  #define bmEP0IBN     bmBIT0
+ 645      =1  
+ 646      =1  /* PING-NAK enable and request bits (NAKIE/NAKIRQ) */
+ 647      =1  #define bmEP8PING     bmBIT7
+ 648      =1  #define bmEP6PING     bmBIT6
+ 649      =1  #define bmEP4PING     bmBIT5
+ 650      =1  #define bmEP2PING     bmBIT4
+ 651      =1  #define bmEP1PING     bmBIT3
+ 652      =1  #define bmEP0PING     bmBIT2
+ 653      =1  #define bmIBN         bmBIT0
+ 654      =1  
+ 655      =1  /* Interface Configuration bits (IFCONFIG) */
+ 656      =1  #define bmIFCLKSRC    bmBIT7
+ 657      =1  #define bm3048MHZ     bmBIT6
+ 658      =1  #define bmIFCLKOE     bmBIT5
+ 659      =1  #define bmIFCLKPOL    bmBIT4
+ 660      =1  #define bmASYNC       bmBIT3
+ 661      =1  #define bmGSTATE      bmBIT2
+ 662      =1  #define bmIFCFG1      bmBIT1
+ 663      =1  #define bmIFCFG0      bmBIT0
+ 664      =1  #define bmIFCFGMASK   (bmIFCFG0 | bmIFCFG1)
+ 665      =1  #define bmIFGPIF      bmIFCFG1
+ 666      =1  
+ 667      =1  /* EP 2468 FIFO Configuration bits (EP2FIFOCFG,EP4FIFOCFG,EP6FIFOCFG,EP8FIFOCFG) */
+ 668      =1  #define bmINFM       bmBIT6
+ 669      =1  #define bmOEP        bmBIT5
+ 670      =1  #define bmAUTOOUT    bmBIT4
+ 671      =1  #define bmAUTOIN     bmBIT3
+ 672      =1  #define bmZEROLENIN  bmBIT2
+ 673      =1  #define bmWORDWIDE   bmBIT0
+ 674      =1  
+ 675      =1  /* Chip Revision Control Bits (REVCTL) - used to ebable/disable revision specidic
+ 676      =1     features */ 
+ 677      =1  #define bmNOAUTOARM    bmBIT1
+ 678      =1  #define bmSKIPCOMMIT   bmBIT0
+ 679      =1  
+ 680      =1  /* Fifo Reset bits (FIFORESET) */
+ 681      =1  #define bmNAKALL       bmBIT7
+ 682      =1  
+ 683      =1  /* Chip Feature Register (GPCR2) */
+ 684      =1  #define bmFULLSPEEDONLY    bmBIT4
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 20  
+
+ 685      =1  
+ 686      =1  #endif   /* FX2REGS_H */
+ 153          #include "syncdly.h"            // SYNCDELAY macro
+   1      =1  //-----------------------------------------------------------------------------
+   2      =1  //   File:      syncdly.h
+   3      =1  //   Contents:  EZ-USB FX2 Synchronization Delay (SYNCDELAY) Macro
+   4      =1  //               Enter with _IFREQ = IFCLK in kHz
+   5      =1  //               Enter with _CFREQ = CLKOUT in kHz
+   6      =1  //
+   7      =1  // $Archive: /USB/Target/Inc/syncdly.h $
+   8      =1  // $Date: 8/12/03 4:26p $
+   9      =1  // $Revision: 2 $
+  10      =1  //
+  11      =1  //
+  12      =1  //-----------------------------------------------------------------------------
+  13      =1  // Copyright 2003, Cypress Semiconductor Corporation
+  14      =1  //
+  15      =1  // This software is owned by Cypress Semiconductor Corporation (Cypress) and is
+  16      =1  // protected by United States copyright laws and international treaty provisions. Cypress
+  17      =1  // hereby grants to Licensee a personal, non-exclusive, non-transferable license to copy,
+  18      =1  // use, modify, create derivative works of, and compile the Cypress Source Code and
+  19      =1  // derivative works for the sole purpose of creating custom software in support of Licensee
+  20      =1  // product ("Licensee Product") to be used only in conjunction with a Cypress integrated
+  21      =1  // circuit. Any reproduction, modification, translation, compilation, or representation of this
+  22      =1  // software except as specified above is prohibited without the express written permission of
+  23      =1  // Cypress.
+  24      =1  //
+  25      =1  // Disclaimer: Cypress makes no warranty of any kind, express or implied, with regard to
+  26      =1  // this material, including, but not limited to, the implied warranties of merchantability and
+  27      =1  // fitness for a particular purpose. Cypress reserves the right to make changes without
+  28      =1  // further notice to the materials described herein. Cypress does not assume any liability
+  29      =1  // arising out of the application or use of any product or circuit described herein. Cypress’
+  30      =1  // products described herein are not authorized for use as components in life-support
+  31      =1  // devices.
+  32      =1  //
+  33      =1  // This software is protected by and subject to worldwide patent coverage, including U.S.
+  34      =1  // and foreign patents. Use may be limited by and subject to the Cypress Software License
+  35      =1  // Agreement.
+  36      =1  //-----------------------------------------------------------------------------
+  37      =1  #include "intrins.h"
+   1      =2  /*--------------------------------------------------------------------------
+   2      =2  INTRINS.H
+   3      =2  
+   4      =2  Intrinsic functions for C51.
+   5      =2  Copyright (c) 1988-2010 Keil Elektronik GmbH and ARM Germany GmbH
+   6      =2  All rights reserved.
+   7      =2  --------------------------------------------------------------------------*/
+   8      =2  
+   9      =2  #ifndef __INTRINS_H__
+  10      =2  #define __INTRINS_H__
+  11      =2  
+  12      =2  #pragma SAVE
+  13      =2  
+  14      =2  #if defined (__CX2__)
+           =2 #pragma FUNCTIONS(STATIC)
+           =2 /* intrinsic functions are reentrant, but need static attribute */
+           =2 #endif
+  18      =2  
+  19      =2  extern void          _nop_     (void);
+  20      =2  extern bit           _testbit_ (bit);
+  21      =2  extern unsigned char _cror_    (unsigned char, unsigned char);
+  22      =2  extern unsigned int  _iror_    (unsigned int,  unsigned char);
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 21  
+
+  23      =2  extern unsigned long _lror_    (unsigned long, unsigned char);
+  24      =2  extern unsigned char _crol_    (unsigned char, unsigned char);
+  25      =2  extern unsigned int  _irol_    (unsigned int,  unsigned char);
+  26      =2  extern unsigned long _lrol_    (unsigned long, unsigned char);
+  27      =2  extern unsigned char _chkfloat_(float);
+  28      =2  #if defined (__CX2__)
+           =2 extern int           abs       (int);
+           =2 extern void          _illop_   (void);
+           =2 #endif
+  32      =2  #if !defined (__CX2__)
+  33      =2  extern void          _push_    (unsigned char _sfr);
+  34      =2  extern void          _pop_     (unsigned char _sfr);
+  35      =2  #endif
+  36      =2  
+  37      =2  #pragma RESTORE
+  38      =2  
+  39      =2  #endif
+  40      =2  
+  38      =1  
+  39      =1    // Registers which require a synchronization delay, see section 15.14
+  40      =1    // FIFORESET        FIFOPINPOLAR
+  41      =1    // INPKTEND         OUTPKTEND
+  42      =1    // EPxBCH:L         REVCTL
+  43      =1    // GPIFTCB3         GPIFTCB2
+  44      =1    // GPIFTCB1         GPIFTCB0
+  45      =1    // EPxFIFOPFH:L     EPxAUTOINLENH:L
+  46      =1    // EPxFIFOCFG       EPxGPIFFLGSEL
+  47      =1    // PINFLAGSxx       EPxFIFOIRQ
+  48      =1    // EPxFIFOIE        GPIFIRQ
+  49      =1    // GPIFIE           GPIFADRH:L
+  50      =1    // UDMACRCH:L       EPxGPIFTRIG
+  51      =1    // GPIFTRIG
+  52      =1    
+  53      =1    // Note: The pre-REVE EPxGPIFTCH/L register are affected, as well...
+  54      =1    //      ...these have been replaced by GPIFTC[B3:B0] registers
+  55      =1  
+  56      =1  // _IFREQ can be in the range of: 5000 to 48000
+  57      =1  #ifndef _IFREQ 
+  58      =1  #define _IFREQ 48000   // IFCLK frequency in kHz
+  59      =1  #endif
+  60      =1  
+  61      =1  // CFREQ can be any one of: 48000, 24000, or 12000
+  62      =1  #ifndef _CFREQ
+  63      =1  #define _CFREQ 48000   // CLKOUT frequency in kHz
+  64      =1  #endif
+  65      =1  
+  66      =1  #if( _IFREQ < 5000 )
+           =1 #error "_IFREQ too small!  Valid Range: 5000 to 48000..."
+           =1 #endif
+  69      =1  
+  70      =1  #if( _IFREQ > 48000 )
+           =1 #error "_IFREQ too large!  Valid Range: 5000 to 48000..."
+           =1 #endif
+  73      =1  
+  74      =1  #if( _CFREQ != 48000 )
+           =1 #if( _CFREQ != 24000 )
+           =1 #if( _CFREQ != 12000 )
+           =1 #error "_CFREQ invalid!  Valid values: 48000, 24000, 12000..."
+           =1 #endif
+           =1 #endif
+           =1 #endif
+  81      =1  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 22  
+
+  82      =1  // Synchronization Delay formula: see TRM section 15-14
+  83      =1  #define _SCYCL ( 3*(_CFREQ) + 5*(_IFREQ) - 1 ) / ( 2*(_IFREQ) )
+  84      =1  
+  85      =1  #if( _SCYCL == 1 )
+           =1 #define SYNCDELAY _nop_( )
+           =1 #endif
+  88      =1  
+  89      =1  #if( _SCYCL == 2 )
+           =1 #define SYNCDELAY _nop_( ); \
+           =1                   _nop_( )
+           =1 #endif
+  93      =1  
+  94      =1  #if( _SCYCL == 3 )
+  95      =1  #define SYNCDELAY _nop_( ); \
+  96      =1                    _nop_( ); \
+  97      =1                    _nop_( ) 
+  98      =1  #endif
+  99      =1  
+ 100      =1  #if( _SCYCL == 4 )
+           =1 #define SYNCDELAY _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( )
+           =1 #endif
+ 106      =1  
+ 107      =1  #if( _SCYCL == 5 )
+           =1 #define SYNCDELAY _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( )
+           =1 #endif
+ 114      =1  
+ 115      =1  #if( _SCYCL == 6 )
+           =1 #define SYNCDELAY _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( )
+           =1 #endif
+ 123      =1  
+ 124      =1  #if( _SCYCL == 7 )
+           =1 #define SYNCDELAY _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( )
+           =1 #endif
+ 133      =1  
+ 134      =1  #if( _SCYCL == 8 )
+           =1 #define SYNCDELAY _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( )
+           =1 #endif
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 23  
+
+ 144      =1  
+ 145      =1  #if( _SCYCL == 9 )
+           =1 #define SYNCDELAY _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( )
+           =1 #endif
+ 156      =1  
+ 157      =1  #if( _SCYCL == 10 )
+           =1 #define SYNCDELAY _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( )
+           =1 #endif
+ 169      =1  
+ 170      =1  #if( _SCYCL == 11 )
+           =1 #define SYNCDELAY _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( )
+           =1 #endif
+ 183      =1  
+ 184      =1  #if( _SCYCL == 12 )
+           =1 #define SYNCDELAY _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( )
+           =1 #endif
+ 198      =1  
+ 199      =1  #if( _SCYCL == 13 )
+           =1 #define SYNCDELAY _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 24  
+
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( )
+           =1 #endif
+ 214      =1  
+ 215      =1  #if( _SCYCL == 14 )
+           =1 #define SYNCDELAY _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( )
+           =1 #endif
+ 231      =1  
+ 232      =1  #if( _SCYCL == 15 )
+           =1 #define SYNCDELAY _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( )
+           =1 #endif
+ 249      =1  
+ 250      =1  #if( _SCYCL == 16 )
+           =1 #define SYNCDELAY _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( ); \
+           =1                   _nop_( )
+           =1 #endif
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 25  
+
+ 154          
+ 155          extern BOOL GotSUD;             // Received setup data flag
+ 156          extern BOOL Sleep;
+ 157          extern BOOL Rwuen;
+ 158          extern BOOL Selfpwr;
+ 159          
+ 160          BYTE Configuration;             // Current configuration
+ 161          BYTE AlternateSetting;          // Alternate settings
+ 162          
+ 163          int start_7_seg_display = 0;  //This variable is used to start 7-seg display after the FX2LP is enumerated
+             -.
+ 164          void EZUSB_INITI2C();
+ 165          
+ 166          #define VR_NAKALL_ON    0xD0
+ 167          #define VR_NAKALL_OFF   0xD1
+ 168          #define bmEP2IRQ    0x10
+ 169          #define bmEP6IRQ    0x40  
+ 170          // 7-segment readout
+ 171          #define LED_ADDR    0x21
+ 172          
+ 173          // Provide access to FX2LP DVK LED's D2-D5. An LED is turned 
+ 174          // on or off by doing a read to one of these memory addresses.  
+ 175          xdata volatile BYTE D5OFF _at_ 0xB000;
+ 176          xdata volatile BYTE D4OFF _at_ 0xA000;
+ 177          xdata volatile BYTE D3OFF _at_ 0x9000;
+ 178          xdata volatile BYTE D2OFF _at_ 0x8000;
+ 179          xdata volatile BYTE D5ON  _at_ 0xB800;
+ 180          xdata volatile BYTE D4ON  _at_ 0xA800;
+ 181          xdata volatile BYTE D3ON  _at_ 0x9800;
+ 182          xdata volatile BYTE D2ON  _at_ 0x8800;
+ 183          
+ 184          int LEDCounter = 0;     // Activity LED blink period
+ 185          BYTE inblink = 0x00;    // IN transfer LED time constant
+ 186          BYTE outblink = 0x00;   // OUT transfer LED time constant
+ 187          
+ 188          // 7-segment readout digits 0-F 
+ 189          BYTE xdata Digit[] = { 0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8, 0x80, 0x98, 0x88, 0x83, 0xc6, 0xa1,
+             - 0x86, 0x8e };
+ 190          
+ 191          //-----------------------------------------------------------------------------
+ 192          // Task Dispatcher hooks
+ 193          //   The following hooks are called by the task dispatcher.
+ 194          //-----------------------------------------------------------------------------
+ 195          
+ 196          void TD_Init(void)             // Called once at startup
+ 197          {
+ 198   1         BYTE dum;          // For the LEDS
+ 199   1         CPUCS = ((CPUCS & ~bmCLKSPD) | bmCLKSPD1) ;  // 48 MHz CPU clock
+ 200   1         
+ 201   1         
+ 202   1         // Turn off all 4 LEDS
+ 203   1         dum = D2OFF;
+ 204   1         dum = D3OFF;
+ 205   1         dum = D4OFF;
+ 206   1         dum = D5OFF;
+ 207   1      
+ 208   1      // EP2CFG & EP6CFG configure our two endpoints, EP2-OUT and EP6-IN
+ 209   1      // b7:    Valid
+ 210   1      // b6:    DIR (0=OUT, 1=IN)
+ 211   1      // b[5:4] Type (01=ISO, 10=BULK, 11=INT)
+ 212   1      // b3:    Size (0=512, 1=1024 bytes)
+ 213   1      // b2:    0
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 26  
+
+ 214   1      // b[1:0] Buffering (00=quad, 10=double, 11=triple)   
+ 215   1      //
+ 216   1      
+ 217   1        EP2CFG = 0xA2;  // Valid, BULK-OUT, 512 byte buffer, double-buffered
+ 218   1        SYNCDELAY;    // Some regs take longer to update, see TRM Section 15.14.                    
+ 219   1        EP6CFG = 0xE2;  // Valid, BULK-IN, 512 byte buffer, double-buffered
+ 220   1        SYNCDELAY;                    
+ 221   1      
+ 222   1        // OUT endpoints do not come up armed
+ 223   1        // Since the endpoint is double buffered we must write dummy byte counts twice
+ 224   1        EP2BCL = 0x80;    // arm EP2OUT by writing byte count w/skip.
+ 225   1        SYNCDELAY;                    
+ 226   1        EP2BCL = 0x80;  // again
+ 227   1        SYNCDELAY;                    
+ 228   1        // enable dual autopointer feature
+ 229   1        AUTOPTRSETUP |= 0x01;
+ 230   1      
+ 231   1        USBIE |= bmSOF;       // Enable the SOF IRQ to serve as LED timers
+ 232   1        EPIE = bmEP6IRQ | bmEP2IRQ; // Enable EP6 and EP2 Interrupts to turn on transfer LEDS
+ 233   1      }
+ 234          
+ 235          void TD_Poll(void)              // Called repeatedly while the device is idle
+ 236          {
+ 237   1        WORD i;
+ 238   1        WORD count;
+ 239   1      //  BYTE dummy_LED2;    // ***For the LED
+ 240   1        BYTE waiting_inpkts;
+ 241   1      
+ 242   1      #ifdef ENABLE_7_SEG_DISPLAY
+ 243   1      if(start_7_seg_display)
+ 244   1      {
+ 245   2      // update 7-seg readout with number of IN packets waiting for transfer to the host
+ 246   2        waiting_inpkts = (EP6CS & 0xF0)>>4;
+ 247   2        EZUSB_WriteI2C(LED_ADDR, 0x01, &(Digit[waiting_inpkts]));
+ 248   2        EZUSB_WaitForEEPROMWrite(LED_ADDR);
+ 249   2      }
+ 250   1      #endif
+ 251   1      
+ 252   1      // Transfer EP6-OUT buffer to EP2-IN buffer when there is a packet in one of the EP6-OUT buffers, AND
+ 253   1      // there is an available EP2-IN buffer. The FIFO status flags update after full packets are transferred.
+ 254   1      // Therefore EP2-OUT "Not Empty" means a packet is available, and "EP6-IN "Not Full" means there is an
+ 255   1      // available buffer. Using the flags this way handles any packet size and takes multiple buffering
+ 256   1      // into account.   
+ 257   1      
+ 258   1        if(!(EP2468STAT & bmEP2EMPTY))    // Is EP2-OUT buffer not empty (has at least one packet)?
+ 259   1        {
+ 260   2          if(!(EP2468STAT & bmEP6FULL)) // YES: Is EP6-IN buffer not full (room for at least 1 pkt)?
+ 261   2            { 
+ 262   3              APTR1H = MSB( &EP2FIFOBUF );
+ 263   3              APTR1L = LSB( &EP2FIFOBUF );
+ 264   3              AUTOPTRH2 = MSB( &EP6FIFOBUF );
+ 265   3              AUTOPTRL2 = LSB( &EP6FIFOBUF );
+ 266   3      
+ 267   3              count = (EP2BCH << 8) + EP2BCL;
+ 268   3      
+ 269   3              // loop EP2OUT buffer data to EP6IN
+ 270   3              for( i = 0; i < count; i++ )
+ 271   3              {
+ 272   4                  EXTAUTODAT2 = EXTAUTODAT1;  // Autopointers make block transfers easy...
+ 273   4              }
+ 274   3              EP6BCH = EP2BCH;    // Send the same number of bytes as received  
+ 275   3              SYNCDELAY;  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 27  
+
+ 276   3              EP6BCL = EP2BCL;        // arm EP6IN
+ 277   3              SYNCDELAY;                    
+ 278   3              EP2BCL = 0x80;          // arm EP2OUT
+ 279   3           }
+ 280   2        }
+ 281   1      }
+ 282          
+ 283          BOOL TD_Suspend(void)          // Called before the device goes into suspend mode
+ 284          {
+ 285   1         return(TRUE);
+ 286   1      }
+ 287          
+ 288          BOOL TD_Resume(void)          // Called after the device resumes
+ 289          {
+ 290   1         return(TRUE);
+ 291   1      }
+ 292          
+ 293          //-----------------------------------------------------------------------------
+ 294          // Device Request hooks
+ 295          //   The following hooks are called by the end point 0 device request parser.
+ 296          //-----------------------------------------------------------------------------
+ 297          
+ 298          BOOL DR_GetDescriptor(void)
+ 299          {
+ 300   1         return(TRUE);
+ 301   1      }
+ 302          
+ 303          BOOL DR_SetConfiguration(void)   // Called when a Set Configuration command is received
+ 304          {
+ 305   1         Configuration = SETUPDAT[2];
+ 306   1      #ifdef ENABLE_7_SEG_DISPLAY
+ 307   1      
+ 308   1        EZUSB_INITI2C();        // for the 7-seg readout
+ 309   1        start_7_seg_display = 1;
+ 310   1      
+ 311   1      #endif
+ 312   1         return(TRUE);            // Handled by user code
+ 313   1      }
+ 314          
+ 315          BOOL DR_GetConfiguration(void)   // Called when a Get Configuration command is received
+ 316          {
+ 317   1         EP0BUF[0] = Configuration;
+ 318   1         EP0BCH = 0;
+ 319   1         EP0BCL = 1;
+ 320   1         return(TRUE);            // Handled by user code
+ 321   1      }
+ 322          
+ 323          BOOL DR_SetInterface(void)       // Called when a Set Interface command is received
+ 324          {
+ 325   1         AlternateSetting = SETUPDAT[2];
+ 326   1         return(TRUE);            // Handled by user code
+ 327   1      }
+ 328          
+ 329          BOOL DR_GetInterface(void)       // Called when a Set Interface command is received
+ 330          {
+ 331   1         EP0BUF[0] = AlternateSetting;
+ 332   1         EP0BCH = 0;
+ 333   1         EP0BCL = 1;
+ 334   1         return(TRUE);            // Handled by user code
+ 335   1      }
+ 336          
+ 337          BOOL DR_GetStatus(void)
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 28  
+
+ 338          {
+ 339   1         return(TRUE);
+ 340   1      }
+ 341          
+ 342          BOOL DR_ClearFeature(void)
+ 343          {
+ 344   1         return(TRUE);
+ 345   1      }
+ 346          
+ 347          BOOL DR_SetFeature(void)
+ 348          {
+ 349   1         return(TRUE);
+ 350   1      }
+ 351          
+ 352          BOOL DR_VendorCmnd(void)
+ 353          {
+ 354   1        return(TRUE);
+ 355   1      }
+ 356          
+ 357          //-----------------------------------------------------------------------------
+ 358          // USB Interrupt Handlers
+ 359          //   The following functions are called by the USB interrupt jump table.
+ 360          //-----------------------------------------------------------------------------
+ 361          
+ 362          // Setup Data Available Interrupt Handler
+ 363          void ISR_Sudav(void) interrupt 0
+ 364          {
+ 365   1         GotSUD = TRUE;            // Set flag
+ 366   1         EZUSB_IRQ_CLEAR();
+ 367   1         USBIRQ = bmSUDAV;         // Clear SUDAV IRQ
+ 368   1      }
+ 369          
+ 370          // Setup Token Interrupt Handler
+ 371          void ISR_Sutok(void) interrupt 0
+ 372          {
+ 373   1         EZUSB_IRQ_CLEAR();
+ 374   1         USBIRQ = bmSUTOK;         // Clear SUTOK IRQ
+ 375   1      }
+ 376          
+ 377          void ISR_Sof(void) interrupt 0
+ 378          {
+ 379   1         BYTE dum;
+ 380   1         BYTE Led_Flag = 0;
+ 381   1         EZUSB_IRQ_CLEAR();
+ 382   1         USBIRQ = bmSOF;            // Clear SOF IRQ
+ 383   1      
+ 384   1          if(--inblink == 0)      // IN and OUT LED extinguishers
+ 385   1          dum = D2OFF;
+ 386   1        if(--outblink == 0) 
+ 387   1          dum = D3OFF;
+ 388   1      
+ 389   1         // *** Blink the LED with one second period. At High-Speed the
+ 390   1         // microSOF's occur every 125 usec. Flash the LED 8 times per sec for High-Speed,
+ 391   1         // 1 per sec for Full-Speed. 
+ 392   1      
+ 393   1         LEDCounter++;
+ 394   1         if(LEDCounter > 1000)
+ 395   1            LEDCounter = 0;   // 1 sec period
+ 396   1            if(LEDCounter < 500)
+ 397   1            dum = D5OFF;
+ 398   1          else
+ 399   1            dum = D5ON;
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 29  
+
+ 400   1      }
+ 401          
+ 402          void ISR_Ures(void) interrupt 0
+ 403          {
+ 404   1         // whenever we get a USB reset, we should revert to full speed mode
+ 405   1         pConfigDscr = pFullSpeedConfigDscr;
+ 406   1         ((CONFIGDSCR xdata *) pConfigDscr)->type = CONFIG_DSCR;
+ 407   1         pOtherConfigDscr = pHighSpeedConfigDscr;
+ 408   1         ((CONFIGDSCR xdata *) pOtherConfigDscr)->type = OTHERSPEED_DSCR;
+ 409   1      
+ 410   1         EZUSB_IRQ_CLEAR();
+ 411   1         USBIRQ = bmURES;         // Clear URES IRQ
+ 412   1      }
+ 413          
+ 414          void ISR_Susp(void) interrupt 0
+ 415          {
+ 416   1         Sleep = TRUE;
+ 417   1         EZUSB_IRQ_CLEAR();
+ 418   1         USBIRQ = bmSUSP;
+ 419   1      }
+ 420          
+ 421          void ISR_Highspeed(void) interrupt 0
+ 422          {
+ 423   1         if (EZUSB_HIGHSPEED())
+ 424   1         {
+ 425   2            pConfigDscr = pHighSpeedConfigDscr;
+ 426   2            ((CONFIGDSCR xdata *) pConfigDscr)->type = CONFIG_DSCR;
+ 427   2            pOtherConfigDscr = pFullSpeedConfigDscr;
+ 428   2            ((CONFIGDSCR xdata *) pOtherConfigDscr)->type = OTHERSPEED_DSCR;
+ 429   2         }
+ 430   1      
+ 431   1         EZUSB_IRQ_CLEAR();
+ 432   1         USBIRQ = bmHSGRANT;
+ 433   1      }
+ 434          void ISR_Ep0ack(void) interrupt 0
+ 435          {
+ 436   1      }
+ 437          void ISR_Stub(void) interrupt 0
+ 438          {
+ 439   1      }
+ 440          void ISR_Ep0in(void) interrupt 0
+ 441          {
+ 442   1      }
+ 443          void ISR_Ep0out(void) interrupt 0
+ 444          {
+ 445   1      }
+ 446          void ISR_Ep1in(void) interrupt 0
+ 447          {
+ 448   1      }
+ 449          void ISR_Ep1out(void) interrupt 0
+ 450          {
+ 451   1      }
+ 452          void ISR_Ep2inout(void) interrupt 0
+ 453          {
+ 454   1        BYTE dum;     
+ 455   1        EZUSB_IRQ_CLEAR();
+ 456   1          EPIRQ = bmEP2IRQ;         // Clear IRQ
+ 457   1        dum = D3ON;
+ 458   1        outblink = 200;
+ 459   1      }
+ 460          void ISR_Ep4inout(void) interrupt 0
+ 461          {
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 30  
+
+ 462   1      }
+ 463          void ISR_Ep6inout(void) interrupt 0
+ 464          {
+ 465   1        BYTE dum;
+ 466   1        EZUSB_IRQ_CLEAR();
+ 467   1          EPIRQ = bmEP6IRQ;         // Clear IRQ  dum = D2OFF;
+ 468   1        dum = D2ON;
+ 469   1        inblink = 200;
+ 470   1      }
+ 471          void ISR_Ep8inout(void) interrupt 0
+ 472          {
+ 473   1      }
+ 474          void ISR_Ibn(void) interrupt 0
+ 475          {
+ 476   1      }
+ 477          void ISR_Ep0pingnak(void) interrupt 0
+ 478          {
+ 479   1      }
+ 480          void ISR_Ep1pingnak(void) interrupt 0
+ 481          {
+ 482   1      }
+ 483          void ISR_Ep2pingnak(void) interrupt 0
+ 484          {
+ 485   1      }
+ 486          void ISR_Ep4pingnak(void) interrupt 0
+ 487          {
+ 488   1      }
+ 489          void ISR_Ep6pingnak(void) interrupt 0
+ 490          {
+ 491   1      }
+ 492          void ISR_Ep8pingnak(void) interrupt 0
+ 493          {
+ 494   1      }
+ 495          void ISR_Errorlimit(void) interrupt 0
+ 496          {
+ 497   1      }
+ 498          void ISR_Ep2piderror(void) interrupt 0
+ 499          {
+ 500   1      }
+ 501          void ISR_Ep4piderror(void) interrupt 0
+ 502          {
+ 503   1      }
+ 504          void ISR_Ep6piderror(void) interrupt 0
+ 505          {
+ 506   1      }
+ 507          void ISR_Ep8piderror(void) interrupt 0
+ 508          {
+ 509   1      }
+ 510          void ISR_Ep2pflag(void) interrupt 0
+ 511          {
+ 512   1      }
+ 513          void ISR_Ep4pflag(void) interrupt 0
+ 514          {
+ 515   1      }
+ 516          void ISR_Ep6pflag(void) interrupt 0
+ 517          {
+ 518   1      }
+ 519          void ISR_Ep8pflag(void) interrupt 0
+ 520          {
+ 521   1      }
+ 522          void ISR_Ep2eflag(void) interrupt 0
+ 523          {
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 31  
+
+ 524   1      }
+ 525          void ISR_Ep4eflag(void) interrupt 0
+ 526          {
+ 527   1      }
+ 528          void ISR_Ep6eflag(void) interrupt 0
+ 529          {
+ 530   1      }
+ 531          void ISR_Ep8eflag(void) interrupt 0
+ 532          {
+ 533   1      }
+ 534          void ISR_Ep2fflag(void) interrupt 0
+ 535          {
+ 536   1      }
+ 537          void ISR_Ep4fflag(void) interrupt 0
+ 538          {
+ 539   1      }
+ 540          void ISR_Ep6fflag(void) interrupt 0
+ 541          {
+ 542   1      }
+ 543          void ISR_Ep8fflag(void) interrupt 0
+ 544          {
+ 545   1      }
+ 546          void ISR_GpifComplete(void) interrupt 0
+ 547          {
+ 548   1      }
+ 549          void ISR_GpifWaveform(void) interrupt 0
+ 550          {
+ 551   1      }
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 32  
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION TD_Init (BEGIN)
+                                           ; SOURCE LINE # 196
+                                           ; SOURCE LINE # 197
+                                           ; SOURCE LINE # 199
+0000 900000      E     MOV     DPTR,#CPUCS
+0003 E0                MOVX    A,@DPTR
+0004 54E7              ANL     A,#0E7H
+0006 4410              ORL     A,#010H
+0008 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 203
+0009 908000            MOV     DPTR,#D2OFF
+000C E0                MOVX    A,@DPTR
+;---- Variable 'dum' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 204
+000D 909000            MOV     DPTR,#D3OFF
+0010 E0                MOVX    A,@DPTR
+                                           ; SOURCE LINE # 205
+0011 90A000            MOV     DPTR,#D4OFF
+0014 E0                MOVX    A,@DPTR
+                                           ; SOURCE LINE # 206
+0015 90B000            MOV     DPTR,#D5OFF
+0018 E0                MOVX    A,@DPTR
+                                           ; SOURCE LINE # 217
+0019 900000      E     MOV     DPTR,#EP2CFG
+001C 74A2              MOV     A,#0A2H
+001E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 218
+001F 00                NOP     
+0020 00                NOP     
+0021 00                NOP     
+                                           ; SOURCE LINE # 219
+0022 900000      E     MOV     DPTR,#EP6CFG
+0025 74E2              MOV     A,#0E2H
+0027 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 220
+0028 00                NOP     
+0029 00                NOP     
+002A 00                NOP     
+                                           ; SOURCE LINE # 224
+002B 900000      E     MOV     DPTR,#EP2BCL
+002E 7480              MOV     A,#080H
+0030 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 225
+0031 00                NOP     
+0032 00                NOP     
+0033 00                NOP     
+                                           ; SOURCE LINE # 226
+0034 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 227
+0035 00                NOP     
+0036 00                NOP     
+0037 00                NOP     
+                                           ; SOURCE LINE # 229
+0038 43AF01            ORL     AUTOPTRSETUP,#01H
+                                           ; SOURCE LINE # 231
+003B 900000      E     MOV     DPTR,#USBIE
+003E E0                MOVX    A,@DPTR
+003F 4402              ORL     A,#02H
+0041 F0                MOVX    @DPTR,A
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 33  
+
+                                           ; SOURCE LINE # 232
+0042 900000      E     MOV     DPTR,#EPIE
+0045 7450              MOV     A,#050H
+0047 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 233
+0048 22                RET     
+             ; FUNCTION TD_Init (END)
+
+             ; FUNCTION TD_Poll (BEGIN)
+                                           ; SOURCE LINE # 235
+                                           ; SOURCE LINE # 236
+                                           ; SOURCE LINE # 243
+0000 E500        R     MOV     A,start_7_seg_display+01H
+0002 4500        R     ORL     A,start_7_seg_display
+0004 601F              JZ      ?C0002
+                                           ; SOURCE LINE # 244
+                                           ; SOURCE LINE # 246
+0006 900000      E     MOV     DPTR,#EP6CS
+0009 E0                MOVX    A,@DPTR
+000A 54F0              ANL     A,#0F0H
+000C C4                SWAP    A
+000D 540F              ANL     A,#0FH
+;---- Variable 'waiting_inpkts' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 247
+000F 2400        R     ADD     A,#LOW Digit
+0011 F582              MOV     DPL,A
+0013 E4                CLR     A
+0014 3400        R     ADDC    A,#HIGH Digit
+0016 AB82              MOV     R3,DPL
+0018 FA                MOV     R2,A
+0019 7D01              MOV     R5,#01H
+001B 7F21              MOV     R7,#021H
+001D 120000      E     LCALL   _EZUSB_WriteI2C
+                                           ; SOURCE LINE # 248
+0020 7F21              MOV     R7,#021H
+0022 120000      E     LCALL   _EZUSB_WaitForEEPROMWrite
+                                           ; SOURCE LINE # 249
+0025         ?C0002:
+                                           ; SOURCE LINE # 258
+0025 E5AA              MOV     A,EP2468STAT
+0027 20E05A            JB      ACC.0,?C0008
+                                           ; SOURCE LINE # 259
+                                           ; SOURCE LINE # 260
+002A E5AA              MOV     A,EP2468STAT
+002C 20E555            JB      ACC.5,?C0008
+                                           ; SOURCE LINE # 261
+                                           ; SOURCE LINE # 262
+002F 7400        E     MOV     A,#HIGH EP2FIFOBUF
+0031 F59A              MOV     AUTOPTRH1,A
+                                           ; SOURCE LINE # 263
+0033 7400        E     MOV     A,#LOW EP2FIFOBUF
+0035 F59B              MOV     AUTOPTRL1,A
+                                           ; SOURCE LINE # 264
+0037 7400        E     MOV     A,#HIGH EP6FIFOBUF
+0039 F59D              MOV     AUTOPTRH2,A
+                                           ; SOURCE LINE # 265
+003B 7400        E     MOV     A,#LOW EP6FIFOBUF
+003D F59E              MOV     AUTOPTRL2,A
+                                           ; SOURCE LINE # 267
+003F 900000      E     MOV     DPTR,#EP2BCH
+0042 E0                MOVX    A,@DPTR
+0043 FE                MOV     R6,A
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 34  
+
+0044 900000      E     MOV     DPTR,#EP2BCL
+0047 E0                MOVX    A,@DPTR
+0048 7C00              MOV     R4,#00H
+004A 2400              ADD     A,#00H
+004C FF                MOV     R7,A
+004D EC                MOV     A,R4
+004E 3E                ADDC    A,R6
+004F FE                MOV     R6,A
+;---- Variable 'count' assigned to Register 'R6/R7' ----
+                                           ; SOURCE LINE # 270
+;---- Variable 'i' assigned to Register 'R4/R5' ----
+0050 E4                CLR     A
+0051 FD                MOV     R5,A
+0052         ?C0005:
+0052 C3                CLR     C
+0053 ED                MOV     A,R5
+0054 9F                SUBB    A,R7
+0055 EC                MOV     A,R4
+0056 9E                SUBB    A,R6
+0057 500F              JNC     ?C0006
+                                           ; SOURCE LINE # 271
+                                           ; SOURCE LINE # 272
+0059 900000      E     MOV     DPTR,#XAUTODAT1
+005C E0                MOVX    A,@DPTR
+005D 900000      E     MOV     DPTR,#XAUTODAT2
+0060 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 273
+0061 0D                INC     R5
+0062 BD0001            CJNE    R5,#00H,?C0068
+0065 0C                INC     R4
+0066         ?C0068:
+0066 80EA              SJMP    ?C0005
+0068         ?C0006:
+                                           ; SOURCE LINE # 274
+0068 900000      E     MOV     DPTR,#EP2BCH
+006B E0                MOVX    A,@DPTR
+006C 900000      E     MOV     DPTR,#EP6BCH
+006F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 275
+0070 00                NOP     
+0071 00                NOP     
+0072 00                NOP     
+                                           ; SOURCE LINE # 276
+0073 900000      E     MOV     DPTR,#EP2BCL
+0076 E0                MOVX    A,@DPTR
+0077 900000      E     MOV     DPTR,#EP6BCL
+007A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 277
+007B 00                NOP     
+007C 00                NOP     
+007D 00                NOP     
+                                           ; SOURCE LINE # 278
+007E 900000      E     MOV     DPTR,#EP2BCL
+0081 7480              MOV     A,#080H
+0083 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 279
+                                           ; SOURCE LINE # 280
+                                           ; SOURCE LINE # 281
+0084         ?C0008:
+0084 22                RET     
+             ; FUNCTION TD_Poll (END)
+
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 35  
+
+             ; FUNCTION TD_Suspend (BEGIN)
+                                           ; SOURCE LINE # 283
+                                           ; SOURCE LINE # 284
+                                           ; SOURCE LINE # 285
+0000 D3                SETB    C
+                                           ; SOURCE LINE # 286
+0001         ?C0009:
+0001 22                RET     
+             ; FUNCTION TD_Suspend (END)
+
+             ; FUNCTION TD_Resume (BEGIN)
+                                           ; SOURCE LINE # 288
+                                           ; SOURCE LINE # 289
+                                           ; SOURCE LINE # 290
+0000 D3                SETB    C
+                                           ; SOURCE LINE # 291
+0001         ?C0010:
+0001 22                RET     
+             ; FUNCTION TD_Resume (END)
+
+             ; FUNCTION DR_GetDescriptor (BEGIN)
+                                           ; SOURCE LINE # 298
+                                           ; SOURCE LINE # 299
+                                           ; SOURCE LINE # 300
+0000 D3                SETB    C
+                                           ; SOURCE LINE # 301
+0001         ?C0011:
+0001 22                RET     
+             ; FUNCTION DR_GetDescriptor (END)
+
+             ; FUNCTION DR_SetConfiguration (BEGIN)
+                                           ; SOURCE LINE # 303
+                                           ; SOURCE LINE # 304
+                                           ; SOURCE LINE # 305
+0000 900000      E     MOV     DPTR,#SETUPDAT+02H
+0003 E0                MOVX    A,@DPTR
+0004 F500        R     MOV     Configuration,A
+                                           ; SOURCE LINE # 308
+0006 120000      E     LCALL   EZUSB_INITI2C
+                                           ; SOURCE LINE # 309
+0009 750000      R     MOV     start_7_seg_display,#00H
+000C 750001      R     MOV     start_7_seg_display+01H,#01H
+                                           ; SOURCE LINE # 312
+000F D3                SETB    C
+                                           ; SOURCE LINE # 313
+0010         ?C0012:
+0010 22                RET     
+             ; FUNCTION DR_SetConfiguration (END)
+
+             ; FUNCTION DR_GetConfiguration (BEGIN)
+                                           ; SOURCE LINE # 315
+                                           ; SOURCE LINE # 316
+                                           ; SOURCE LINE # 317
+0000 900000      E     MOV     DPTR,#EP0BUF
+0003 E500        R     MOV     A,Configuration
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 318
+0006 E4                CLR     A
+0007 900000      E     MOV     DPTR,#EP0BCH
+000A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 319
+000B 900000      E     MOV     DPTR,#EP0BCL
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 36  
+
+000E 04                INC     A
+000F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 320
+0010 D3                SETB    C
+                                           ; SOURCE LINE # 321
+0011         ?C0013:
+0011 22                RET     
+             ; FUNCTION DR_GetConfiguration (END)
+
+             ; FUNCTION DR_SetInterface (BEGIN)
+                                           ; SOURCE LINE # 323
+                                           ; SOURCE LINE # 324
+                                           ; SOURCE LINE # 325
+0000 900000      E     MOV     DPTR,#SETUPDAT+02H
+0003 E0                MOVX    A,@DPTR
+0004 F500        R     MOV     AlternateSetting,A
+                                           ; SOURCE LINE # 326
+0006 D3                SETB    C
+                                           ; SOURCE LINE # 327
+0007         ?C0014:
+0007 22                RET     
+             ; FUNCTION DR_SetInterface (END)
+
+             ; FUNCTION DR_GetInterface (BEGIN)
+                                           ; SOURCE LINE # 329
+                                           ; SOURCE LINE # 330
+                                           ; SOURCE LINE # 331
+0000 900000      E     MOV     DPTR,#EP0BUF
+0003 E500        R     MOV     A,AlternateSetting
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 332
+0006 E4                CLR     A
+0007 900000      E     MOV     DPTR,#EP0BCH
+000A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 333
+000B 900000      E     MOV     DPTR,#EP0BCL
+000E 04                INC     A
+000F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 334
+0010 D3                SETB    C
+                                           ; SOURCE LINE # 335
+0011         ?C0015:
+0011 22                RET     
+             ; FUNCTION DR_GetInterface (END)
+
+             ; FUNCTION DR_GetStatus (BEGIN)
+                                           ; SOURCE LINE # 337
+                                           ; SOURCE LINE # 338
+                                           ; SOURCE LINE # 339
+0000 D3                SETB    C
+                                           ; SOURCE LINE # 340
+0001         ?C0016:
+0001 22                RET     
+             ; FUNCTION DR_GetStatus (END)
+
+             ; FUNCTION DR_ClearFeature (BEGIN)
+                                           ; SOURCE LINE # 342
+                                           ; SOURCE LINE # 343
+                                           ; SOURCE LINE # 344
+0000 D3                SETB    C
+                                           ; SOURCE LINE # 345
+0001         ?C0017:
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 37  
+
+0001 22                RET     
+             ; FUNCTION DR_ClearFeature (END)
+
+             ; FUNCTION DR_SetFeature (BEGIN)
+                                           ; SOURCE LINE # 347
+                                           ; SOURCE LINE # 348
+                                           ; SOURCE LINE # 349
+0000 D3                SETB    C
+                                           ; SOURCE LINE # 350
+0001         ?C0018:
+0001 22                RET     
+             ; FUNCTION DR_SetFeature (END)
+
+             ; FUNCTION DR_VendorCmnd (BEGIN)
+                                           ; SOURCE LINE # 352
+                                           ; SOURCE LINE # 353
+                                           ; SOURCE LINE # 354
+0000 D3                SETB    C
+                                           ; SOURCE LINE # 355
+0001         ?C0019:
+0001 22                RET     
+             ; FUNCTION DR_VendorCmnd (END)
+
+             ; FUNCTION ISR_Sudav (BEGIN)
+0000 C0E0              PUSH    ACC
+0002 C083              PUSH    DPH
+0004 C082              PUSH    DPL
+                                           ; SOURCE LINE # 363
+                                           ; SOURCE LINE # 365
+0006 D200        E     SETB    GotSUD
+                                           ; SOURCE LINE # 366
+0008 5391EF            ANL     EXIF,#0EFH
+                                           ; SOURCE LINE # 367
+000B 900000      E     MOV     DPTR,#USBIRQ
+000E 7401              MOV     A,#01H
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 368
+0011 D082              POP     DPL
+0013 D083              POP     DPH
+0015 D0E0              POP     ACC
+0017 32                RETI    
+             ; FUNCTION ISR_Sudav (END)
+
+             ; FUNCTION ISR_Sutok (BEGIN)
+0000 C0E0              PUSH    ACC
+0002 C083              PUSH    DPH
+0004 C082              PUSH    DPL
+                                           ; SOURCE LINE # 371
+                                           ; SOURCE LINE # 373
+0006 5391EF            ANL     EXIF,#0EFH
+                                           ; SOURCE LINE # 374
+0009 900000      E     MOV     DPTR,#USBIRQ
+000C 7404              MOV     A,#04H
+000E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 375
+000F D082              POP     DPL
+0011 D083              POP     DPH
+0013 D0E0              POP     ACC
+0015 32                RETI    
+             ; FUNCTION ISR_Sutok (END)
+
+             ; FUNCTION ISR_Sof (BEGIN)
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 38  
+
+0000 C0E0              PUSH    ACC
+0002 C083              PUSH    DPH
+0004 C082              PUSH    DPL
+0006 C0D0              PUSH    PSW
+0008 75D000            MOV     PSW,#00H
+000B C007              PUSH    AR7
+                                           ; SOURCE LINE # 377
+;---- Variable 'dum' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 380
+000D 750000      R     MOV     Led_Flag,#00H
+                                           ; SOURCE LINE # 381
+0010 5391EF            ANL     EXIF,#0EFH
+                                           ; SOURCE LINE # 382
+0013 900000      E     MOV     DPTR,#USBIRQ
+0016 7402              MOV     A,#02H
+0018 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 384
+0019 D50005      R     DJNZ    inblink,?C0022
+                                           ; SOURCE LINE # 385
+001C 908000            MOV     DPTR,#D2OFF
+001F E0                MOVX    A,@DPTR
+0020 FF                MOV     R7,A
+0021         ?C0022:
+                                           ; SOURCE LINE # 386
+0021 D50004      R     DJNZ    outblink,?C0023
+                                           ; SOURCE LINE # 387
+0024 909000            MOV     DPTR,#D3OFF
+0027 E0                MOVX    A,@DPTR
+0028         ?C0023:
+                                           ; SOURCE LINE # 393
+0028 0500        R     INC     LEDCounter+01H
+002A E500        R     MOV     A,LEDCounter+01H
+002C 7002              JNZ     ?C0069
+002E 0500        R     INC     LEDCounter
+0030         ?C0069:
+                                           ; SOURCE LINE # 394
+0030 D3                SETB    C
+0031 94E8              SUBB    A,#0E8H
+0033 E500        R     MOV     A,LEDCounter
+0035 6480              XRL     A,#080H
+0037 9483              SUBB    A,#083H
+0039 4006              JC      ?C0024
+                                           ; SOURCE LINE # 395
+003B 750000      R     MOV     LEDCounter,#00H
+003E 750000      R     MOV     LEDCounter+01H,#00H
+0041         ?C0024:
+                                           ; SOURCE LINE # 396
+0041 C3                CLR     C
+0042 E500        R     MOV     A,LEDCounter+01H
+0044 94F4              SUBB    A,#0F4H
+0046 E500        R     MOV     A,LEDCounter
+0048 6480              XRL     A,#080H
+004A 9481              SUBB    A,#081H
+004C 5006              JNC     ?C0025
+                                           ; SOURCE LINE # 397
+004E 90B000            MOV     DPTR,#D5OFF
+0051 E0                MOVX    A,@DPTR
+0052 8004              SJMP    ?C0027
+0054         ?C0025:
+                                           ; SOURCE LINE # 399
+0054 90B800            MOV     DPTR,#D5ON
+0057 E0                MOVX    A,@DPTR
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 39  
+
+                                           ; SOURCE LINE # 400
+0058         ?C0027:
+0058 D007              POP     AR7
+005A D0D0              POP     PSW
+005C D082              POP     DPL
+005E D083              POP     DPH
+0060 D0E0              POP     ACC
+0062 32                RETI    
+             ; FUNCTION ISR_Sof (END)
+
+             ; FUNCTION ISR_Ures (BEGIN)
+0000 C0E0              PUSH    ACC
+0002 C083              PUSH    DPH
+0004 C082              PUSH    DPL
+                                           ; SOURCE LINE # 402
+                                           ; SOURCE LINE # 405
+0006 850000      E     MOV     pConfigDscr,pFullSpeedConfigDscr
+0009 850000      E     MOV     pConfigDscr+01H,pFullSpeedConfigDscr+01H
+                                           ; SOURCE LINE # 406
+000C 850082      E     MOV     DPL,pConfigDscr+01H
+000F 850083      E     MOV     DPH,pConfigDscr
+0012 A3                INC     DPTR
+0013 7402              MOV     A,#02H
+0015 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 407
+0016 850000      E     MOV     pOtherConfigDscr,pHighSpeedConfigDscr
+0019 850000      E     MOV     pOtherConfigDscr+01H,pHighSpeedConfigDscr+01H
+                                           ; SOURCE LINE # 408
+001C 850082      E     MOV     DPL,pOtherConfigDscr+01H
+001F 850083      E     MOV     DPH,pOtherConfigDscr
+0022 A3                INC     DPTR
+0023 7407              MOV     A,#07H
+0025 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 410
+0026 5391EF            ANL     EXIF,#0EFH
+                                           ; SOURCE LINE # 411
+0029 900000      E     MOV     DPTR,#USBIRQ
+002C 7410              MOV     A,#010H
+002E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 412
+002F D082              POP     DPL
+0031 D083              POP     DPH
+0033 D0E0              POP     ACC
+0035 32                RETI    
+             ; FUNCTION ISR_Ures (END)
+
+             ; FUNCTION ISR_Susp (BEGIN)
+0000 C0E0              PUSH    ACC
+0002 C083              PUSH    DPH
+0004 C082              PUSH    DPL
+                                           ; SOURCE LINE # 414
+                                           ; SOURCE LINE # 416
+0006 D200        E     SETB    Sleep
+                                           ; SOURCE LINE # 417
+0008 5391EF            ANL     EXIF,#0EFH
+                                           ; SOURCE LINE # 418
+000B 900000      E     MOV     DPTR,#USBIRQ
+000E 7408              MOV     A,#08H
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 419
+0011 D082              POP     DPL
+0013 D083              POP     DPH
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 40  
+
+0015 D0E0              POP     ACC
+0017 32                RETI    
+             ; FUNCTION ISR_Susp (END)
+
+             ; FUNCTION ISR_Highspeed (BEGIN)
+0000 C0E0              PUSH    ACC
+0002 C083              PUSH    DPH
+0004 C082              PUSH    DPL
+                                           ; SOURCE LINE # 421
+                                           ; SOURCE LINE # 423
+0006 900000      E     MOV     DPTR,#USBCS
+0009 E0                MOVX    A,@DPTR
+000A 30E720            JNB     ACC.7,?C0030
+                                           ; SOURCE LINE # 424
+                                           ; SOURCE LINE # 425
+000D 850000      E     MOV     pConfigDscr,pHighSpeedConfigDscr
+0010 850000      E     MOV     pConfigDscr+01H,pHighSpeedConfigDscr+01H
+                                           ; SOURCE LINE # 426
+0013 850082      E     MOV     DPL,pConfigDscr+01H
+0016 850083      E     MOV     DPH,pConfigDscr
+0019 A3                INC     DPTR
+001A 7402              MOV     A,#02H
+001C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 427
+001D 850000      E     MOV     pOtherConfigDscr,pFullSpeedConfigDscr
+0020 850000      E     MOV     pOtherConfigDscr+01H,pFullSpeedConfigDscr+01H
+                                           ; SOURCE LINE # 428
+0023 850082      E     MOV     DPL,pOtherConfigDscr+01H
+0026 850083      E     MOV     DPH,pOtherConfigDscr
+0029 A3                INC     DPTR
+002A 7407              MOV     A,#07H
+002C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 429
+002D         ?C0030:
+                                           ; SOURCE LINE # 431
+002D 5391EF            ANL     EXIF,#0EFH
+                                           ; SOURCE LINE # 432
+0030 900000      E     MOV     DPTR,#USBIRQ
+0033 7420              MOV     A,#020H
+0035 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 433
+0036 D082              POP     DPL
+0038 D083              POP     DPH
+003A D0E0              POP     ACC
+003C 32                RETI    
+             ; FUNCTION ISR_Highspeed (END)
+
+             ; FUNCTION ISR_Ep0ack (BEGIN)
+                                           ; SOURCE LINE # 434
+                                           ; SOURCE LINE # 436
+0000 32                RETI    
+             ; FUNCTION ISR_Ep0ack (END)
+
+             ; FUNCTION ISR_Stub (BEGIN)
+                                           ; SOURCE LINE # 437
+                                           ; SOURCE LINE # 439
+0000 32                RETI    
+             ; FUNCTION ISR_Stub (END)
+
+             ; FUNCTION ISR_Ep0in (BEGIN)
+                                           ; SOURCE LINE # 440
+                                           ; SOURCE LINE # 442
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 41  
+
+0000 32                RETI    
+             ; FUNCTION ISR_Ep0in (END)
+
+             ; FUNCTION ISR_Ep0out (BEGIN)
+                                           ; SOURCE LINE # 443
+                                           ; SOURCE LINE # 445
+0000 32                RETI    
+             ; FUNCTION ISR_Ep0out (END)
+
+             ; FUNCTION ISR_Ep1in (BEGIN)
+                                           ; SOURCE LINE # 446
+                                           ; SOURCE LINE # 448
+0000 32                RETI    
+             ; FUNCTION ISR_Ep1in (END)
+
+             ; FUNCTION ISR_Ep1out (BEGIN)
+                                           ; SOURCE LINE # 449
+                                           ; SOURCE LINE # 451
+0000 32                RETI    
+             ; FUNCTION ISR_Ep1out (END)
+
+             ; FUNCTION ISR_Ep2inout (BEGIN)
+0000 C0E0              PUSH    ACC
+0002 C083              PUSH    DPH
+0004 C082              PUSH    DPL
+                                           ; SOURCE LINE # 452
+                                           ; SOURCE LINE # 455
+0006 5391EF            ANL     EXIF,#0EFH
+                                           ; SOURCE LINE # 456
+0009 900000      E     MOV     DPTR,#EPIRQ
+000C 7410              MOV     A,#010H
+000E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 457
+000F 909800            MOV     DPTR,#D3ON
+0012 E0                MOVX    A,@DPTR
+0013 F500        R     MOV     dum,A
+                                           ; SOURCE LINE # 458
+0015 7500C8      R     MOV     outblink,#0C8H
+                                           ; SOURCE LINE # 459
+0018 D082              POP     DPL
+001A D083              POP     DPH
+001C D0E0              POP     ACC
+001E 32                RETI    
+             ; FUNCTION ISR_Ep2inout (END)
+
+             ; FUNCTION ISR_Ep4inout (BEGIN)
+                                           ; SOURCE LINE # 460
+                                           ; SOURCE LINE # 462
+0000 32                RETI    
+             ; FUNCTION ISR_Ep4inout (END)
+
+             ; FUNCTION ISR_Ep6inout (BEGIN)
+0000 C0E0              PUSH    ACC
+0002 C083              PUSH    DPH
+0004 C082              PUSH    DPL
+                                           ; SOURCE LINE # 463
+                                           ; SOURCE LINE # 466
+0006 5391EF            ANL     EXIF,#0EFH
+                                           ; SOURCE LINE # 467
+0009 900000      E     MOV     DPTR,#EPIRQ
+000C 7440              MOV     A,#040H
+000E F0                MOVX    @DPTR,A
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 42  
+
+                                           ; SOURCE LINE # 468
+000F 908800            MOV     DPTR,#D2ON
+0012 E0                MOVX    A,@DPTR
+0013 F500        R     MOV     dum,A
+                                           ; SOURCE LINE # 469
+0015 7500C8      R     MOV     inblink,#0C8H
+                                           ; SOURCE LINE # 470
+0018 D082              POP     DPL
+001A D083              POP     DPH
+001C D0E0              POP     ACC
+001E 32                RETI    
+             ; FUNCTION ISR_Ep6inout (END)
+
+             ; FUNCTION ISR_Ep8inout (BEGIN)
+                                           ; SOURCE LINE # 471
+                                           ; SOURCE LINE # 473
+0000 32                RETI    
+             ; FUNCTION ISR_Ep8inout (END)
+
+             ; FUNCTION ISR_Ibn (BEGIN)
+                                           ; SOURCE LINE # 474
+                                           ; SOURCE LINE # 476
+0000 32                RETI    
+             ; FUNCTION ISR_Ibn (END)
+
+             ; FUNCTION ISR_Ep0pingnak (BEGIN)
+                                           ; SOURCE LINE # 477
+                                           ; SOURCE LINE # 479
+0000 32                RETI    
+             ; FUNCTION ISR_Ep0pingnak (END)
+
+             ; FUNCTION ISR_Ep1pingnak (BEGIN)
+                                           ; SOURCE LINE # 480
+                                           ; SOURCE LINE # 482
+0000 32                RETI    
+             ; FUNCTION ISR_Ep1pingnak (END)
+
+             ; FUNCTION ISR_Ep2pingnak (BEGIN)
+                                           ; SOURCE LINE # 483
+                                           ; SOURCE LINE # 485
+0000 32                RETI    
+             ; FUNCTION ISR_Ep2pingnak (END)
+
+             ; FUNCTION ISR_Ep4pingnak (BEGIN)
+                                           ; SOURCE LINE # 486
+                                           ; SOURCE LINE # 488
+0000 32                RETI    
+             ; FUNCTION ISR_Ep4pingnak (END)
+
+             ; FUNCTION ISR_Ep6pingnak (BEGIN)
+                                           ; SOURCE LINE # 489
+                                           ; SOURCE LINE # 491
+0000 32                RETI    
+             ; FUNCTION ISR_Ep6pingnak (END)
+
+             ; FUNCTION ISR_Ep8pingnak (BEGIN)
+                                           ; SOURCE LINE # 492
+                                           ; SOURCE LINE # 494
+0000 32                RETI    
+             ; FUNCTION ISR_Ep8pingnak (END)
+
+             ; FUNCTION ISR_Errorlimit (BEGIN)
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 43  
+
+                                           ; SOURCE LINE # 495
+                                           ; SOURCE LINE # 497
+0000 32                RETI    
+             ; FUNCTION ISR_Errorlimit (END)
+
+             ; FUNCTION ISR_Ep2piderror (BEGIN)
+                                           ; SOURCE LINE # 498
+                                           ; SOURCE LINE # 500
+0000 32                RETI    
+             ; FUNCTION ISR_Ep2piderror (END)
+
+             ; FUNCTION ISR_Ep4piderror (BEGIN)
+                                           ; SOURCE LINE # 501
+                                           ; SOURCE LINE # 503
+0000 32                RETI    
+             ; FUNCTION ISR_Ep4piderror (END)
+
+             ; FUNCTION ISR_Ep6piderror (BEGIN)
+                                           ; SOURCE LINE # 504
+                                           ; SOURCE LINE # 506
+0000 32                RETI    
+             ; FUNCTION ISR_Ep6piderror (END)
+
+             ; FUNCTION ISR_Ep8piderror (BEGIN)
+                                           ; SOURCE LINE # 507
+                                           ; SOURCE LINE # 509
+0000 32                RETI    
+             ; FUNCTION ISR_Ep8piderror (END)
+
+             ; FUNCTION ISR_Ep2pflag (BEGIN)
+                                           ; SOURCE LINE # 510
+                                           ; SOURCE LINE # 512
+0000 32                RETI    
+             ; FUNCTION ISR_Ep2pflag (END)
+
+             ; FUNCTION ISR_Ep4pflag (BEGIN)
+                                           ; SOURCE LINE # 513
+                                           ; SOURCE LINE # 515
+0000 32                RETI    
+             ; FUNCTION ISR_Ep4pflag (END)
+
+             ; FUNCTION ISR_Ep6pflag (BEGIN)
+                                           ; SOURCE LINE # 516
+                                           ; SOURCE LINE # 518
+0000 32                RETI    
+             ; FUNCTION ISR_Ep6pflag (END)
+
+             ; FUNCTION ISR_Ep8pflag (BEGIN)
+                                           ; SOURCE LINE # 519
+                                           ; SOURCE LINE # 521
+0000 32                RETI    
+             ; FUNCTION ISR_Ep8pflag (END)
+
+             ; FUNCTION ISR_Ep2eflag (BEGIN)
+                                           ; SOURCE LINE # 522
+                                           ; SOURCE LINE # 524
+0000 32                RETI    
+             ; FUNCTION ISR_Ep2eflag (END)
+
+             ; FUNCTION ISR_Ep4eflag (BEGIN)
+                                           ; SOURCE LINE # 525
+                                           ; SOURCE LINE # 527
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 44  
+
+0000 32                RETI    
+             ; FUNCTION ISR_Ep4eflag (END)
+
+             ; FUNCTION ISR_Ep6eflag (BEGIN)
+                                           ; SOURCE LINE # 528
+                                           ; SOURCE LINE # 530
+0000 32                RETI    
+             ; FUNCTION ISR_Ep6eflag (END)
+
+             ; FUNCTION ISR_Ep8eflag (BEGIN)
+                                           ; SOURCE LINE # 531
+                                           ; SOURCE LINE # 533
+0000 32                RETI    
+             ; FUNCTION ISR_Ep8eflag (END)
+
+             ; FUNCTION ISR_Ep2fflag (BEGIN)
+                                           ; SOURCE LINE # 534
+                                           ; SOURCE LINE # 536
+0000 32                RETI    
+             ; FUNCTION ISR_Ep2fflag (END)
+
+             ; FUNCTION ISR_Ep4fflag (BEGIN)
+                                           ; SOURCE LINE # 537
+                                           ; SOURCE LINE # 539
+0000 32                RETI    
+             ; FUNCTION ISR_Ep4fflag (END)
+
+             ; FUNCTION ISR_Ep6fflag (BEGIN)
+                                           ; SOURCE LINE # 540
+                                           ; SOURCE LINE # 542
+0000 32                RETI    
+             ; FUNCTION ISR_Ep6fflag (END)
+
+             ; FUNCTION ISR_Ep8fflag (BEGIN)
+                                           ; SOURCE LINE # 543
+                                           ; SOURCE LINE # 545
+0000 32                RETI    
+             ; FUNCTION ISR_Ep8fflag (END)
+
+             ; FUNCTION ISR_GpifComplete (BEGIN)
+                                           ; SOURCE LINE # 546
+                                           ; SOURCE LINE # 548
+0000 32                RETI    
+             ; FUNCTION ISR_GpifComplete (END)
+
+             ; FUNCTION ISR_GpifWaveform (BEGIN)
+                                           ; SOURCE LINE # 549
+                                           ; SOURCE LINE # 551
+0000 32                RETI    
+             ; FUNCTION ISR_GpifWaveform (END)
+
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 45  
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+ISR_Errorlimit . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+CPUCS. . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+USBCS. . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+DWORD. . . . . . . . . . . . . . . . .  TYPEDEF  -----  U_LONG   -----  4
+EPIRQ. . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+DR_SetConfiguration. . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+_EZUSB_WaitForEEPROMWrite. . . . . . .  EXTERN   CODE   PROC     -----  -----
+STRINGDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  2
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+AlternateSetting . . . . . . . . . . .  PUBLIC   DATA   U_CHAR   0000H  1
+ISR_Ep0in. . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep1in. . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+TD_Init. . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  dum. . . . . . . . . . . . . . . . .  * REG *  DATA   U_CHAR   0007H  1
+ISR_Ep0out . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep1out . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+TD_Poll. . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  i. . . . . . . . . . . . . . . . . .  * REG *  DATA   U_INT    0004H  2
+  count. . . . . . . . . . . . . . . .  * REG *  DATA   U_INT    0006H  2
+  waiting_inpkts . . . . . . . . . . .  * REG *  DATA   U_CHAR   0007H  1
+D2ON . . . . . . . . . . . . . . . . .  PUBLIC   XDATA  U_CHAR   8800H  1
+EP0BCH . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+D3ON . . . . . . . . . . . . . . . . .  PUBLIC   XDATA  U_CHAR   9800H  1
+D4ON . . . . . . . . . . . . . . . . .  PUBLIC   XDATA  U_CHAR   A800H  1
+EP2BCH . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+DEVICEQUALDSCR . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  10
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+  spec_ver_minor . . . . . . . . . . .  MEMBER   -----  U_CHAR   0002H  1
+  spec_ver_major . . . . . . . . . . .  MEMBER   -----  U_CHAR   0003H  1
+  dev_class. . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0004H  1
+  sub_class. . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0005H  1
+  protocol . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0006H  1
+  max_packet . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0007H  1
+  configs. . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0008H  1
+  reserved0. . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0009H  1
+ISR_GpifComplete . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+D5ON . . . . . . . . . . . . . . . . .  PUBLIC   XDATA  U_CHAR   B800H  1
+EP0BCL . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+GotSUD . . . . . . . . . . . . . . . .  EXTERN   DATA   BIT      -----  1
+EP2CFG . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+EP6BCH . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+EP2BCL . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+EP6CFG . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+EP6BCL . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+XAUTODAT1. . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+XAUTODAT2. . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+DR_GetStatus . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep0pingnak . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep1pingnak . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+EP0BUF . . . . . . . . . . . . . . . .  EXTERN   XDATA  ARRAY    -----  64
+EPIE . . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+ISR_GpifWaveform . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep2piderror. . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep2pingnak . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep4piderror. . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 46  
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+ISR_Ep4pingnak . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep6piderror. . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep6pingnak . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+EP2468STAT . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00AAH  1
+ISR_Ep8piderror. . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep8pingnak . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+AUTOPTRH1. . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   009AH  1
+AUTOPTRH2. . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   009DH  1
+EXIF . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0091H  1
+DSCR . . . . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  2
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+BOOL . . . . . . . . . . . . . . . . .  TYPEDEF  DATA   BIT      -----  1
+DR_GetInterface. . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+AUTOPTRL1. . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   009BH  1
+AUTOPTRL2. . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   009EH  1
+DR_ClearFeature. . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+BYTE . . . . . . . . . . . . . . . . .  TYPEDEF  -----  U_CHAR   -----  1
+_EZUSB_WriteI2C. . . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
+ISR_Ep2eflag . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep2fflag . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+LEDCounter . . . . . . . . . . . . . .  PUBLIC   DATA   INT      0001H  2
+ISR_Ep4eflag . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+DR_SetInterface. . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep4fflag . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+WORD . . . . . . . . . . . . . . . . .  TYPEDEF  -----  U_INT    -----  2
+ISR_Ep6eflag . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep6fflag . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+DR_GetDescriptor . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep8eflag . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep8fflag . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep2pflag . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+start_7_seg_display. . . . . . . . . .  PUBLIC   DATA   INT      0003H  2
+AUTOPTRSETUP . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00AFH  1
+ISR_Ep4pflag . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep6pflag . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep8pflag . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+EP2FIFOBUF . . . . . . . . . . . . . .  EXTERN   XDATA  ARRAY    -----  1024
+EP6FIFOBUF . . . . . . . . . . . . . .  EXTERN   XDATA  ARRAY    -----  1024
+pHighSpeedConfigDscr . . . . . . . . .  EXTERN   DATA   U_INT    -----  2
+D2OFF. . . . . . . . . . . . . . . . .  PUBLIC   XDATA  U_CHAR   8000H  1
+D3OFF. . . . . . . . . . . . . . . . .  PUBLIC   XDATA  U_CHAR   9000H  1
+D4OFF. . . . . . . . . . . . . . . . .  PUBLIC   XDATA  U_CHAR   A000H  1
+ISR_Sudav. . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+D5OFF. . . . . . . . . . . . . . . . .  PUBLIC   XDATA  U_CHAR   B000H  1
+USBIRQ . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+pConfigDscr. . . . . . . . . . . . . .  EXTERN   DATA   U_INT    -----  2
+TD_Suspend . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+pOtherConfigDscr . . . . . . . . . . .  EXTERN   DATA   U_INT    -----  2
+EZUSB_INITI2C. . . . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
+DEVICEDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  18
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+  spec_ver_minor . . . . . . . . . . .  MEMBER   -----  U_CHAR   0002H  1
+  spec_ver_major . . . . . . . . . . .  MEMBER   -----  U_CHAR   0003H  1
+  dev_class. . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0004H  1
+  sub_class. . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0005H  1
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 47  
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+  protocol . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0006H  1
+  max_packet . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0007H  1
+  vendor_id. . . . . . . . . . . . . .  MEMBER   -----  U_INT    0008H  2
+  product_id . . . . . . . . . . . . .  MEMBER   -----  U_INT    000AH  2
+  version_id . . . . . . . . . . . . .  MEMBER   -----  U_INT    000CH  2
+  mfg_str. . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   000EH  1
+  prod_str . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   000FH  1
+  serialnum_str. . . . . . . . . . . .  MEMBER   -----  U_CHAR   0010H  1
+  configs. . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0011H  1
+Configuration. . . . . . . . . . . . .  PUBLIC   DATA   U_CHAR   0005H  1
+EP6CS. . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+pFullSpeedConfigDscr . . . . . . . . .  EXTERN   DATA   U_INT    -----  2
+ISR_Ep0ack . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Highspeed. . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+CONFIGDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  9
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+  config_len . . . . . . . . . . . . .  MEMBER   -----  U_INT    0002H  2
+  interfaces . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0004H  1
+  index. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0005H  1
+  config_str . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0006H  1
+  attrib . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0007H  1
+  power. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0008H  1
+ISR_Sutok. . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ibn. . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep2inout . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  dum. . . . . . . . . . . . . . . . .  AUTO     DATA   U_CHAR   0000H  1
+inblink. . . . . . . . . . . . . . . .  PUBLIC   DATA   U_CHAR   0006H  1
+ISR_Ep4inout . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+DR_VendorCmnd. . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+TD_Resume. . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+outblink . . . . . . . . . . . . . . .  PUBLIC   DATA   U_CHAR   0007H  1
+SETUPDAT . . . . . . . . . . . . . . .  EXTERN   XDATA  ARRAY    -----  8
+ISR_Ep6inout . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  dum. . . . . . . . . . . . . . . . .  AUTO     DATA   U_CHAR   0000H  1
+ISR_Stub . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ep8inout . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+ISR_Ures . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+EPIOC. . . . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  2
+  cntrl. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  bytes. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+I2CPCKT. . . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  6
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  dat. . . . . . . . . . . . . . . . .  MEMBER   -----  PTR      0001H  3
+  count. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0004H  1
+  status . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0005H  1
+Digit. . . . . . . . . . . . . . . . .  PUBLIC   XDATA  ARRAY    0000H  16
+DR_SetFeature. . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+INTRFCDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  9
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+  index. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0002H  1
+  alt_setting. . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0003H  1
+  ep_cnt . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0004H  1
+  class. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0005H  1
+  sub_class. . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0006H  1
+  protocol . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0007H  1
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 48  
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+  interface_str. . . . . . . . . . . .  MEMBER   -----  U_CHAR   0008H  1
+ISR_Sof. . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  dum. . . . . . . . . . . . . . . . .  * REG *  DATA   U_CHAR   0007H  1
+  Led_Flag . . . . . . . . . . . . . .  AUTO     DATA   U_CHAR   0000H  1
+USBIE. . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+ENDPNTDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  7
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+  addr . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0002H  1
+  ep_type. . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0003H  1
+  mp_L . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0004H  1
+  mp_H . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0005H  1
+  interval . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0006H  1
+DR_GetConfiguration. . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+Sleep. . . . . . . . . . . . . . . . .  EXTERN   DATA   BIT      -----  1
+ISR_Susp . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    661    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     16    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      8       3
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

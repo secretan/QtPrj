@@ -2,6 +2,7 @@
 #define JLWIDGET_H
 
 #include <QWidget>
+#include "exusb.h"
 
 namespace Ui {
 class JLWidget;
@@ -15,8 +16,12 @@ public:
     explicit JLWidget(QWidget *parent = 0);
     ~JLWidget();
 
+private slots:
+    void on_pushButton_clicked();
+
 private:
     Ui::JLWidget *ui;
+    ExUSB *exusb;
 };
 
 #endif // JLWIDGET_H

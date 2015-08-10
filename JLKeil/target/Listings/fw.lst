@@ -1,10 +1,10 @@
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 1   
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 1   
 
 
-C51 COMPILER V9.54, COMPILATION OF MODULE FW
+C51 COMPILER V9.01, COMPILATION OF MODULE FW
 OBJECT MODULE PLACED IN .\Objects\fw.obj
-COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\src\fw.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND CODE LISTINCLUDE
-                    - SYMBOLS PRINT(.\Listings\fw.lst) TABS(2) PREPRINT(.\Listings\fw.i) OBJECT(.\Objects\fw.obj)
+COMPILER INVOKED BY: D:\Program Files (x86)\keil\C51\BIN\C51.EXE ..\src\fw.c BROWSE DEBUG OBJECTEXTEND CODE LISTINCLUDE 
+                    -SYMBOLS PRINT(.\Listings\fw.lst) PREPRINT(.\Listings\fw.i) OBJECT(.\Objects\fw.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   37      =1  #define DEVICE_DSCR      0x01      // Descriptor type: Device
   38      =1  #define CONFIG_DSCR      0x02      // Descriptor type: Configuration
   39      =1  #define STRING_DSCR      0x03      // Descriptor type: String
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 2   
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 2   
 
   40      =1  #define INTRFC_DSCR      0x04      // Descriptor type: Interface
   41      =1  #define ENDPNT_DSCR      0x05      // Descriptor type: End Point
@@ -86,11 +86,11 @@ line level    source
   59      =1  //////////////////////////////////////////////////////////////////////////////
   60      =1  //Added for HID
   61      =1  
-  62      =1  #define SETUP_MASK        0x60  //Used to mask off request type
-  63      =1  #define SETUP_STANDARD_REQUEST  0   //Standard Request
-  64      =1  #define SETUP_CLASS_REQUEST   0x20  //Class Request
-  65      =1  #define SETUP_VENDOR_REQUEST  0x40  //Vendor Request
-  66      =1  #define SETUP_RESERVED_REQUEST  0x60  //Reserved or illegal request
+  62      =1  #define SETUP_MASK                              0x60    //Used to mask off request type
+  63      =1  #define SETUP_STANDARD_REQUEST  0               //Standard Request
+  64      =1  #define SETUP_CLASS_REQUEST             0x20    //Class Request
+  65      =1  #define SETUP_VENDOR_REQUEST    0x40    //Vendor Request
+  66      =1  #define SETUP_RESERVED_REQUEST  0x60    //Reserved or illegal request
   67      =1  
   68      =1  //////////////////////////////////////////////////////////////////////////////
   69      =1  
@@ -117,8 +117,8 @@ line level    source
   90      =1  #define GD_DEVICE_QUALIFIER 0x06  // Get descriptor: Device Qualifier
   91      =1  #define GD_OTHER_SPEED_CONFIGURATION 0x07  // Get descriptor: Other Configuration
   92      =1  #define GD_INTERFACE_POWER 0x08  // Get descriptor: Interface Power
-  93      =1  #define GD_HID              0x21  // Get descriptor: HID
-  94      =1  #define GD_REPORT          0x22 // Get descriptor: Report
+  93      =1  #define GD_HID              0x21        // Get descriptor: HID
+  94      =1  #define GD_REPORT                0x22   // Get descriptor: Report
   95      =1  
   96      =1  #define GS_DEVICE          0x80  // Get Status: Device
   97      =1  #define GS_INTERFACE       0x81  // Get Status: Interface
@@ -126,7 +126,7 @@ line level    source
   99      =1  
  100      =1  #define FT_DEVICE          0x00  // Feature: Device
  101      =1  #define FT_ENDPOINT        0x02  // Feature: End Point
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 3   
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 3   
 
  102      =1  
  103      =1  #define I2C_IDLE              0     // I2C Status: Idle mode
@@ -190,7 +190,7 @@ line level    source
  161      =1  
  162      =1  #define EZUSB_EXTWAKEUP()      (((WAKEUPCS & bmWU2) && (WAKEUPCS & bmWU2EN)) ||\
  163      =1                                  ((WAKEUPCS & bmWU) &&  (WAKEUPCS & bmWUEN)))
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 4   
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 4   
 
  164      =1  
  165      =1  #define EZUSB_HIGHSPEED()      (USBCS & bmHSM)
@@ -254,7 +254,7 @@ line level    source
  223      =1     BYTE   protocol;      // Device sub-sub-class
  224      =1     BYTE   max_packet;      // Maximum packet size
  225      =1     BYTE   configs;      // Number of configurations
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 5   
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 5   
 
  226      =1     BYTE  reserved0;
  227      =1  }DEVICEQUALDSCR;
@@ -318,14 +318,14 @@ line level    source
  285      =1  //-----------------------------------------------------------------------------
  286      =1  // Globals
  287      =1  //-----------------------------------------------------------------------------
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 6   
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 6   
 
  288      =1  extern code BYTE   USB_AutoVector;
  289      =1  
  290      =1  extern WORD   pDeviceDscr;
  291      =1  extern WORD   pDeviceQualDscr;
- 292      =1  extern WORD   pHighSpeedConfigDscr;
- 293      =1  extern WORD   pFullSpeedConfigDscr; 
+ 292      =1  extern WORD       pHighSpeedConfigDscr;
+ 293      =1  extern WORD       pFullSpeedConfigDscr; 
  294      =1  extern WORD   pConfigDscr;
  295      =1  extern WORD   pOtherConfigDscr;
  296      =1  extern WORD   pStringDscr;
@@ -382,7 +382,7 @@ line level    source
   12      =1  
   13      =1  #ifndef FX2REGS_H   /* Header Sentry */
   14      =1  #define FX2REGS_H
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 7   
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 7   
 
   15      =1  
   16      =1  //-----------------------------------------------------------------------------
@@ -446,7 +446,7 @@ line level    source
   74      =1  EXTERN xdata volatile BYTE EP4AUTOINLENH     _AT_ 0xE622;  // Endpoint 4 Packet Length H (IN only)
   75      =1  EXTERN xdata volatile BYTE EP4AUTOINLENL     _AT_ 0xE623;  // Endpoint 4 Packet Length L (IN only)
   76      =1  EXTERN xdata volatile BYTE EP6AUTOINLENH     _AT_ 0xE624;  // Endpoint 6 Packet Length H (IN only)
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 8   
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 8   
 
   77      =1  EXTERN xdata volatile BYTE EP6AUTOINLENL     _AT_ 0xE625;  // Endpoint 6 Packet Length L (IN only)
   78      =1  EXTERN xdata volatile BYTE EP8AUTOINLENH     _AT_ 0xE626;  // Endpoint 8 Packet Length H (IN only)
@@ -510,7 +510,7 @@ line level    source
  136      =1  
  137      =1  // USB Control
  138      =1  
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 9   
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 9   
 
  139      =1  EXTERN xdata volatile BYTE USBCS             _AT_ 0xE680;  // USB Control & Status
  140      =1  EXTERN xdata volatile BYTE SUSPEND           _AT_ 0xE681;  // Put chip into suspend
@@ -574,7 +574,7 @@ line level    source
  198      =1  EXTERN xdata volatile BYTE GPIFTCB0          _AT_ 0xE6D1;  // GPIF Transaction Count Byte 0
  199      =1  
  200      =1  #define EP2GPIFTCH GPIFTCB1   // these are here for backwards compatibility
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 10  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 10  
 
  201      =1  #define EP2GPIFTCL GPIFTCB0   // 
  202      =1  #define EP4GPIFTCH GPIFTCB1   // these are here for backwards compatibility
@@ -638,7 +638,7 @@ line level    source
  260      =1  EXTERN xdata volatile BYTE EP1INBUF[64]      _AT_ 0xE7C0;  // EP1-IN buffer
  261      =1  EXTERN xdata volatile BYTE EP2FIFOBUF[1024]  _AT_ 0xF000;  // 512/1024-byte EP2 buffer (IN or OUT)
  262      =1  EXTERN xdata volatile BYTE EP4FIFOBUF[1024]  _AT_ 0xF400;  // 512 byte EP4 buffer (IN or OUT)
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 11  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 11  
 
  263      =1  EXTERN xdata volatile BYTE EP6FIFOBUF[1024]  _AT_ 0xF800;  // 512/1024-byte EP6 buffer (IN or OUT)
  264      =1  EXTERN xdata volatile BYTE EP8FIFOBUF[1024]  _AT_ 0xFC00;  // 512 byte EP8 buffer (IN or OUT)
@@ -702,7 +702,7 @@ line level    source
  322      =1           sbit IE1    = 0x88+3;
  323      =1           sbit TR0    = 0x88+4;
  324      =1           sbit TF0    = 0x88+5;
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 12  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 12  
 
  325      =1           sbit TR1    = 0x88+6;
  326      =1           sbit TF1    = 0x88+7;
@@ -766,7 +766,7 @@ line level    source
  384      =1  #define APTR1H AUTOPTRH1 // for backwards compatibility with examples
  385      =1  #define APTR1L AUTOPTRL1 // for backwards compatibility with examples
  386      =1  
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 13  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 13  
 
  387      =1  // this is how they are defined in the TRM
  388      =1  sfr AUTOPTRH1     = 0x9A; 
@@ -830,7 +830,7 @@ line level    source
  446      =1           sbit PD6    = 0xB0 + 6;
  447      =1           sbit PD7    = 0xB0 + 7;
  448      =1  sfr IOE     = 0xB1;
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 14  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 14  
 
  449      =1  sfr OEA     = 0xB2;
  450      =1  sfr OEB     = 0xB3;
@@ -894,7 +894,7 @@ line level    source
  508      =1           /*  EICON  */
  509      =1           sbit INT6  = 0xD8+3;
  510      =1           sbit RESI  = 0xD8+4;
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 15  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 15  
 
  511      =1           sbit ERESI = 0xD8+5;
  512      =1           sbit SMOD1 = 0xD8+7;
@@ -958,7 +958,7 @@ line level    source
  570      =1  #define bmID         (bmBIT4 | bmBIT3)
  571      =1  #define bmBERR       bmBIT2
  572      =1  #define bmACK        bmBIT1
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 16  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 16  
 
  573      =1  #define bmDONE       bmBIT0
  574      =1  /* I2C Control Register (I2CTL) */
@@ -1022,7 +1022,7 @@ line level    source
  632      =1  #define bmSDPAUTO    bmBIT0
  633      =1  /* Endpoint Data Toggle Control (TOGCTL) */
  634      =1  #define bmQUERYTOGGLE  bmBIT7
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 17  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 17  
 
  635      =1  #define bmSETTOGGLE    bmBIT6
  636      =1  #define bmRESETTOGGLE  bmBIT5
@@ -1080,13 +1080,13 @@ line level    source
    1      =1  //-----------------------------------------------------------------------------
    2      =1  //   File:      syncdly.h
    3      =1  //   Contents:  EZ-USB FX2 Synchronization Delay (SYNCDELAY) Macro
-   4      =1  //               Enter with _IFREQ = IFCLK in kHz
-   5      =1  //               Enter with _CFREQ = CLKOUT in kHz
+   4      =1  //                   Enter with _IFREQ = IFCLK in kHz
+   5      =1  //                   Enter with _CFREQ = CLKOUT in kHz
    6      =1  //
    7      =1  // $Archive: /USB/Target/Inc/syncdly.h $
    8      =1  // $Date: 8/12/03 4:26p $
    9      =1  // $Revision: 2 $
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 18  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 18  
 
   10      =1  //
   11      =1  //
@@ -1120,44 +1120,27 @@ line level    source
    2      =2  INTRINS.H
    3      =2  
    4      =2  Intrinsic functions for C51.
-   5      =2  Copyright (c) 1988-2010 Keil Elektronik GmbH and ARM Germany GmbH
+   5      =2  Copyright (c) 1988-2004 Keil Elektronik GmbH and Keil Software, Inc.
    6      =2  All rights reserved.
    7      =2  --------------------------------------------------------------------------*/
    8      =2  
    9      =2  #ifndef __INTRINS_H__
   10      =2  #define __INTRINS_H__
   11      =2  
-  12      =2  #pragma SAVE
-  13      =2  
-  14      =2  #if defined (__CX2__)
-           =2 #pragma FUNCTIONS(STATIC)
-           =2 /* intrinsic functions are reentrant, but need static attribute */
-           =2 #endif
-  18      =2  
-  19      =2  extern void          _nop_     (void);
-  20      =2  extern bit           _testbit_ (bit);
-  21      =2  extern unsigned char _cror_    (unsigned char, unsigned char);
-  22      =2  extern unsigned int  _iror_    (unsigned int,  unsigned char);
-  23      =2  extern unsigned long _lror_    (unsigned long, unsigned char);
-  24      =2  extern unsigned char _crol_    (unsigned char, unsigned char);
-  25      =2  extern unsigned int  _irol_    (unsigned int,  unsigned char);
-  26      =2  extern unsigned long _lrol_    (unsigned long, unsigned char);
-  27      =2  extern unsigned char _chkfloat_(float);
-  28      =2  #if defined (__CX2__)
-           =2 extern int           abs       (int);
-           =2 extern void          _illop_   (void);
-           =2 #endif
-  32      =2  #if !defined (__CX2__)
-  33      =2  extern void          _push_    (unsigned char _sfr);
-  34      =2  extern void          _pop_     (unsigned char _sfr);
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 19  
-
-  35      =2  #endif
-  36      =2  
-  37      =2  #pragma RESTORE
-  38      =2  
-  39      =2  #endif
-  40      =2  
+  12      =2  extern void          _nop_     (void);
+  13      =2  extern bit           _testbit_ (bit);
+  14      =2  extern unsigned char _cror_    (unsigned char, unsigned char);
+  15      =2  extern unsigned int  _iror_    (unsigned int,  unsigned char);
+  16      =2  extern unsigned long _lror_    (unsigned long, unsigned char);
+  17      =2  extern unsigned char _crol_    (unsigned char, unsigned char);
+  18      =2  extern unsigned int  _irol_    (unsigned int,  unsigned char);
+  19      =2  extern unsigned long _lrol_    (unsigned long, unsigned char);
+  20      =2  extern unsigned char _chkfloat_(float);
+  21      =2  extern void          _push_    (unsigned char _sfr);
+  22      =2  extern void          _pop_     (unsigned char _sfr);
+  23      =2  
+  24      =2  #endif
+  25      =2  
   38      =1  
   39      =1    // Registers which require a synchronization delay, see section 15.14
   40      =1    // FIFORESET        FIFOPINPOLAR
@@ -1167,6 +1150,8 @@ line level    source
   44      =1    // GPIFTCB1         GPIFTCB0
   45      =1    // EPxFIFOPFH:L     EPxAUTOINLENH:L
   46      =1    // EPxFIFOCFG       EPxGPIFFLGSEL
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 19  
+
   47      =1    // PINFLAGSxx       EPxFIFOIRQ
   48      =1    // EPxFIFOIE        GPIFIRQ
   49      =1    // GPIFIE           GPIFADRH:L
@@ -1214,8 +1199,6 @@ line level    source
            =1                   _nop_( )
            =1 #endif
   93      =1  
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 20  
-
   94      =1  #if( _SCYCL == 3 )
   95      =1  #define SYNCDELAY _nop_( ); \
   96      =1                    _nop_( ); \
@@ -1231,6 +1214,8 @@ line level    source
  106      =1  
  107      =1  #if( _SCYCL == 5 )
            =1 #define SYNCDELAY _nop_( ); \
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 20  
+
            =1                   _nop_( ); \
            =1                   _nop_( ); \
            =1                   _nop_( ); \
@@ -1278,8 +1263,6 @@ line level    source
            =1                   _nop_( ); \
            =1                   _nop_( )
            =1 #endif
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 21  
-
  156      =1  
  157      =1  #if( _SCYCL == 10 )
            =1 #define SYNCDELAY _nop_( ); \
@@ -1295,6 +1278,8 @@ line level    source
            =1 #endif
  169      =1  
  170      =1  #if( _SCYCL == 11 )
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 21  
+
            =1 #define SYNCDELAY _nop_( ); \
            =1                   _nop_( ); \
            =1                   _nop_( ); \
@@ -1342,8 +1327,6 @@ line level    source
  215      =1  #if( _SCYCL == 14 )
            =1 #define SYNCDELAY _nop_( ); \
            =1                   _nop_( ); \
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 22  
-
            =1                   _nop_( ); \
            =1                   _nop_( ); \
            =1                   _nop_( ); \
@@ -1359,6 +1342,8 @@ line level    source
            =1 #endif
  231      =1  
  232      =1  #if( _SCYCL == 15 )
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 22  
+
            =1 #define SYNCDELAY _nop_( ); \
            =1                   _nop_( ); \
            =1                   _nop_( ); \
@@ -1406,8 +1391,6 @@ line level    source
   27          // Random Macros
   28          //-----------------------------------------------------------------------------
   29          #define   min(a,b) (((a)<(b))?(a):(b))
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 23  
-
   30          #define   max(a,b) (((a)>(b))?(a):(b))
   31          
   32          //-----------------------------------------------------------------------------
@@ -1423,6 +1406,8 @@ line level    source
   42          WORD   pHighSpeedConfigDscr;
   43          WORD   pFullSpeedConfigDscr;   
   44          WORD   pConfigDscr;
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 23  
+
   45          WORD   pOtherConfigDscr;   
   46          WORD   pStringDscr;   
   47          
@@ -1470,8 +1455,6 @@ line level    source
   89          // Task dispatcher
   90          void main(void)
   91          {
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 24  
-
   92   1         DWORD   i;
   93   1         WORD   offset;
   94   1         DWORD   DevDescrLen;
@@ -1487,6 +1470,8 @@ line level    source
  104   1      
  105   1         // Initialize user device
  106   1         TD_Init();
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 24  
+
  107   1      
  108   1         // The following section of code is used to relocate the descriptor table. 
  109   1         // The frameworks uses SUDPTRH and SUDPTRL to automate the SETUP requests
@@ -1534,8 +1519,6 @@ line level    source
  151   1         USBIE |= bmSUDAV | bmSUTOK | bmSUSP | bmURES | bmHSGRANT;   // Enable selected interrupts
  152   1         EA = 1;                  // Enable 8051 interrupts
  153   1      
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 25  
-
  154   1      #ifndef NO_RENUM
  155   1         // Renumerate if necessary.  Do this by checking the renum bit.  If it
  156   1         // is already set, there is no need to renumerate.  The renum bit will
@@ -1551,6 +1534,8 @@ line level    source
  166   1         // is not necessary but doesn't hurt anything
  167   1         USBCS &=~bmDISCON;
  168   1      
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 25  
+
  169   1         CKCON = (CKCON&(~bmSTRETCH)) | FW_STRETCH_VALUE; // Set stretch
  170   1      
  171   1         // clear the Sleep flag.
@@ -1598,8 +1583,6 @@ line level    source
  212   1      }
  213          
  214          BOOL HighSpeedCapable()
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 26  
-
  215          {
  216   1         // this function determines if the chip is high-speed capable.
  217   1         // FX2 and FX2LP are high-speed capable. FX1 is not - it does
@@ -1615,6 +1598,8 @@ line level    source
  227          void SetupCommand(void)
  228          {
  229   1         void   *dscr_ptr;
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 26  
+
  230   1      
  231   1         switch(SETUPDAT[1])
  232   1         {
@@ -1627,18 +1612,18 @@ line level    source
  239   3                        SUDPTRL = LSB(pDeviceDscr);
  240   3                        break;
  241   3                     case GD_DEVICE_QUALIFIER:            // Device Qualifier
- 242   3                  // only retuen a device qualifier if this is a high speed
- 243   3                // capable chip.
- 244   3                  if (HighSpeedCapable())
- 245   3                {
- 246   4                          SUDPTRH = MSB(pDeviceQualDscr);
- 247   4                          SUDPTRL = LSB(pDeviceQualDscr);
- 248   4                }
- 249   3                else
- 250   3                {
- 251   4                  EZUSB_STALL_EP0();
- 252   4                }
- 253   3                break;
+ 242   3                                        // only retuen a device qualifier if this is a high speed
+ 243   3                                        // capable chip.
+ 244   3                                        if (HighSpeedCapable())
+ 245   3                                        {
+ 246   4                                SUDPTRH = MSB(pDeviceQualDscr);
+ 247   4                                SUDPTRL = LSB(pDeviceQualDscr);
+ 248   4                                        }
+ 249   3                                        else
+ 250   3                                        {
+ 251   4                                                EZUSB_STALL_EP0();
+ 252   4                                        }
+ 253   3                                        break;
  254   3                     case GD_CONFIGURATION:         // Configuration
  255   3                        SUDPTRH = MSB(pConfigDscr);
  256   3                        SUDPTRL = LSB(pConfigDscr);
@@ -1662,15 +1647,13 @@ line level    source
  274   2               break;
  275   2            case SC_GET_INTERFACE:                  // *** Get Interface
  276   2               DR_GetInterface();
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 27  
-
  277   2               break;
  278   2            case SC_SET_INTERFACE:                  // *** Set Interface
  279   2               DR_SetInterface();
  280   2               break;
  281   2            case SC_SET_CONFIGURATION:               // *** Set Configuration
  282   2               DR_SetConfiguration();
- 283   2          
+ 283   2                      
  284   2               break;
  285   2            case SC_GET_CONFIGURATION:               // *** Get Configuration
  286   2               DR_GetConfiguration();
@@ -1679,6 +1662,8 @@ line level    source
  289   2               if(DR_GetStatus())
  290   2                  switch(SETUPDAT[0])
  291   2                  {
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 27  
+
  292   3                     case GS_DEVICE:            // Device
  293   3                        EP0BUF[0] = ((BYTE)Rwuen << 1) | (BYTE)Selfpwr;
  294   3                        EP0BUF[1] = 0;
@@ -1726,8 +1711,6 @@ line level    source
  336   2               if(DR_SetFeature())
  337   2                  switch(SETUPDAT[0])
  338   2                  {
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 28  
-
  339   3                     case FT_DEVICE:            // Device
  340   3                        if(SETUPDAT[2] == 1)
  341   3                           Rwuen = TRUE;      // Enable Remote Wakeup
@@ -1743,6 +1726,8 @@ line level    source
  351   3                        break;
  352   3                     case FT_ENDPOINT:         // End Point
  353   3                        *(BYTE xdata *) epcs(SETUPDAT[4]) |= bmEPSTALL;
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 28  
+
  354   3                        break;
  355   3                     default:
  356   3                        EZUSB_STALL_EP0();      // Stall End Point 0
@@ -1764,7 +1749,7 @@ line level    source
  372   1      }
  373          
  374          
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 29  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 29  
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
@@ -1828,7 +1813,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 004F 2402              ADD     A,#02H
 0051 CF                XCH     A,R7
 0052 3400              ADDC    A,#00H
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 30  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 30  
 
 0054 FE                MOV     R6,A
 0055 E4                CLR     A
@@ -1892,7 +1877,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 00B7 2480              ADD     A,#080H
 00B9 FF                MOV     R7,A
 00BA 7400        E     MOV     A,#HIGH DeviceDscr
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 31  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 31  
 
 00BC 34FF              ADDC    A,#0FFH
 00BE FE                MOV     R6,A
@@ -1956,7 +1941,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0109 E0                MOVX    A,@DPTR
 010A 4409              ORL     A,#09H
 010C F0                MOVX    @DPTR,A
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 32  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 32  
 
                                            ; SOURCE LINE # 151
 010D 900000      E     MOV     DPTR,#USBIE
@@ -2020,7 +2005,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0150 E0                MOVX    A,@DPTR
 0151 20E1EF            JB      ACC.1,?C0013
 0154         ?C0015:
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 33  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 33  
 
 0154 900000      E     MOV     DPTR,#WAKEUPCS
 0157 E0                MOVX    A,@DPTR
@@ -2084,7 +2069,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 002C 020000      R     LJMP    ?C0036
 002F 2405              ADD     A,#05H
 0031 6003              JZ      $ + 5H
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 34  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 34  
 
 0033 020000      R     LJMP    ?C0071
                                            ; SOURCE LINE # 232
@@ -2148,7 +2133,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0077         ?C0030:
                                            ; SOURCE LINE # 259
 0077 E500        R     MOV     A,pOtherConfigDscr
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 35  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 35  
 
 0079 900000      E     MOV     DPTR,#SUDPTRH
 007C F0                MOVX    @DPTR,A
@@ -2212,7 +2197,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 00B3         ?C0037:
                                            ; SOURCE LINE # 282
 00B3 120000      E     LCALL   DR_SetConfiguration
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 36  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 36  
 
                                            ; SOURCE LINE # 284
 00B6 020000      R     LJMP    ?C0021
@@ -2276,7 +2261,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 00F2 7E00              MOV     R6,#00H
 00F4 E0                MOVX    A,@DPTR
 00F5 D3                SETB    C
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 37  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 37  
 
 00F6 9480              SUBB    A,#080H
 00F8 7C00              MOV     R4,#00H
@@ -2340,7 +2325,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 315
 013C 120000      E     LCALL   DR_ClearFeature
 013F 4003              JC      $ + 5H
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 38  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 38  
 
 0141 020000      R     LJMP    ?C0021
                                            ; SOURCE LINE # 316
@@ -2404,7 +2389,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 018F FF                MOV     R7,A
 0190 33                RLC     A
 0191 95E0              SUBB    A,ACC
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 39  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 39  
 
 0193 FE                MOV     R6,A
 0194 EF                MOV     A,R7
@@ -2468,7 +2453,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 01DB         ?C0063:
                                            ; SOURCE LINE # 342
 01DB 900000      E     MOV     DPTR,#SETUPDAT+02H
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 40  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 40  
 
 01DE E0                MOVX    A,@DPTR
 01DF B40202            CJNE    A,#02H,?C0065
@@ -2532,7 +2517,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 358
 0222 8008              SJMP    ?C0089
                                            ; SOURCE LINE # 359
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 41  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 41  
 
 0224         ?C0071:
                                            ; SOURCE LINE # 360
@@ -2563,7 +2548,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0003 32                RETI    
              ; FUNCTION resume_isr (END)
 
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 42  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 42  
 
 NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
 ====                                    =====   ======  ====    ======  ====
@@ -2626,7 +2611,7 @@ resume_isr . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
 TOGCTL . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
 EZUSB_Discon . . . . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
 pHighSpeedConfigDscr . . . . . . . . .  PUBLIC   DATA   U_INT    0000H  2
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 43  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 43  
 
 NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
 ====                                    =====   ======  ====    ======  ====
@@ -2689,7 +2674,7 @@ FullSpeedConfigDscr. . . . . . . . . .  EXTERN   CODE   STRUCT   -----  9
 DR_SetFeature. . . . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
 INTRFCDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  9
   length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
-C51 COMPILER V9.54   FW                                                                    08/10/2015 23:47:13 PAGE 44  
+C51 COMPILER V9.01   FW                                                                    08/11/2015 02:23:24 PAGE 44  
 
 NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
 ====                                    =====   ======  ====    ======  ====

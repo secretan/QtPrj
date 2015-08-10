@@ -15,7 +15,7 @@
  
  
   
-#line 1 "../inc\fx2.h" /0
+#line 1 "../INC\FX2.H" /0
  
  
  
@@ -353,7 +353,7 @@
 #line 15 "..\src\fw.c" /0
  
   
-#line 1 "../inc\fx2regs.h" /0
+#line 1 "../INC\FX2REGS.H" /0
  
  
  
@@ -388,11 +388,11 @@
  
  
  
-#line 35 "../inc\fx2regs.h" /1
+#line 35 "../INC\FX2REGS.H" /1
   
   
  
-#line 38 "../inc\fx2regs.h" /0
+#line 38 "../INC\FX2REGS.H" /0
  
  
  
@@ -1045,7 +1045,7 @@
 #line 16 "..\src\fw.c" /0
  
   
-#line 1 "../inc\syncdly.h" /0
+#line 1 "../INC\SYNCDLY.H" /0
  
  
  
@@ -1083,7 +1083,7 @@
  
  
   
-#line 1 "D:\Keil_v5\C51\inc\intrins.h" /0
+#line 1 "D:\PROGRAM FILES (X86)\KEIL\C51\INC\INTRINS.H" /0
 
 
 
@@ -1094,15 +1094,6 @@
  
  
  
- 
- #pragma SAVE
- 
- 
-#line 15 "D:\Keil_v5\C51\inc\intrins.h" /1
- 
- 
- 
-#line 18 "D:\Keil_v5\C51\inc\intrins.h" /0
  
  extern void          _nop_     (void);
  extern bit           _testbit_ (bit);
@@ -1113,22 +1104,12 @@
  extern unsigned int  _irol_    (unsigned int,  unsigned char);
  extern unsigned long _lrol_    (unsigned long, unsigned char);
  extern unsigned char _chkfloat_(float);
- 
-#line 29 "D:\Keil_v5\C51\inc\intrins.h" /1
- 
- 
- 
-#line 32 "D:\Keil_v5\C51\inc\intrins.h" /0
- 
  extern void          _push_    (unsigned char _sfr);
  extern void          _pop_     (unsigned char _sfr);
  
  
- #pragma RESTORE
  
- 
- 
-#line 37 "../inc\syncdly.h" /0
+#line 37 "../INC\SYNCDLY.H" /0
  
  
  
@@ -1159,42 +1140,42 @@
  
  
  
-#line 67 "../inc\syncdly.h" /1
+#line 67 "../INC\SYNCDLY.H" /1
  
  
-#line 69 "../inc\syncdly.h" /0
+#line 69 "../INC\SYNCDLY.H" /0
  
  
-#line 71 "../inc\syncdly.h" /1
+#line 71 "../INC\SYNCDLY.H" /1
  
  
-#line 73 "../inc\syncdly.h" /0
+#line 73 "../INC\SYNCDLY.H" /0
  
  
-#line 75 "../inc\syncdly.h" /1
- 
- 
- 
- 
- 
- 
-#line 81 "../inc\syncdly.h" /0
+#line 75 "../INC\SYNCDLY.H" /1
  
  
  
  
  
-#line 86 "../inc\syncdly.h" /1
+ 
+#line 81 "../INC\SYNCDLY.H" /0
+ 
+ 
+ 
+ 
+ 
+#line 86 "../INC\SYNCDLY.H" /1
   
  
-#line 88 "../inc\syncdly.h" /0
+#line 88 "../INC\SYNCDLY.H" /0
  
  
-#line 90 "../inc\syncdly.h" /1
+#line 90 "../INC\SYNCDLY.H" /1
   
 
  
-#line 93 "../inc\syncdly.h" /0
+#line 93 "../INC\SYNCDLY.H" /0
  
  
  
@@ -1203,26 +1184,26 @@
  
  
  
-#line 101 "../inc\syncdly.h" /1
+#line 101 "../INC\SYNCDLY.H" /1
   
 
 
 
  
-#line 106 "../inc\syncdly.h" /0
+#line 106 "../INC\SYNCDLY.H" /0
  
  
-#line 108 "../inc\syncdly.h" /1
+#line 108 "../INC\SYNCDLY.H" /1
   
 
 
 
 
  
-#line 114 "../inc\syncdly.h" /0
+#line 114 "../INC\SYNCDLY.H" /0
  
  
-#line 116 "../inc\syncdly.h" /1
+#line 116 "../INC\SYNCDLY.H" /1
   
 
 
@@ -1230,10 +1211,10 @@
 
 
  
-#line 123 "../inc\syncdly.h" /0
+#line 123 "../INC\SYNCDLY.H" /0
  
  
-#line 125 "../inc\syncdly.h" /1
+#line 125 "../INC\SYNCDLY.H" /1
   
 
 
@@ -1242,10 +1223,10 @@
 
 
  
-#line 133 "../inc\syncdly.h" /0
+#line 133 "../INC\SYNCDLY.H" /0
  
  
-#line 135 "../inc\syncdly.h" /1
+#line 135 "../INC\SYNCDLY.H" /1
   
 
 
@@ -1255,10 +1236,10 @@
 
 
  
-#line 144 "../inc\syncdly.h" /0
+#line 144 "../INC\SYNCDLY.H" /0
  
  
-#line 146 "../inc\syncdly.h" /1
+#line 146 "../INC\SYNCDLY.H" /1
   
 
 
@@ -1269,10 +1250,10 @@
 
 
  
-#line 156 "../inc\syncdly.h" /0
+#line 156 "../INC\SYNCDLY.H" /0
  
  
-#line 158 "../inc\syncdly.h" /1
+#line 158 "../INC\SYNCDLY.H" /1
   
 
 
@@ -1284,10 +1265,10 @@
 
 
  
-#line 169 "../inc\syncdly.h" /0
+#line 169 "../INC\SYNCDLY.H" /0
  
  
-#line 171 "../inc\syncdly.h" /1
+#line 171 "../INC\SYNCDLY.H" /1
   
 
 
@@ -1300,10 +1281,10 @@
 
 
  
-#line 183 "../inc\syncdly.h" /0
+#line 183 "../INC\SYNCDLY.H" /0
  
  
-#line 185 "../inc\syncdly.h" /1
+#line 185 "../INC\SYNCDLY.H" /1
   
 
 
@@ -1317,10 +1298,10 @@
 
 
  
-#line 198 "../inc\syncdly.h" /0
+#line 198 "../INC\SYNCDLY.H" /0
  
  
-#line 200 "../inc\syncdly.h" /1
+#line 200 "../INC\SYNCDLY.H" /1
   
 
 
@@ -1335,10 +1316,10 @@
 
 
  
-#line 214 "../inc\syncdly.h" /0
+#line 214 "../INC\SYNCDLY.H" /0
  
  
-#line 216 "../inc\syncdly.h" /1
+#line 216 "../INC\SYNCDLY.H" /1
   
 
 
@@ -1354,10 +1335,10 @@
 
 
  
-#line 231 "../inc\syncdly.h" /0
+#line 231 "../INC\SYNCDLY.H" /0
  
  
-#line 233 "../inc\syncdly.h" /1
+#line 233 "../INC\SYNCDLY.H" /1
   
 
 
@@ -1374,10 +1355,10 @@
 
 
  
-#line 249 "../inc\syncdly.h" /0
+#line 249 "../INC\SYNCDLY.H" /0
  
  
-#line 251 "../inc\syncdly.h" /1
+#line 251 "../INC\SYNCDLY.H" /1
   
 
 

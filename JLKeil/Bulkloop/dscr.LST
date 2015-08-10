@@ -1,9 +1,10 @@
-A51 MACRO ASSEMBLER  DSCR                                                                 07/27/2015 22:07:42 PAGE     1
+A51 MACRO ASSEMBLER  DSCR                                                                 08/11/2015 04:38:52 PAGE     1
 
 
-MACRO ASSEMBLER A51 V8.02c
-OBJECT MODULE PLACED IN dscr.OBJ
-ASSEMBLER INVOKED BY: D:\Keil_v5\C51\BIN\A51.EXE dscr.a51 SET(SMALL) DEBUG EP
+MACRO ASSEMBLER A51 V8.02
+OBJECT MODULE PLACED IN .\dscr.obj
+ASSEMBLER INVOKED BY: D:\Program Files (x86)\keil\C51\BIN\A51.EXE ..\lib\dscr.a51 SET(SMALL) DEBUG PRINT(.\dscr.lst) OBJ
+                      ECT(.\dscr.obj) EP
 
 LOC  OBJ            LINE     SOURCE
 
@@ -64,9 +65,9 @@ LOC  OBJ            LINE     SOURCE
 000F 02               53           db   2         ;; Product string index
 0010 00               54           db   0         ;; Serial number string index
 0011 01               55           db   1         ;; Number of configurations
-                      56     
-A51 MACRO ASSEMBLER  DSCR                                                                 07/27/2015 22:07:42 PAGE     2
+A51 MACRO ASSEMBLER  DSCR                                                                 08/11/2015 04:38:52 PAGE     2
 
+                      56     
 0012                  57     DeviceQualDscr:
 0012 0A               58           db   DSCR_DEVQUAL_LEN   ;; Descriptor length
 0013 06               59           db   DSCR_DEVQUAL   ;; Decriptor type
@@ -132,9 +133,9 @@ LOC  OBJ            LINE     SOURCE
 0044 32              119           db   50      ;; Power requirement (div 2 ma)
                      120     
                      121     ;; Interface Descriptor
-0045 09              122           db   DSCR_INTRFC_LEN      ;; Descriptor length
-A51 MACRO ASSEMBLER  DSCR                                                                 07/27/2015 22:07:42 PAGE     3
+A51 MACRO ASSEMBLER  DSCR                                                                 08/11/2015 04:38:52 PAGE     3
 
+0045 09              122           db   DSCR_INTRFC_LEN      ;; Descriptor length
 0046 04              123           db   DSCR_INTRFC         ;; Descriptor type
 0047 00              124           db   0               ;; Zero-based index of this interface
 0048 00              125           db   0               ;; Alternate setting
@@ -199,7 +200,7 @@ LOC  OBJ            LINE     SOURCE
 007E 0000            184           dw   0000H
                      185           end
                                    
-A51 MACRO ASSEMBLER  DSCR                                                                 07/27/2015 22:07:42 PAGE     4
+A51 MACRO ASSEMBLER  DSCR                                                                 08/11/2015 04:38:52 PAGE     4
 
 SYMBOL TABLE LISTING
 ------ ----- -------

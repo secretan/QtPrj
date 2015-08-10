@@ -1,8 +1,8 @@
-"fw.obj",
-"bulkloop.obj",
-"dscr.obj",
-".\USBJmpTb.OBJ",
-".\EZUSB.LIB" 
+".\bulkloop.obj",
+".\fw.obj",
+".\dscr.obj",
+"..\lib\EZUSB.LIB",
+"..\lib\USBJmpTb.OBJ" 
 TO "bulkloop" 
 RAMSIZE(256) 
 CODE( 0x80-0x0FFF )

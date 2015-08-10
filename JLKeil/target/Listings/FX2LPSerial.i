@@ -2,7 +2,7 @@
 #line 1 "..\src\FX2LPSerial.c" /0
  
   
-#line 1 "../inc\fx2.h" /0
+#line 1 "../INC\FX2.H" /0
  
  
  
@@ -340,7 +340,7 @@
 #line 2 "..\src\FX2LPSerial.c" /0
  
   
-#line 1 "../inc\fx2regs.h" /0
+#line 1 "../INC\FX2REGS.H" /0
  
  
  
@@ -375,11 +375,11 @@
  
  
  
-#line 35 "../inc\fx2regs.h" /1
+#line 35 "../INC\FX2REGS.H" /1
   
   
  
-#line 38 "../inc\fx2regs.h" /0
+#line 38 "../INC\FX2REGS.H" /0
  
  
  
@@ -1032,7 +1032,7 @@
 #line 3 "..\src\FX2LPSerial.c" /0
  
   
-#line 1 "../inc\FX2LPserial.h" /0
+#line 1 "../INC\FX2LPSERIAL.H" /0
  
  
  

@@ -198,7 +198,8 @@ void TD_Init(void)             // Called once at startup
    BYTE dum;					// For the LEDS
 	 int i;
    CPUCS = ((CPUCS & ~bmCLKSPD) | bmCLKSPD1) ;	// 48 MHz CPU clock
-   
+   // set the slave FIFO interface to 48MHz
+   IFCONFIG |= 0x40;
    
    // Turn off all 4 LEDS
    dum = D2OFF;
@@ -228,7 +229,7 @@ void TD_Init(void)             // Called once at startup
   SYNCDELAY;                    
 	for (i = 0; i < 512; i++)
 	{
-		EP6FIFOBUF[i] = i+1;
+		EP6FIFOBUF[i] = i+2;
 	}
   // enable dual autopointer feature
   AUTOPTRSETUP |= 0x01;
@@ -239,11 +240,12 @@ void TD_Init(void)             // Called once at startup
 
 void TD_Poll(void)              // Called repeatedly while the device is idle
 {
+#if 1
   WORD i;
   WORD count;
 //  BYTE dummy_LED2;		// ***For the LED
   BYTE waiting_inpkts;
-
+#if 0
 #ifdef ENABLE_7_SEG_DISPLAY
 if(start_7_seg_display)
 {
@@ -252,6 +254,7 @@ if(start_7_seg_display)
   EZUSB_WriteI2C(LED_ADDR, 0x01, &(Digit[waiting_inpkts]));
   EZUSB_WaitForEEPROMWrite(LED_ADDR);
 }
+#endif
 #endif
 
 // Transfer EP6-OUT buffer to EP2-IN buffer when there is a packet in one of the EP6-OUT buffers, AND
@@ -283,6 +286,7 @@ if(start_7_seg_display)
         EP2BCL = 0x80;          // arm EP2OUT
      }
   }
+  #endif
 }
 
 BOOL TD_Suspend(void)          // Called before the device goes into suspend mode

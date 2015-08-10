@@ -21,7 +21,9 @@ HEADERS  += jlwidget.h \
 
 FORMS    += jlwidget.ui
 
-unix:!macx|win32: LIBS += -L$$PWD/cypress/lib/x64/ -lCyAPI0
+unix:!macx|win32: LIBS += -L$$PWD/cypress/lib/x64/ -lCyAPI
+win32: LIBS += -lsetupapi
+
 
 INCLUDEPATH += $$PWD/cypress/inc
 DEPENDPATH += $$PWD/cypress/inc

@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 1   
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE FX2LPSERIAL
@@ -62,7 +62,7 @@ line level    source
   49      =1  #define bmEPOUT   bmBIT7
   50      =1  #define bmEPIN    0x00
   51      =1  
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 2   
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 2   
 
   52      =1  #define EP_CONTROL   0x00        // End Point type: Control
   53      =1  #define EP_ISO       0x01        // End Point type: Isochronous
@@ -126,7 +126,7 @@ line level    source
  111      =1  #define I2C_WAITSTOP          9     // I2C Status: Wait for STOP complete
  112      =1  
  113      =1  /*-----------------------------------------------------------------------------
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 3   
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 3   
 
  114      =1     Macros
  115      =1  -----------------------------------------------------------------------------*/
@@ -190,7 +190,7 @@ line level    source
  173      =1  typedef bit            BOOL;
  174      =1  
  175      =1  #define  INT0_VECT   0
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 4   
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 4   
 
  176      =1  #define  TMR0_VECT   1
  177      =1  #define  INT1_VECT   2
@@ -254,7 +254,7 @@ line level    source
  235      =1     BYTE   index;         // Configuration number
  236      =1     BYTE   config_str;      // Configuration string
  237      =1     BYTE   attrib;         // Attributes (b7 - buspwr, b6 - selfpwr, b5 - rwu
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 5   
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 5   
 
  238      =1     BYTE   power;         // Power requirement (div 2 ma)
  239      =1  }CONFIGDSCR;
@@ -318,7 +318,7 @@ line level    source
  297      =1  
  298      =1  extern code DEVICEDSCR        DeviceDscr;
  299      =1  extern code DEVICEQUALDSCR    DeviceQualDscr;
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 6   
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 6   
 
  300      =1  extern code CONFIGDSCR        HighSpeedConfigDscr;
  301      =1  extern code CONFIGDSCR        FullSpeedConfigDscr;
@@ -382,7 +382,7 @@ line level    source
   24      =1  // Such lines are created from FX2.h by using the preprocessor. 
   25      =1  // Incidently, these lines will not generate any space in the resulting hex 
   26      =1  // file; they just bind the symbols to the addresses for compilation. 
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 7   
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 7   
 
   27      =1  // You just need to put "#define ALLOCATE_EXTERN" in your main program file; 
   28      =1  // i.e. fw.c or a stand-alone C source file. 
@@ -446,7 +446,7 @@ line level    source
   86      =1  EXTERN xdata volatile BYTE EP8FIFOPFH        _AT_ 0xE636;  // EP8 Programmable Flag trigger H
   87      =1  EXTERN xdata volatile BYTE EP8FIFOPFL        _AT_ 0xE637;  // EP8 Programmable Flag trigger L
   88      =1  EXTERN xdata volatile BYTE EP2ISOINPKTS      _AT_ 0xE640;  // EP2 (if ISO) IN Packets per frame (1-3)
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 8   
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 8   
 
   89      =1  EXTERN xdata volatile BYTE EP4ISOINPKTS      _AT_ 0xE641;  // EP4 (if ISO) IN Packets per frame (1-3)
   90      =1  EXTERN xdata volatile BYTE EP6ISOINPKTS      _AT_ 0xE642;  // EP6 (if ISO) IN Packets per frame (1-3)
@@ -510,7 +510,7 @@ line level    source
  148      =1  // Endpoints
  149      =1  
  150      =1  EXTERN xdata volatile BYTE EP0BCH            _AT_ 0xE68A;  // Endpoint 0 Byte Count H
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 9   
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 9   
 
  151      =1  EXTERN xdata volatile BYTE EP0BCL            _AT_ 0xE68B;  // Endpoint 0 Byte Count L
  152      =1  EXTERN xdata volatile BYTE EP1OUTBC          _AT_ 0xE68D;  // Endpoint 1 OUT Byte Count
@@ -574,7 +574,7 @@ line level    source
  210      =1  EXTERN xdata volatile BYTE EP2GPIFPFSTOP     _AT_ 0xE6D3;  // Stop GPIF EP2 transaction on prog. flag
  211      =1  EXTERN xdata volatile BYTE EP2GPIFTRIG       _AT_ 0xE6D4;  // EP2 FIFO Trigger
  212      =1  EXTERN xdata volatile BYTE EP4GPIFFLGSEL     _AT_ 0xE6DA;  // EP4 GPIF Flag select
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 10  
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 10  
 
  213      =1  EXTERN xdata volatile BYTE EP4GPIFPFSTOP     _AT_ 0xE6DB;  // Stop GPIF EP4 transaction on prog. flag
  214      =1  EXTERN xdata volatile BYTE EP4GPIFTRIG       _AT_ 0xE6DC;  // EP4 FIFO Trigger
@@ -638,7 +638,7 @@ line level    source
  272      =1  EXTERN xdata volatile BYTE ECC1B2            _AT_ 0xE62C;  // ECC1 Byte 2
  273      =1  EXTERN xdata volatile BYTE ECC2B0            _AT_ 0xE62D;  // ECC2 Byte 0
  274      =1  EXTERN xdata volatile BYTE ECC2B1            _AT_ 0xE62E;  // ECC2 Byte 1
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 11  
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 11  
 
  275      =1  EXTERN xdata volatile BYTE ECC2B2            _AT_ 0xE62F;  // ECC2 Byte 2
  276      =1  
@@ -702,7 +702,7 @@ line level    source
  334      =1           //sbit M11    = 0x89+5;
  335      =1           //sbit CT1    = 0x89+6;
  336      =1           //sbit GATE1  = 0x89+7;
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 12  
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 12  
 
  337      =1  sfr TL0     = 0x8A;
  338      =1  sfr TL1     = 0x8B;
@@ -766,7 +766,7 @@ line level    source
  396      =1           sbit PC1    = 0xA0 + 1;
  397      =1           sbit PC2    = 0xA0 + 2;
  398      =1           sbit PC3    = 0xA0 + 3;
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 13  
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 13  
 
  399      =1  
  400      =1           sbit PC4    = 0xA0 + 4;
@@ -830,7 +830,7 @@ line level    source
  458      =1           sbit PT0   = 0xB8+1;
  459      =1           sbit PX1   = 0xB8+2;
  460      =1           sbit PT1   = 0xB8+3;
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 14  
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 14  
 
  461      =1           sbit PS0   = 0xB8+4;
  462      =1           sbit PT2   = 0xB8+5;
@@ -894,7 +894,7 @@ line level    source
  520      =1           sbit EIEX6   = 0xE8+4;
  521      =1  sfr B      = 0xF0;
  522      =1  sfr EIP    = 0xF8; // EIP Bit Values differ from Reg320
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 15  
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 15  
 
  523      =1           /*  EIP  */
  524      =1           sbit PUSB    = 0xF8+0;
@@ -958,7 +958,7 @@ line level    source
  582      =1  #define bmIV0        bmBIT2
  583      =1  /* USB Interrupt Request & Enable Registers (USBIE/USBIRQ) */
  584      =1  #define bmEP0ACK     bmBIT6
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 16  
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 16  
 
  585      =1  #define bmHSGRANT    bmBIT5
  586      =1  #define bmURES       bmBIT4
@@ -1022,7 +1022,7 @@ line level    source
  644      =1  #define bmEP0IBN     bmBIT0
  645      =1  
  646      =1  /* PING-NAK enable and request bits (NAKIE/NAKIRQ) */
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 17  
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 17  
 
  647      =1  #define bmEP8PING     bmBIT7
  648      =1  #define bmEP6PING     bmBIT6
@@ -1086,7 +1086,7 @@ line level    source
   19      =1  
   20      =1  extern void
   21      =1  FX2LPSerial_XmitHex4(WORD w) ;
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 18  
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 18  
 
   22      =1  
   23      =1  extern void
@@ -1145,7 +1145,7 @@ line level    source
   52   1      }
   53          
   54          
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 19  
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 19  
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
@@ -1209,7 +1209,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0007 5004              JNC     ?C0005
                                            ; SOURCE LINE # 31
 0009 2430              ADD     A,#030H
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 20  
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 20  
 
 000B 8002              SJMP    ?C0014
 000D         ?C0005:
@@ -1273,7 +1273,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0014 08                INC     R0
 0015 E6                MOV     A,@R0
 0016 FA                MOV     R2,A
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 21  
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 21  
 
 0017 08                INC     R0
 0018 E6                MOV     A,@R0
@@ -1306,7 +1306,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 003E 22                RET     
              ; FUNCTION _?FX2LPSerial_XmitString (END)
 
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 22  
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 22  
 
 NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
 ====                                    =====   ======  ====    ======  ====
@@ -1369,7 +1369,7 @@ SCON0. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0098H  1
 CONFIGDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  9
   length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
   type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
-C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 22:26:05 PAGE 23  
+C51 COMPILER V9.54   FX2LPSERIAL                                                           08/10/2015 23:47:13 PAGE 23  
 
 NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
 ====                                    =====   ======  ====    ======  ====

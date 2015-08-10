@@ -196,6 +196,7 @@ BYTE xdata Digit[] = { 0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8, 0x80, 0x9
 void TD_Init(void)             // Called once at startup
 {
    BYTE dum;					// For the LEDS
+	 int i;
    CPUCS = ((CPUCS & ~bmCLKSPD) | bmCLKSPD1) ;	// 48 MHz CPU clock
    
    
@@ -225,11 +226,15 @@ void TD_Init(void)             // Called once at startup
   SYNCDELAY;                    
   EP2BCL = 0x80;	// again
   SYNCDELAY;                    
+	for (i = 0; i < 512; i++)
+	{
+		EP6FIFOBUF[i] = i+1;
+	}
   // enable dual autopointer feature
   AUTOPTRSETUP |= 0x01;
 
-  USBIE |= bmSOF;				// Enable the SOF IRQ to serve as LED timers
-  EPIE = bmEP6IRQ | bmEP2IRQ;	// Enable EP6 and EP2 Interrupts to turn on transfer LEDS
+  //USBIE |= bmSOF;				// Enable the SOF IRQ to serve as LED timers
+  //EPIE = bmEP6IRQ | bmEP2IRQ;	// Enable EP6 and EP2 Interrupts to turn on transfer LEDS
 }
 
 void TD_Poll(void)              // Called repeatedly while the device is idle

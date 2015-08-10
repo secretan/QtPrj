@@ -1579,6 +1579,7 @@
  void TD_Init(void)              
  {
  BYTE dum;					 
+ int i;
  CPUCS = ((CPUCS & ~(0x10 | 0x08)) | 0x10) ;	 
  
  
@@ -1608,11 +1609,15 @@
   _nop_( ); _nop_( ); _nop_( );                    
  EP2BCL = 0x80;	 
   _nop_( ); _nop_( ); _nop_( );                    
+ for (i = 0; i < 512; i++)
+ {
+ EP6FIFOBUF[i] = i+1;
+ }
  
  AUTOPTRSETUP |= 0x01;
  
- USBIE |= 0x02;				 
- EPIE = 0x40 | 0x10;	 
+ 
+ 
  }
  
  void TD_Poll(void)               

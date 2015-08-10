@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 1   
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE BULKLOOP
@@ -62,7 +62,7 @@ line level    source
   52          //  Initialization:
   53          //    FX2LP is initialized in the TD_Init function, which is called once at startup.
   54          //    The two endpoints defined in the descriptor file are be configured using these statements:
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 2   
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 2   
 
   55          //
   56          //    EP2CFG = 0xA2;  // EP2 is BULK-OUT, double-buffered
@@ -126,7 +126,7 @@ line level    source
  114          //
  115          //      count = (EP2BCH << 8) + EP2BCL; // The count value is loaded from the byte 
  116          //                                      // count registers
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 3   
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 3   
 
  117          //
  118          //      The data transfer is carried out by the execution of the loop below. 
@@ -190,7 +190,7 @@ line level    source
   25      =1  #define   TRUE    1
   26      =1  #define FALSE   0
   27      =1  
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 4   
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 4   
 
   28      =1  #define bmBIT0   0x01
   29      =1  #define bmBIT1   0x02
@@ -254,7 +254,7 @@ line level    source
   87      =1  #define GD_STRING          0x03  // Get descriptor: String
   88      =1  #define GD_INTERFACE       0x04  // Get descriptor: Interface
   89      =1  #define GD_ENDPOINT        0x05  // Get descriptor: Endpoint
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 5   
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 5   
 
   90      =1  #define GD_DEVICE_QUALIFIER 0x06  // Get descriptor: Device Qualifier
   91      =1  #define GD_OTHER_SPEED_CONFIGURATION 0x07  // Get descriptor: Other Configuration
@@ -318,7 +318,7 @@ line level    source
  149      =1  #define EZUSB_DISABLE_RSMIRQ()      (EICON &= ~0x20)   // Disable Resume Interrupt (EPFI_)
  150      =1  #define EZUSB_CLEAR_RSMIRQ()      (EICON &= ~0x10)   // Clear Resume Interrupt Flag (PFI_)
  151      =1  
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 6   
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 6   
 
  152      =1  #define EZUSB_GETI2CSTATUS()      (I2CPckt.status)
  153      =1  #define EZUSB_CLEARI2CSTATUS()      if((I2CPckt.status == I2C_BERROR) || (I2CPckt.status == I2C_NACK))\
@@ -382,7 +382,7 @@ line level    source
  211      =1     BYTE   serialnum_str;   // Serial number string index
  212      =1     BYTE   configs;      // Number of configurations
  213      =1  }DEVICEDSCR;
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 7   
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 7   
 
  214      =1  
  215      =1  typedef struct            // Device Qualifier Descriptor
@@ -446,7 +446,7 @@ line level    source
  273      =1     BYTE   cntrl;         // End point control register
  274      =1     BYTE   bytes;         // End point buffer byte count
  275      =1  }EPIOC;
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 8   
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 8   
 
  276      =1  
  277      =1  typedef struct 
@@ -510,7 +510,7 @@ line level    source
  152          #include "fx2regs.h"
    1      =1  //-----------------------------------------------------------------------------
    2      =1  //   File:      FX2regs.h
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 9   
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 9   
 
    3      =1  //   Contents:   EZ-USB FX2/FX2LP/FX1 register declarations and bit mask definitions.
    4      =1  //
@@ -574,7 +574,7 @@ line level    source
   62      =1  EXTERN xdata volatile BYTE EP1OUTCFG         _AT_ 0xE610;  // Endpoint 1-OUT Configuration
   63      =1  EXTERN xdata volatile BYTE EP1INCFG          _AT_ 0xE611;  // Endpoint 1-IN Configuration
   64      =1  EXTERN xdata volatile BYTE EP2CFG            _AT_ 0xE612;  // Endpoint 2 Configuration
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 10  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 10  
 
   65      =1  EXTERN xdata volatile BYTE EP4CFG            _AT_ 0xE613;  // Endpoint 4 Configuration
   66      =1  EXTERN xdata volatile BYTE EP6CFG            _AT_ 0xE614;  // Endpoint 6 Configuration
@@ -638,7 +638,7 @@ line level    source
  124      =1  
  125      =1  EXTERN xdata volatile BYTE PORTACFG          _AT_ 0xE670;  // I/O PORTA Alternate Configuration
  126      =1  EXTERN xdata volatile BYTE PORTCCFG          _AT_ 0xE671;  // I/O PORTC Alternate Configuration
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 11  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 11  
 
  127      =1  EXTERN xdata volatile BYTE PORTECFG          _AT_ 0xE672;  // I/O PORTE Alternate Configuration
  128      =1  EXTERN xdata volatile BYTE I2CS              _AT_ 0xE678;  // Control & Status
@@ -702,7 +702,7 @@ line level    source
  186      =1  // GPIF
  187      =1  
  188      =1  EXTERN xdata volatile BYTE GPIFWFSELECT      _AT_ 0xE6C0;  // Waveform Selector
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 12  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 12  
 
  189      =1  EXTERN xdata volatile BYTE GPIFIDLECS        _AT_ 0xE6C1;  // GPIF Done, GPIF IDLE drive mode
  190      =1  EXTERN xdata volatile BYTE GPIFIDLECTL       _AT_ 0xE6C2;  // Inactive Bus, CTL states
@@ -766,7 +766,7 @@ line level    source
  248      =1  EXTERN xdata volatile BYTE DBUG              _AT_ 0xE6F8;  // Debug
  249      =1  EXTERN xdata volatile BYTE TESTCFG           _AT_ 0xE6F9;  // Test configuration
  250      =1  EXTERN xdata volatile BYTE USBTEST           _AT_ 0xE6FA;  // USB Test Modes
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 13  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 13  
 
  251      =1  EXTERN xdata volatile BYTE CT1               _AT_ 0xE6FB;  // Chirp Test--Override
  252      =1  EXTERN xdata volatile BYTE CT2               _AT_ 0xE6FC;  // Chirp Test--FSM
@@ -830,7 +830,7 @@ line level    source
  310      =1  sfr PCON    = 0x87;
  311      =1           /*  PCON  */
  312      =1           //sbit IDLE   = 0x87+0;
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 14  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 14  
 
  313      =1           //sbit STOP   = 0x87+1;
  314      =1           //sbit GF0    = 0x87+2;
@@ -894,7 +894,7 @@ line level    source
  372      =1           sbit RI    = 0x98+0;
  373      =1           sbit TI    = 0x98+1;
  374      =1           sbit RB8   = 0x98+2;
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 15  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 15  
 
  375      =1           sbit TB8   = 0x98+3;
  376      =1           sbit REN   = 0x98+4;
@@ -958,7 +958,7 @@ line level    source
  434      =1           //   sbit APTR1FZ = 0xAF+1;
  435      =1           //   sbit APTR2FZ = 0xAF+2;
  436      =1  
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 16  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 16  
 
  437      =1  sfr IOD     = 0xB0;
  438      =1           /*  IOD  */
@@ -1022,7 +1022,7 @@ line level    source
  496      =1  sfr TH2    = 0xCD;
  497      =1  sfr PSW    = 0xD0;
  498      =1           /*  PSW  */
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 17  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 17  
 
  499      =1           sbit P     = 0xD0+0;
  500      =1           sbit FL    = 0xD0+1;
@@ -1086,7 +1086,7 @@ line level    source
  558      =1  #define bmT2EX       bmBIT6
  559      =1  #define bmINT6       bmBIT5
  560      =1  #define bmRXD1OUT    bmBIT4
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 18  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 18  
 
  561      =1  #define bmRXD0OUT    bmBIT3
  562      =1  #define bmT2OUT      bmBIT2
@@ -1150,7 +1150,7 @@ line level    source
  620      =1  #define bmEPFULL     bmBIT3
  621      =1  #define bmEPEMPTY    bmBIT2
  622      =1  /* Endpoint Status (EP2468STAT) SFR bits */
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 19  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 19  
 
  623      =1  #define bmEP8FULL    bmBIT7
  624      =1  #define bmEP8EMPTY   bmBIT6
@@ -1214,7 +1214,7 @@ line level    source
  682      =1  
  683      =1  /* Chip Feature Register (GPCR2) */
  684      =1  #define bmFULLSPEEDONLY    bmBIT4
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 20  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 20  
 
  685      =1  
  686      =1  #endif   /* FX2REGS_H */
@@ -1278,7 +1278,7 @@ line level    source
   20      =2  extern bit           _testbit_ (bit);
   21      =2  extern unsigned char _cror_    (unsigned char, unsigned char);
   22      =2  extern unsigned int  _iror_    (unsigned int,  unsigned char);
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 21  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 21  
 
   23      =2  extern unsigned long _lror_    (unsigned long, unsigned char);
   24      =2  extern unsigned char _crol_    (unsigned char, unsigned char);
@@ -1342,7 +1342,7 @@ line level    source
            =1 #endif
            =1 #endif
   81      =1  
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 22  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 22  
 
   82      =1  // Synchronization Delay formula: see TRM section 15-14
   83      =1  #define _SCYCL ( 3*(_CFREQ) + 5*(_IFREQ) - 1 ) / ( 2*(_IFREQ) )
@@ -1406,7 +1406,7 @@ line level    source
            =1                   _nop_( ); \
            =1                   _nop_( )
            =1 #endif
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 23  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 23  
 
  144      =1  
  145      =1  #if( _SCYCL == 9 )
@@ -1470,7 +1470,7 @@ line level    source
            =1                   _nop_( ); \
            =1                   _nop_( ); \
            =1                   _nop_( ); \
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 24  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 24  
 
            =1                   _nop_( ); \
            =1                   _nop_( ); \
@@ -1534,7 +1534,7 @@ line level    source
            =1                   _nop_( ); \
            =1                   _nop_( )
            =1 #endif
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 25  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 25  
 
  154          
  155          extern BOOL GotSUD;             // Received setup data flag
@@ -1583,372 +1583,377 @@ line level    source
  196          void TD_Init(void)             // Called once at startup
  197          {
  198   1         BYTE dum;          // For the LEDS
- 199   1         CPUCS = ((CPUCS & ~bmCLKSPD) | bmCLKSPD1) ;  // 48 MHz CPU clock
- 200   1         
+ 199   1         int i;
+ 200   1         CPUCS = ((CPUCS & ~bmCLKSPD) | bmCLKSPD1) ;  // 48 MHz CPU clock
  201   1         
- 202   1         // Turn off all 4 LEDS
- 203   1         dum = D2OFF;
- 204   1         dum = D3OFF;
- 205   1         dum = D4OFF;
- 206   1         dum = D5OFF;
- 207   1      
- 208   1      // EP2CFG & EP6CFG configure our two endpoints, EP2-OUT and EP6-IN
- 209   1      // b7:    Valid
- 210   1      // b6:    DIR (0=OUT, 1=IN)
- 211   1      // b[5:4] Type (01=ISO, 10=BULK, 11=INT)
- 212   1      // b3:    Size (0=512, 1=1024 bytes)
- 213   1      // b2:    0
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 26  
+ 202   1         
+ 203   1         // Turn off all 4 LEDS
+ 204   1         dum = D2OFF;
+ 205   1         dum = D3OFF;
+ 206   1         dum = D4OFF;
+ 207   1         dum = D5OFF;
+ 208   1      
+ 209   1      // EP2CFG & EP6CFG configure our two endpoints, EP2-OUT and EP6-IN
+ 210   1      // b7:    Valid
+ 211   1      // b6:    DIR (0=OUT, 1=IN)
+ 212   1      // b[5:4] Type (01=ISO, 10=BULK, 11=INT)
+ 213   1      // b3:    Size (0=512, 1=1024 bytes)
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 26  
 
- 214   1      // b[1:0] Buffering (00=quad, 10=double, 11=triple)   
- 215   1      //
- 216   1      
- 217   1        EP2CFG = 0xA2;  // Valid, BULK-OUT, 512 byte buffer, double-buffered
- 218   1        SYNCDELAY;    // Some regs take longer to update, see TRM Section 15.14.                    
- 219   1        EP6CFG = 0xE2;  // Valid, BULK-IN, 512 byte buffer, double-buffered
- 220   1        SYNCDELAY;                    
- 221   1      
- 222   1        // OUT endpoints do not come up armed
- 223   1        // Since the endpoint is double buffered we must write dummy byte counts twice
- 224   1        EP2BCL = 0x80;    // arm EP2OUT by writing byte count w/skip.
- 225   1        SYNCDELAY;                    
- 226   1        EP2BCL = 0x80;  // again
- 227   1        SYNCDELAY;                    
- 228   1        // enable dual autopointer feature
- 229   1        AUTOPTRSETUP |= 0x01;
- 230   1      
- 231   1        USBIE |= bmSOF;       // Enable the SOF IRQ to serve as LED timers
- 232   1        EPIE = bmEP6IRQ | bmEP2IRQ; // Enable EP6 and EP2 Interrupts to turn on transfer LEDS
- 233   1      }
- 234          
- 235          void TD_Poll(void)              // Called repeatedly while the device is idle
- 236          {
- 237   1        WORD i;
- 238   1        WORD count;
- 239   1      //  BYTE dummy_LED2;    // ***For the LED
- 240   1        BYTE waiting_inpkts;
- 241   1      
- 242   1      #ifdef ENABLE_7_SEG_DISPLAY
- 243   1      if(start_7_seg_display)
- 244   1      {
- 245   2      // update 7-seg readout with number of IN packets waiting for transfer to the host
- 246   2        waiting_inpkts = (EP6CS & 0xF0)>>4;
- 247   2        EZUSB_WriteI2C(LED_ADDR, 0x01, &(Digit[waiting_inpkts]));
- 248   2        EZUSB_WaitForEEPROMWrite(LED_ADDR);
- 249   2      }
- 250   1      #endif
- 251   1      
- 252   1      // Transfer EP6-OUT buffer to EP2-IN buffer when there is a packet in one of the EP6-OUT buffers, AND
- 253   1      // there is an available EP2-IN buffer. The FIFO status flags update after full packets are transferred.
- 254   1      // Therefore EP2-OUT "Not Empty" means a packet is available, and "EP6-IN "Not Full" means there is an
- 255   1      // available buffer. Using the flags this way handles any packet size and takes multiple buffering
- 256   1      // into account.   
- 257   1      
- 258   1        if(!(EP2468STAT & bmEP2EMPTY))    // Is EP2-OUT buffer not empty (has at least one packet)?
- 259   1        {
- 260   2          if(!(EP2468STAT & bmEP6FULL)) // YES: Is EP6-IN buffer not full (room for at least 1 pkt)?
- 261   2            { 
- 262   3              APTR1H = MSB( &EP2FIFOBUF );
- 263   3              APTR1L = LSB( &EP2FIFOBUF );
- 264   3              AUTOPTRH2 = MSB( &EP6FIFOBUF );
- 265   3              AUTOPTRL2 = LSB( &EP6FIFOBUF );
- 266   3      
- 267   3              count = (EP2BCH << 8) + EP2BCL;
- 268   3      
- 269   3              // loop EP2OUT buffer data to EP6IN
- 270   3              for( i = 0; i < count; i++ )
- 271   3              {
- 272   4                  EXTAUTODAT2 = EXTAUTODAT1;  // Autopointers make block transfers easy...
- 273   4              }
- 274   3              EP6BCH = EP2BCH;    // Send the same number of bytes as received  
- 275   3              SYNCDELAY;  
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 27  
+ 214   1      // b2:    0
+ 215   1      // b[1:0] Buffering (00=quad, 10=double, 11=triple)   
+ 216   1      //
+ 217   1      
+ 218   1        EP2CFG = 0xA2;  // Valid, BULK-OUT, 512 byte buffer, double-buffered
+ 219   1        SYNCDELAY;    // Some regs take longer to update, see TRM Section 15.14.                    
+ 220   1        EP6CFG = 0xE2;  // Valid, BULK-IN, 512 byte buffer, double-buffered
+ 221   1        SYNCDELAY;                    
+ 222   1      
+ 223   1        // OUT endpoints do not come up armed
+ 224   1        // Since the endpoint is double buffered we must write dummy byte counts twice
+ 225   1        EP2BCL = 0x80;    // arm EP2OUT by writing byte count w/skip.
+ 226   1        SYNCDELAY;                    
+ 227   1        EP2BCL = 0x80;  // again
+ 228   1        SYNCDELAY;                    
+ 229   1        for (i = 0; i < 512; i++)
+ 230   1        {
+ 231   2          EP6FIFOBUF[i] = i+1;
+ 232   2        }
+ 233   1        // enable dual autopointer feature
+ 234   1        AUTOPTRSETUP |= 0x01;
+ 235   1      
+ 236   1        //USBIE |= bmSOF;       // Enable the SOF IRQ to serve as LED timers
+ 237   1        //EPIE = bmEP6IRQ | bmEP2IRQ; // Enable EP6 and EP2 Interrupts to turn on transfer LEDS
+ 238   1      }
+ 239          
+ 240          void TD_Poll(void)              // Called repeatedly while the device is idle
+ 241          {
+ 242   1        WORD i;
+ 243   1        WORD count;
+ 244   1      //  BYTE dummy_LED2;    // ***For the LED
+ 245   1        BYTE waiting_inpkts;
+ 246   1      
+ 247   1      #ifdef ENABLE_7_SEG_DISPLAY
+ 248   1      if(start_7_seg_display)
+ 249   1      {
+ 250   2      // update 7-seg readout with number of IN packets waiting for transfer to the host
+ 251   2        waiting_inpkts = (EP6CS & 0xF0)>>4;
+ 252   2        EZUSB_WriteI2C(LED_ADDR, 0x01, &(Digit[waiting_inpkts]));
+ 253   2        EZUSB_WaitForEEPROMWrite(LED_ADDR);
+ 254   2      }
+ 255   1      #endif
+ 256   1      
+ 257   1      // Transfer EP6-OUT buffer to EP2-IN buffer when there is a packet in one of the EP6-OUT buffers, AND
+ 258   1      // there is an available EP2-IN buffer. The FIFO status flags update after full packets are transferred.
+ 259   1      // Therefore EP2-OUT "Not Empty" means a packet is available, and "EP6-IN "Not Full" means there is an
+ 260   1      // available buffer. Using the flags this way handles any packet size and takes multiple buffering
+ 261   1      // into account.   
+ 262   1      
+ 263   1        if(!(EP2468STAT & bmEP2EMPTY))    // Is EP2-OUT buffer not empty (has at least one packet)?
+ 264   1        {
+ 265   2          if(!(EP2468STAT & bmEP6FULL)) // YES: Is EP6-IN buffer not full (room for at least 1 pkt)?
+ 266   2            { 
+ 267   3              APTR1H = MSB( &EP2FIFOBUF );
+ 268   3              APTR1L = LSB( &EP2FIFOBUF );
+ 269   3              AUTOPTRH2 = MSB( &EP6FIFOBUF );
+ 270   3              AUTOPTRL2 = LSB( &EP6FIFOBUF );
+ 271   3      
+ 272   3              count = (EP2BCH << 8) + EP2BCL;
+ 273   3      
+ 274   3              // loop EP2OUT buffer data to EP6IN
+ 275   3              for( i = 0; i < count; i++ )
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 27  
 
- 276   3              EP6BCL = EP2BCL;        // arm EP6IN
- 277   3              SYNCDELAY;                    
- 278   3              EP2BCL = 0x80;          // arm EP2OUT
- 279   3           }
- 280   2        }
- 281   1      }
- 282          
- 283          BOOL TD_Suspend(void)          // Called before the device goes into suspend mode
- 284          {
- 285   1         return(TRUE);
+ 276   3              {
+ 277   4                  EXTAUTODAT2 = EXTAUTODAT1;  // Autopointers make block transfers easy...
+ 278   4              }
+ 279   3              EP6BCH = EP2BCH;    // Send the same number of bytes as received  
+ 280   3              SYNCDELAY;  
+ 281   3              EP6BCL = EP2BCL;        // arm EP6IN
+ 282   3              SYNCDELAY;                    
+ 283   3              EP2BCL = 0x80;          // arm EP2OUT
+ 284   3           }
+ 285   2        }
  286   1      }
  287          
- 288          BOOL TD_Resume(void)          // Called after the device resumes
+ 288          BOOL TD_Suspend(void)          // Called before the device goes into suspend mode
  289          {
  290   1         return(TRUE);
  291   1      }
  292          
- 293          //-----------------------------------------------------------------------------
- 294          // Device Request hooks
- 295          //   The following hooks are called by the end point 0 device request parser.
- 296          //-----------------------------------------------------------------------------
+ 293          BOOL TD_Resume(void)          // Called after the device resumes
+ 294          {
+ 295   1         return(TRUE);
+ 296   1      }
  297          
- 298          BOOL DR_GetDescriptor(void)
- 299          {
- 300   1         return(TRUE);
- 301   1      }
+ 298          //-----------------------------------------------------------------------------
+ 299          // Device Request hooks
+ 300          //   The following hooks are called by the end point 0 device request parser.
+ 301          //-----------------------------------------------------------------------------
  302          
- 303          BOOL DR_SetConfiguration(void)   // Called when a Set Configuration command is received
+ 303          BOOL DR_GetDescriptor(void)
  304          {
- 305   1         Configuration = SETUPDAT[2];
- 306   1      #ifdef ENABLE_7_SEG_DISPLAY
- 307   1      
- 308   1        EZUSB_INITI2C();        // for the 7-seg readout
- 309   1        start_7_seg_display = 1;
- 310   1      
- 311   1      #endif
- 312   1         return(TRUE);            // Handled by user code
- 313   1      }
- 314          
- 315          BOOL DR_GetConfiguration(void)   // Called when a Get Configuration command is received
- 316          {
- 317   1         EP0BUF[0] = Configuration;
- 318   1         EP0BCH = 0;
- 319   1         EP0BCL = 1;
- 320   1         return(TRUE);            // Handled by user code
- 321   1      }
- 322          
- 323          BOOL DR_SetInterface(void)       // Called when a Set Interface command is received
- 324          {
- 325   1         AlternateSetting = SETUPDAT[2];
- 326   1         return(TRUE);            // Handled by user code
- 327   1      }
- 328          
- 329          BOOL DR_GetInterface(void)       // Called when a Set Interface command is received
- 330          {
- 331   1         EP0BUF[0] = AlternateSetting;
- 332   1         EP0BCH = 0;
- 333   1         EP0BCL = 1;
- 334   1         return(TRUE);            // Handled by user code
- 335   1      }
- 336          
- 337          BOOL DR_GetStatus(void)
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 28  
+ 305   1         return(TRUE);
+ 306   1      }
+ 307          
+ 308          BOOL DR_SetConfiguration(void)   // Called when a Set Configuration command is received
+ 309          {
+ 310   1         Configuration = SETUPDAT[2];
+ 311   1      #ifdef ENABLE_7_SEG_DISPLAY
+ 312   1      
+ 313   1        EZUSB_INITI2C();        // for the 7-seg readout
+ 314   1        start_7_seg_display = 1;
+ 315   1      
+ 316   1      #endif
+ 317   1         return(TRUE);            // Handled by user code
+ 318   1      }
+ 319          
+ 320          BOOL DR_GetConfiguration(void)   // Called when a Get Configuration command is received
+ 321          {
+ 322   1         EP0BUF[0] = Configuration;
+ 323   1         EP0BCH = 0;
+ 324   1         EP0BCL = 1;
+ 325   1         return(TRUE);            // Handled by user code
+ 326   1      }
+ 327          
+ 328          BOOL DR_SetInterface(void)       // Called when a Set Interface command is received
+ 329          {
+ 330   1         AlternateSetting = SETUPDAT[2];
+ 331   1         return(TRUE);            // Handled by user code
+ 332   1      }
+ 333          
+ 334          BOOL DR_GetInterface(void)       // Called when a Set Interface command is received
+ 335          {
+ 336   1         EP0BUF[0] = AlternateSetting;
+ 337   1         EP0BCH = 0;
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 28  
 
- 338          {
- 339   1         return(TRUE);
+ 338   1         EP0BCL = 1;
+ 339   1         return(TRUE);            // Handled by user code
  340   1      }
  341          
- 342          BOOL DR_ClearFeature(void)
+ 342          BOOL DR_GetStatus(void)
  343          {
  344   1         return(TRUE);
  345   1      }
  346          
- 347          BOOL DR_SetFeature(void)
+ 347          BOOL DR_ClearFeature(void)
  348          {
  349   1         return(TRUE);
  350   1      }
  351          
- 352          BOOL DR_VendorCmnd(void)
+ 352          BOOL DR_SetFeature(void)
  353          {
- 354   1        return(TRUE);
+ 354   1         return(TRUE);
  355   1      }
  356          
- 357          //-----------------------------------------------------------------------------
- 358          // USB Interrupt Handlers
- 359          //   The following functions are called by the USB interrupt jump table.
- 360          //-----------------------------------------------------------------------------
+ 357          BOOL DR_VendorCmnd(void)
+ 358          {
+ 359   1        return(TRUE);
+ 360   1      }
  361          
- 362          // Setup Data Available Interrupt Handler
- 363          void ISR_Sudav(void) interrupt 0
- 364          {
- 365   1         GotSUD = TRUE;            // Set flag
- 366   1         EZUSB_IRQ_CLEAR();
- 367   1         USBIRQ = bmSUDAV;         // Clear SUDAV IRQ
- 368   1      }
- 369          
- 370          // Setup Token Interrupt Handler
- 371          void ISR_Sutok(void) interrupt 0
- 372          {
- 373   1         EZUSB_IRQ_CLEAR();
- 374   1         USBIRQ = bmSUTOK;         // Clear SUTOK IRQ
- 375   1      }
- 376          
- 377          void ISR_Sof(void) interrupt 0
- 378          {
- 379   1         BYTE dum;
- 380   1         BYTE Led_Flag = 0;
- 381   1         EZUSB_IRQ_CLEAR();
- 382   1         USBIRQ = bmSOF;            // Clear SOF IRQ
- 383   1      
- 384   1          if(--inblink == 0)      // IN and OUT LED extinguishers
- 385   1          dum = D2OFF;
- 386   1        if(--outblink == 0) 
- 387   1          dum = D3OFF;
+ 362          //-----------------------------------------------------------------------------
+ 363          // USB Interrupt Handlers
+ 364          //   The following functions are called by the USB interrupt jump table.
+ 365          //-----------------------------------------------------------------------------
+ 366          
+ 367          // Setup Data Available Interrupt Handler
+ 368          void ISR_Sudav(void) interrupt 0
+ 369          {
+ 370   1         GotSUD = TRUE;            // Set flag
+ 371   1         EZUSB_IRQ_CLEAR();
+ 372   1         USBIRQ = bmSUDAV;         // Clear SUDAV IRQ
+ 373   1      }
+ 374          
+ 375          // Setup Token Interrupt Handler
+ 376          void ISR_Sutok(void) interrupt 0
+ 377          {
+ 378   1         EZUSB_IRQ_CLEAR();
+ 379   1         USBIRQ = bmSUTOK;         // Clear SUTOK IRQ
+ 380   1      }
+ 381          
+ 382          void ISR_Sof(void) interrupt 0
+ 383          {
+ 384   1         BYTE dum;
+ 385   1         BYTE Led_Flag = 0;
+ 386   1         EZUSB_IRQ_CLEAR();
+ 387   1         USBIRQ = bmSOF;            // Clear SOF IRQ
  388   1      
- 389   1         // *** Blink the LED with one second period. At High-Speed the
- 390   1         // microSOF's occur every 125 usec. Flash the LED 8 times per sec for High-Speed,
- 391   1         // 1 per sec for Full-Speed. 
- 392   1      
- 393   1         LEDCounter++;
- 394   1         if(LEDCounter > 1000)
- 395   1            LEDCounter = 0;   // 1 sec period
- 396   1            if(LEDCounter < 500)
- 397   1            dum = D5OFF;
- 398   1          else
- 399   1            dum = D5ON;
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 29  
+ 389   1          if(--inblink == 0)      // IN and OUT LED extinguishers
+ 390   1          dum = D2OFF;
+ 391   1        if(--outblink == 0) 
+ 392   1          dum = D3OFF;
+ 393   1      
+ 394   1         // *** Blink the LED with one second period. At High-Speed the
+ 395   1         // microSOF's occur every 125 usec. Flash the LED 8 times per sec for High-Speed,
+ 396   1         // 1 per sec for Full-Speed. 
+ 397   1      
+ 398   1         LEDCounter++;
+ 399   1         if(LEDCounter > 1000)
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 29  
 
- 400   1      }
- 401          
- 402          void ISR_Ures(void) interrupt 0
- 403          {
- 404   1         // whenever we get a USB reset, we should revert to full speed mode
- 405   1         pConfigDscr = pFullSpeedConfigDscr;
- 406   1         ((CONFIGDSCR xdata *) pConfigDscr)->type = CONFIG_DSCR;
- 407   1         pOtherConfigDscr = pHighSpeedConfigDscr;
- 408   1         ((CONFIGDSCR xdata *) pOtherConfigDscr)->type = OTHERSPEED_DSCR;
- 409   1      
- 410   1         EZUSB_IRQ_CLEAR();
- 411   1         USBIRQ = bmURES;         // Clear URES IRQ
- 412   1      }
- 413          
- 414          void ISR_Susp(void) interrupt 0
- 415          {
- 416   1         Sleep = TRUE;
- 417   1         EZUSB_IRQ_CLEAR();
- 418   1         USBIRQ = bmSUSP;
- 419   1      }
- 420          
- 421          void ISR_Highspeed(void) interrupt 0
- 422          {
- 423   1         if (EZUSB_HIGHSPEED())
- 424   1         {
- 425   2            pConfigDscr = pHighSpeedConfigDscr;
- 426   2            ((CONFIGDSCR xdata *) pConfigDscr)->type = CONFIG_DSCR;
- 427   2            pOtherConfigDscr = pFullSpeedConfigDscr;
- 428   2            ((CONFIGDSCR xdata *) pOtherConfigDscr)->type = OTHERSPEED_DSCR;
- 429   2         }
- 430   1      
- 431   1         EZUSB_IRQ_CLEAR();
- 432   1         USBIRQ = bmHSGRANT;
- 433   1      }
- 434          void ISR_Ep0ack(void) interrupt 0
- 435          {
- 436   1      }
- 437          void ISR_Stub(void) interrupt 0
- 438          {
- 439   1      }
- 440          void ISR_Ep0in(void) interrupt 0
- 441          {
- 442   1      }
- 443          void ISR_Ep0out(void) interrupt 0
- 444          {
- 445   1      }
- 446          void ISR_Ep1in(void) interrupt 0
- 447          {
- 448   1      }
- 449          void ISR_Ep1out(void) interrupt 0
- 450          {
- 451   1      }
- 452          void ISR_Ep2inout(void) interrupt 0
- 453          {
- 454   1        BYTE dum;     
- 455   1        EZUSB_IRQ_CLEAR();
- 456   1          EPIRQ = bmEP2IRQ;         // Clear IRQ
- 457   1        dum = D3ON;
- 458   1        outblink = 200;
- 459   1      }
- 460          void ISR_Ep4inout(void) interrupt 0
- 461          {
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 30  
+ 400   1            LEDCounter = 0;   // 1 sec period
+ 401   1            if(LEDCounter < 500)
+ 402   1            dum = D5OFF;
+ 403   1          else
+ 404   1            dum = D5ON;
+ 405   1      }
+ 406          
+ 407          void ISR_Ures(void) interrupt 0
+ 408          {
+ 409   1         // whenever we get a USB reset, we should revert to full speed mode
+ 410   1         pConfigDscr = pFullSpeedConfigDscr;
+ 411   1         ((CONFIGDSCR xdata *) pConfigDscr)->type = CONFIG_DSCR;
+ 412   1         pOtherConfigDscr = pHighSpeedConfigDscr;
+ 413   1         ((CONFIGDSCR xdata *) pOtherConfigDscr)->type = OTHERSPEED_DSCR;
+ 414   1      
+ 415   1         EZUSB_IRQ_CLEAR();
+ 416   1         USBIRQ = bmURES;         // Clear URES IRQ
+ 417   1      }
+ 418          
+ 419          void ISR_Susp(void) interrupt 0
+ 420          {
+ 421   1         Sleep = TRUE;
+ 422   1         EZUSB_IRQ_CLEAR();
+ 423   1         USBIRQ = bmSUSP;
+ 424   1      }
+ 425          
+ 426          void ISR_Highspeed(void) interrupt 0
+ 427          {
+ 428   1         if (EZUSB_HIGHSPEED())
+ 429   1         {
+ 430   2            pConfigDscr = pHighSpeedConfigDscr;
+ 431   2            ((CONFIGDSCR xdata *) pConfigDscr)->type = CONFIG_DSCR;
+ 432   2            pOtherConfigDscr = pFullSpeedConfigDscr;
+ 433   2            ((CONFIGDSCR xdata *) pOtherConfigDscr)->type = OTHERSPEED_DSCR;
+ 434   2         }
+ 435   1      
+ 436   1         EZUSB_IRQ_CLEAR();
+ 437   1         USBIRQ = bmHSGRANT;
+ 438   1      }
+ 439          void ISR_Ep0ack(void) interrupt 0
+ 440          {
+ 441   1      }
+ 442          void ISR_Stub(void) interrupt 0
+ 443          {
+ 444   1      }
+ 445          void ISR_Ep0in(void) interrupt 0
+ 446          {
+ 447   1      }
+ 448          void ISR_Ep0out(void) interrupt 0
+ 449          {
+ 450   1      }
+ 451          void ISR_Ep1in(void) interrupt 0
+ 452          {
+ 453   1      }
+ 454          void ISR_Ep1out(void) interrupt 0
+ 455          {
+ 456   1      }
+ 457          void ISR_Ep2inout(void) interrupt 0
+ 458          {
+ 459   1        BYTE dum;     
+ 460   1        EZUSB_IRQ_CLEAR();
+ 461   1          EPIRQ = bmEP2IRQ;         // Clear IRQ
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 30  
 
- 462   1      }
- 463          void ISR_Ep6inout(void) interrupt 0
- 464          {
- 465   1        BYTE dum;
- 466   1        EZUSB_IRQ_CLEAR();
- 467   1          EPIRQ = bmEP6IRQ;         // Clear IRQ  dum = D2OFF;
- 468   1        dum = D2ON;
- 469   1        inblink = 200;
- 470   1      }
- 471          void ISR_Ep8inout(void) interrupt 0
- 472          {
- 473   1      }
- 474          void ISR_Ibn(void) interrupt 0
- 475          {
- 476   1      }
- 477          void ISR_Ep0pingnak(void) interrupt 0
- 478          {
- 479   1      }
- 480          void ISR_Ep1pingnak(void) interrupt 0
- 481          {
- 482   1      }
- 483          void ISR_Ep2pingnak(void) interrupt 0
- 484          {
- 485   1      }
- 486          void ISR_Ep4pingnak(void) interrupt 0
- 487          {
- 488   1      }
- 489          void ISR_Ep6pingnak(void) interrupt 0
- 490          {
- 491   1      }
- 492          void ISR_Ep8pingnak(void) interrupt 0
- 493          {
- 494   1      }
- 495          void ISR_Errorlimit(void) interrupt 0
- 496          {
- 497   1      }
- 498          void ISR_Ep2piderror(void) interrupt 0
- 499          {
- 500   1      }
- 501          void ISR_Ep4piderror(void) interrupt 0
- 502          {
- 503   1      }
- 504          void ISR_Ep6piderror(void) interrupt 0
- 505          {
- 506   1      }
- 507          void ISR_Ep8piderror(void) interrupt 0
- 508          {
- 509   1      }
- 510          void ISR_Ep2pflag(void) interrupt 0
- 511          {
- 512   1      }
- 513          void ISR_Ep4pflag(void) interrupt 0
- 514          {
- 515   1      }
- 516          void ISR_Ep6pflag(void) interrupt 0
- 517          {
- 518   1      }
- 519          void ISR_Ep8pflag(void) interrupt 0
- 520          {
- 521   1      }
- 522          void ISR_Ep2eflag(void) interrupt 0
- 523          {
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 31  
+ 462   1        dum = D3ON;
+ 463   1        outblink = 200;
+ 464   1      }
+ 465          void ISR_Ep4inout(void) interrupt 0
+ 466          {
+ 467   1      }
+ 468          void ISR_Ep6inout(void) interrupt 0
+ 469          {
+ 470   1        BYTE dum;
+ 471   1        EZUSB_IRQ_CLEAR();
+ 472   1          EPIRQ = bmEP6IRQ;         // Clear IRQ  dum = D2OFF;
+ 473   1        dum = D2ON;
+ 474   1        inblink = 200;
+ 475   1      }
+ 476          void ISR_Ep8inout(void) interrupt 0
+ 477          {
+ 478   1      }
+ 479          void ISR_Ibn(void) interrupt 0
+ 480          {
+ 481   1      }
+ 482          void ISR_Ep0pingnak(void) interrupt 0
+ 483          {
+ 484   1      }
+ 485          void ISR_Ep1pingnak(void) interrupt 0
+ 486          {
+ 487   1      }
+ 488          void ISR_Ep2pingnak(void) interrupt 0
+ 489          {
+ 490   1      }
+ 491          void ISR_Ep4pingnak(void) interrupt 0
+ 492          {
+ 493   1      }
+ 494          void ISR_Ep6pingnak(void) interrupt 0
+ 495          {
+ 496   1      }
+ 497          void ISR_Ep8pingnak(void) interrupt 0
+ 498          {
+ 499   1      }
+ 500          void ISR_Errorlimit(void) interrupt 0
+ 501          {
+ 502   1      }
+ 503          void ISR_Ep2piderror(void) interrupt 0
+ 504          {
+ 505   1      }
+ 506          void ISR_Ep4piderror(void) interrupt 0
+ 507          {
+ 508   1      }
+ 509          void ISR_Ep6piderror(void) interrupt 0
+ 510          {
+ 511   1      }
+ 512          void ISR_Ep8piderror(void) interrupt 0
+ 513          {
+ 514   1      }
+ 515          void ISR_Ep2pflag(void) interrupt 0
+ 516          {
+ 517   1      }
+ 518          void ISR_Ep4pflag(void) interrupt 0
+ 519          {
+ 520   1      }
+ 521          void ISR_Ep6pflag(void) interrupt 0
+ 522          {
+ 523   1      }
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 31  
 
- 524   1      }
- 525          void ISR_Ep4eflag(void) interrupt 0
- 526          {
- 527   1      }
- 528          void ISR_Ep6eflag(void) interrupt 0
- 529          {
- 530   1      }
- 531          void ISR_Ep8eflag(void) interrupt 0
- 532          {
- 533   1      }
- 534          void ISR_Ep2fflag(void) interrupt 0
- 535          {
- 536   1      }
- 537          void ISR_Ep4fflag(void) interrupt 0
- 538          {
- 539   1      }
- 540          void ISR_Ep6fflag(void) interrupt 0
- 541          {
- 542   1      }
- 543          void ISR_Ep8fflag(void) interrupt 0
- 544          {
- 545   1      }
- 546          void ISR_GpifComplete(void) interrupt 0
- 547          {
- 548   1      }
- 549          void ISR_GpifWaveform(void) interrupt 0
- 550          {
- 551   1      }
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 32  
+ 524          void ISR_Ep8pflag(void) interrupt 0
+ 525          {
+ 526   1      }
+ 527          void ISR_Ep2eflag(void) interrupt 0
+ 528          {
+ 529   1      }
+ 530          void ISR_Ep4eflag(void) interrupt 0
+ 531          {
+ 532   1      }
+ 533          void ISR_Ep6eflag(void) interrupt 0
+ 534          {
+ 535   1      }
+ 536          void ISR_Ep8eflag(void) interrupt 0
+ 537          {
+ 538   1      }
+ 539          void ISR_Ep2fflag(void) interrupt 0
+ 540          {
+ 541   1      }
+ 542          void ISR_Ep4fflag(void) interrupt 0
+ 543          {
+ 544   1      }
+ 545          void ISR_Ep6fflag(void) interrupt 0
+ 546          {
+ 547   1      }
+ 548          void ISR_Ep8fflag(void) interrupt 0
+ 549          {
+ 550   1      }
+ 551          void ISR_GpifComplete(void) interrupt 0
+ 552          {
+ 553   1      }
+ 554          void ISR_GpifWaveform(void) interrupt 0
+ 555          {
+ 556   1      }
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 32  
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
@@ -1956,88 +1961,108 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
              ; FUNCTION TD_Init (BEGIN)
                                            ; SOURCE LINE # 196
                                            ; SOURCE LINE # 197
-                                           ; SOURCE LINE # 199
+                                           ; SOURCE LINE # 200
 0000 900000      E     MOV     DPTR,#CPUCS
 0003 E0                MOVX    A,@DPTR
 0004 54E7              ANL     A,#0E7H
 0006 4410              ORL     A,#010H
 0008 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 203
+                                           ; SOURCE LINE # 204
 0009 908000            MOV     DPTR,#D2OFF
 000C E0                MOVX    A,@DPTR
 ;---- Variable 'dum' assigned to Register 'R7' ----
-                                           ; SOURCE LINE # 204
+                                           ; SOURCE LINE # 205
 000D 909000            MOV     DPTR,#D3OFF
 0010 E0                MOVX    A,@DPTR
-                                           ; SOURCE LINE # 205
+                                           ; SOURCE LINE # 206
 0011 90A000            MOV     DPTR,#D4OFF
 0014 E0                MOVX    A,@DPTR
-                                           ; SOURCE LINE # 206
+                                           ; SOURCE LINE # 207
 0015 90B000            MOV     DPTR,#D5OFF
 0018 E0                MOVX    A,@DPTR
-                                           ; SOURCE LINE # 217
+                                           ; SOURCE LINE # 218
 0019 900000      E     MOV     DPTR,#EP2CFG
 001C 74A2              MOV     A,#0A2H
 001E F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 218
+                                           ; SOURCE LINE # 219
 001F 00                NOP     
 0020 00                NOP     
 0021 00                NOP     
-                                           ; SOURCE LINE # 219
+                                           ; SOURCE LINE # 220
 0022 900000      E     MOV     DPTR,#EP6CFG
 0025 74E2              MOV     A,#0E2H
 0027 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 220
+                                           ; SOURCE LINE # 221
 0028 00                NOP     
 0029 00                NOP     
 002A 00                NOP     
-                                           ; SOURCE LINE # 224
+                                           ; SOURCE LINE # 225
 002B 900000      E     MOV     DPTR,#EP2BCL
 002E 7480              MOV     A,#080H
 0030 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 225
+                                           ; SOURCE LINE # 226
 0031 00                NOP     
 0032 00                NOP     
 0033 00                NOP     
-                                           ; SOURCE LINE # 226
-0034 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 227
+0034 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 228
 0035 00                NOP     
 0036 00                NOP     
 0037 00                NOP     
                                            ; SOURCE LINE # 229
-0038 43AF01            ORL     AUTOPTRSETUP,#01H
-                                           ; SOURCE LINE # 231
-003B 900000      E     MOV     DPTR,#USBIE
-003E E0                MOVX    A,@DPTR
-003F 4402              ORL     A,#02H
-0041 F0                MOVX    @DPTR,A
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 33  
+;---- Variable 'i' assigned to Register 'R6/R7' ----
+0038 E4                CLR     A
+0039 FF                MOV     R7,A
+003A FE                MOV     R6,A
+003B         ?C0001:
+                                           ; SOURCE LINE # 230
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 33  
 
+                                           ; SOURCE LINE # 231
+003B EF                MOV     A,R7
+003C 04                INC     A
+003D FD                MOV     R5,A
+003E 7400        E     MOV     A,#LOW EP6FIFOBUF
+0040 2F                ADD     A,R7
+0041 F582              MOV     DPL,A
+0043 7400        E     MOV     A,#HIGH EP6FIFOBUF
+0045 3E                ADDC    A,R6
+0046 F583              MOV     DPH,A
+0048 ED                MOV     A,R5
+0049 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 232
-0042 900000      E     MOV     DPTR,#EPIE
-0045 7450              MOV     A,#050H
-0047 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 233
-0048 22                RET     
+004A 0F                INC     R7
+004B BF0001            CJNE    R7,#00H,?C0071
+004E 0E                INC     R6
+004F         ?C0071:
+004F E4                CLR     A
+0050 B507E8            CJNE    A,AR7,?C0001
+0053 EE                MOV     A,R6
+0054 B402E4            CJNE    A,#02H,?C0001
+0057         ?C0002:
+                                           ; SOURCE LINE # 234
+0057 43AF01            ORL     AUTOPTRSETUP,#01H
+                                           ; SOURCE LINE # 238
+005A 22                RET     
              ; FUNCTION TD_Init (END)
 
              ; FUNCTION TD_Poll (BEGIN)
-                                           ; SOURCE LINE # 235
-                                           ; SOURCE LINE # 236
-                                           ; SOURCE LINE # 243
+                                           ; SOURCE LINE # 240
+                                           ; SOURCE LINE # 241
+                                           ; SOURCE LINE # 248
 0000 E500        R     MOV     A,start_7_seg_display+01H
 0002 4500        R     ORL     A,start_7_seg_display
-0004 601F              JZ      ?C0002
-                                           ; SOURCE LINE # 244
-                                           ; SOURCE LINE # 246
+0004 601F              JZ      ?C0005
+                                           ; SOURCE LINE # 249
+                                           ; SOURCE LINE # 251
 0006 900000      E     MOV     DPTR,#EP6CS
 0009 E0                MOVX    A,@DPTR
 000A 54F0              ANL     A,#0F0H
 000C C4                SWAP    A
 000D 540F              ANL     A,#0FH
 ;---- Variable 'waiting_inpkts' assigned to Register 'R7' ----
-                                           ; SOURCE LINE # 247
+                                           ; SOURCE LINE # 252
 000F 2400        R     ADD     A,#LOW Digit
 0011 F582              MOV     DPL,A
 0013 E4                CLR     A
@@ -2047,37 +2072,37 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0019 7D01              MOV     R5,#01H
 001B 7F21              MOV     R7,#021H
 001D 120000      E     LCALL   _EZUSB_WriteI2C
-                                           ; SOURCE LINE # 248
+                                           ; SOURCE LINE # 253
 0020 7F21              MOV     R7,#021H
 0022 120000      E     LCALL   _EZUSB_WaitForEEPROMWrite
-                                           ; SOURCE LINE # 249
-0025         ?C0002:
-                                           ; SOURCE LINE # 258
+                                           ; SOURCE LINE # 254
+0025         ?C0005:
+                                           ; SOURCE LINE # 263
 0025 E5AA              MOV     A,EP2468STAT
-0027 20E05A            JB      ACC.0,?C0008
-                                           ; SOURCE LINE # 259
-                                           ; SOURCE LINE # 260
+0027 20E05A            JB      ACC.0,?C0011
+                                           ; SOURCE LINE # 264
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 34  
+
+                                           ; SOURCE LINE # 265
 002A E5AA              MOV     A,EP2468STAT
-002C 20E555            JB      ACC.5,?C0008
-                                           ; SOURCE LINE # 261
-                                           ; SOURCE LINE # 262
+002C 20E555            JB      ACC.5,?C0011
+                                           ; SOURCE LINE # 266
+                                           ; SOURCE LINE # 267
 002F 7400        E     MOV     A,#HIGH EP2FIFOBUF
 0031 F59A              MOV     AUTOPTRH1,A
-                                           ; SOURCE LINE # 263
+                                           ; SOURCE LINE # 268
 0033 7400        E     MOV     A,#LOW EP2FIFOBUF
 0035 F59B              MOV     AUTOPTRL1,A
-                                           ; SOURCE LINE # 264
+                                           ; SOURCE LINE # 269
 0037 7400        E     MOV     A,#HIGH EP6FIFOBUF
 0039 F59D              MOV     AUTOPTRH2,A
-                                           ; SOURCE LINE # 265
+                                           ; SOURCE LINE # 270
 003B 7400        E     MOV     A,#LOW EP6FIFOBUF
 003D F59E              MOV     AUTOPTRL2,A
-                                           ; SOURCE LINE # 267
+                                           ; SOURCE LINE # 272
 003F 900000      E     MOV     DPTR,#EP2BCH
 0042 E0                MOVX    A,@DPTR
 0043 FE                MOV     R6,A
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 34  
-
 0044 900000      E     MOV     DPTR,#EP2BCL
 0047 E0                MOVX    A,@DPTR
 0048 7C00              MOV     R4,#00H
@@ -2087,209 +2112,209 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 004E 3E                ADDC    A,R6
 004F FE                MOV     R6,A
 ;---- Variable 'count' assigned to Register 'R6/R7' ----
-                                           ; SOURCE LINE # 270
+                                           ; SOURCE LINE # 275
 ;---- Variable 'i' assigned to Register 'R4/R5' ----
 0050 E4                CLR     A
 0051 FD                MOV     R5,A
-0052         ?C0005:
+0052         ?C0008:
 0052 C3                CLR     C
 0053 ED                MOV     A,R5
 0054 9F                SUBB    A,R7
 0055 EC                MOV     A,R4
 0056 9E                SUBB    A,R6
-0057 500F              JNC     ?C0006
-                                           ; SOURCE LINE # 271
-                                           ; SOURCE LINE # 272
+0057 500F              JNC     ?C0009
+                                           ; SOURCE LINE # 276
+                                           ; SOURCE LINE # 277
 0059 900000      E     MOV     DPTR,#XAUTODAT1
 005C E0                MOVX    A,@DPTR
 005D 900000      E     MOV     DPTR,#XAUTODAT2
 0060 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 273
+                                           ; SOURCE LINE # 278
 0061 0D                INC     R5
-0062 BD0001            CJNE    R5,#00H,?C0068
+0062 BD0001            CJNE    R5,#00H,?C0073
 0065 0C                INC     R4
-0066         ?C0068:
-0066 80EA              SJMP    ?C0005
-0068         ?C0006:
-                                           ; SOURCE LINE # 274
+0066         ?C0073:
+0066 80EA              SJMP    ?C0008
+0068         ?C0009:
+                                           ; SOURCE LINE # 279
 0068 900000      E     MOV     DPTR,#EP2BCH
 006B E0                MOVX    A,@DPTR
 006C 900000      E     MOV     DPTR,#EP6BCH
 006F F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 275
+                                           ; SOURCE LINE # 280
 0070 00                NOP     
 0071 00                NOP     
 0072 00                NOP     
-                                           ; SOURCE LINE # 276
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 35  
+
+                                           ; SOURCE LINE # 281
 0073 900000      E     MOV     DPTR,#EP2BCL
 0076 E0                MOVX    A,@DPTR
 0077 900000      E     MOV     DPTR,#EP6BCL
 007A F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 277
+                                           ; SOURCE LINE # 282
 007B 00                NOP     
 007C 00                NOP     
 007D 00                NOP     
-                                           ; SOURCE LINE # 278
+                                           ; SOURCE LINE # 283
 007E 900000      E     MOV     DPTR,#EP2BCL
 0081 7480              MOV     A,#080H
 0083 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 279
-                                           ; SOURCE LINE # 280
-                                           ; SOURCE LINE # 281
-0084         ?C0008:
+                                           ; SOURCE LINE # 284
+                                           ; SOURCE LINE # 285
+                                           ; SOURCE LINE # 286
+0084         ?C0011:
 0084 22                RET     
              ; FUNCTION TD_Poll (END)
 
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 35  
-
              ; FUNCTION TD_Suspend (BEGIN)
-                                           ; SOURCE LINE # 283
-                                           ; SOURCE LINE # 284
-                                           ; SOURCE LINE # 285
-0000 D3                SETB    C
-                                           ; SOURCE LINE # 286
-0001         ?C0009:
-0001 22                RET     
-             ; FUNCTION TD_Suspend (END)
-
-             ; FUNCTION TD_Resume (BEGIN)
                                            ; SOURCE LINE # 288
                                            ; SOURCE LINE # 289
                                            ; SOURCE LINE # 290
 0000 D3                SETB    C
                                            ; SOURCE LINE # 291
-0001         ?C0010:
+0001         ?C0012:
+0001 22                RET     
+             ; FUNCTION TD_Suspend (END)
+
+             ; FUNCTION TD_Resume (BEGIN)
+                                           ; SOURCE LINE # 293
+                                           ; SOURCE LINE # 294
+                                           ; SOURCE LINE # 295
+0000 D3                SETB    C
+                                           ; SOURCE LINE # 296
+0001         ?C0013:
 0001 22                RET     
              ; FUNCTION TD_Resume (END)
 
              ; FUNCTION DR_GetDescriptor (BEGIN)
-                                           ; SOURCE LINE # 298
-                                           ; SOURCE LINE # 299
-                                           ; SOURCE LINE # 300
+                                           ; SOURCE LINE # 303
+                                           ; SOURCE LINE # 304
+                                           ; SOURCE LINE # 305
 0000 D3                SETB    C
-                                           ; SOURCE LINE # 301
-0001         ?C0011:
+                                           ; SOURCE LINE # 306
+0001         ?C0014:
 0001 22                RET     
              ; FUNCTION DR_GetDescriptor (END)
 
              ; FUNCTION DR_SetConfiguration (BEGIN)
-                                           ; SOURCE LINE # 303
-                                           ; SOURCE LINE # 304
-                                           ; SOURCE LINE # 305
+                                           ; SOURCE LINE # 308
+                                           ; SOURCE LINE # 309
+                                           ; SOURCE LINE # 310
 0000 900000      E     MOV     DPTR,#SETUPDAT+02H
 0003 E0                MOVX    A,@DPTR
 0004 F500        R     MOV     Configuration,A
-                                           ; SOURCE LINE # 308
+                                           ; SOURCE LINE # 313
 0006 120000      E     LCALL   EZUSB_INITI2C
-                                           ; SOURCE LINE # 309
+                                           ; SOURCE LINE # 314
 0009 750000      R     MOV     start_7_seg_display,#00H
 000C 750001      R     MOV     start_7_seg_display+01H,#01H
-                                           ; SOURCE LINE # 312
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 36  
+
+                                           ; SOURCE LINE # 317
 000F D3                SETB    C
-                                           ; SOURCE LINE # 313
-0010         ?C0012:
+                                           ; SOURCE LINE # 318
+0010         ?C0015:
 0010 22                RET     
              ; FUNCTION DR_SetConfiguration (END)
 
              ; FUNCTION DR_GetConfiguration (BEGIN)
-                                           ; SOURCE LINE # 315
-                                           ; SOURCE LINE # 316
-                                           ; SOURCE LINE # 317
+                                           ; SOURCE LINE # 320
+                                           ; SOURCE LINE # 321
+                                           ; SOURCE LINE # 322
 0000 900000      E     MOV     DPTR,#EP0BUF
 0003 E500        R     MOV     A,Configuration
 0005 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 318
+                                           ; SOURCE LINE # 323
 0006 E4                CLR     A
 0007 900000      E     MOV     DPTR,#EP0BCH
 000A F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 319
+                                           ; SOURCE LINE # 324
 000B 900000      E     MOV     DPTR,#EP0BCL
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 36  
-
 000E 04                INC     A
 000F F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 320
+                                           ; SOURCE LINE # 325
 0010 D3                SETB    C
-                                           ; SOURCE LINE # 321
-0011         ?C0013:
+                                           ; SOURCE LINE # 326
+0011         ?C0016:
 0011 22                RET     
              ; FUNCTION DR_GetConfiguration (END)
 
              ; FUNCTION DR_SetInterface (BEGIN)
-                                           ; SOURCE LINE # 323
-                                           ; SOURCE LINE # 324
-                                           ; SOURCE LINE # 325
+                                           ; SOURCE LINE # 328
+                                           ; SOURCE LINE # 329
+                                           ; SOURCE LINE # 330
 0000 900000      E     MOV     DPTR,#SETUPDAT+02H
 0003 E0                MOVX    A,@DPTR
 0004 F500        R     MOV     AlternateSetting,A
-                                           ; SOURCE LINE # 326
+                                           ; SOURCE LINE # 331
 0006 D3                SETB    C
-                                           ; SOURCE LINE # 327
-0007         ?C0014:
+                                           ; SOURCE LINE # 332
+0007         ?C0017:
 0007 22                RET     
              ; FUNCTION DR_SetInterface (END)
 
              ; FUNCTION DR_GetInterface (BEGIN)
-                                           ; SOURCE LINE # 329
-                                           ; SOURCE LINE # 330
-                                           ; SOURCE LINE # 331
+                                           ; SOURCE LINE # 334
+                                           ; SOURCE LINE # 335
+                                           ; SOURCE LINE # 336
 0000 900000      E     MOV     DPTR,#EP0BUF
 0003 E500        R     MOV     A,AlternateSetting
 0005 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 332
+                                           ; SOURCE LINE # 337
 0006 E4                CLR     A
 0007 900000      E     MOV     DPTR,#EP0BCH
 000A F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 333
+                                           ; SOURCE LINE # 338
 000B 900000      E     MOV     DPTR,#EP0BCL
 000E 04                INC     A
 000F F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 334
+                                           ; SOURCE LINE # 339
 0010 D3                SETB    C
-                                           ; SOURCE LINE # 335
-0011         ?C0015:
+                                           ; SOURCE LINE # 340
+0011         ?C0018:
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 37  
+
 0011 22                RET     
              ; FUNCTION DR_GetInterface (END)
 
              ; FUNCTION DR_GetStatus (BEGIN)
-                                           ; SOURCE LINE # 337
-                                           ; SOURCE LINE # 338
-                                           ; SOURCE LINE # 339
-0000 D3                SETB    C
-                                           ; SOURCE LINE # 340
-0001         ?C0016:
-0001 22                RET     
-             ; FUNCTION DR_GetStatus (END)
-
-             ; FUNCTION DR_ClearFeature (BEGIN)
                                            ; SOURCE LINE # 342
                                            ; SOURCE LINE # 343
                                            ; SOURCE LINE # 344
 0000 D3                SETB    C
                                            ; SOURCE LINE # 345
-0001         ?C0017:
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 37  
-
+0001         ?C0019:
 0001 22                RET     
-             ; FUNCTION DR_ClearFeature (END)
+             ; FUNCTION DR_GetStatus (END)
 
-             ; FUNCTION DR_SetFeature (BEGIN)
+             ; FUNCTION DR_ClearFeature (BEGIN)
                                            ; SOURCE LINE # 347
                                            ; SOURCE LINE # 348
                                            ; SOURCE LINE # 349
 0000 D3                SETB    C
                                            ; SOURCE LINE # 350
-0001         ?C0018:
+0001         ?C0020:
 0001 22                RET     
-             ; FUNCTION DR_SetFeature (END)
+             ; FUNCTION DR_ClearFeature (END)
 
-             ; FUNCTION DR_VendorCmnd (BEGIN)
+             ; FUNCTION DR_SetFeature (BEGIN)
                                            ; SOURCE LINE # 352
                                            ; SOURCE LINE # 353
                                            ; SOURCE LINE # 354
 0000 D3                SETB    C
                                            ; SOURCE LINE # 355
-0001         ?C0019:
+0001         ?C0021:
+0001 22                RET     
+             ; FUNCTION DR_SetFeature (END)
+
+             ; FUNCTION DR_VendorCmnd (BEGIN)
+                                           ; SOURCE LINE # 357
+                                           ; SOURCE LINE # 358
+                                           ; SOURCE LINE # 359
+0000 D3                SETB    C
+                                           ; SOURCE LINE # 360
+0001         ?C0022:
 0001 22                RET     
              ; FUNCTION DR_VendorCmnd (END)
 
@@ -2297,34 +2322,36 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0000 C0E0              PUSH    ACC
 0002 C083              PUSH    DPH
 0004 C082              PUSH    DPL
-                                           ; SOURCE LINE # 363
-                                           ; SOURCE LINE # 365
+                                           ; SOURCE LINE # 368
+                                           ; SOURCE LINE # 370
 0006 D200        E     SETB    GotSUD
-                                           ; SOURCE LINE # 366
+                                           ; SOURCE LINE # 371
 0008 5391EF            ANL     EXIF,#0EFH
-                                           ; SOURCE LINE # 367
+                                           ; SOURCE LINE # 372
 000B 900000      E     MOV     DPTR,#USBIRQ
 000E 7401              MOV     A,#01H
 0010 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 368
+                                           ; SOURCE LINE # 373
 0011 D082              POP     DPL
 0013 D083              POP     DPH
 0015 D0E0              POP     ACC
 0017 32                RETI    
              ; FUNCTION ISR_Sudav (END)
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 38  
+
 
              ; FUNCTION ISR_Sutok (BEGIN)
 0000 C0E0              PUSH    ACC
 0002 C083              PUSH    DPH
 0004 C082              PUSH    DPL
-                                           ; SOURCE LINE # 371
-                                           ; SOURCE LINE # 373
+                                           ; SOURCE LINE # 376
+                                           ; SOURCE LINE # 378
 0006 5391EF            ANL     EXIF,#0EFH
-                                           ; SOURCE LINE # 374
+                                           ; SOURCE LINE # 379
 0009 900000      E     MOV     DPTR,#USBIRQ
 000C 7404              MOV     A,#04H
 000E F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 375
+                                           ; SOURCE LINE # 380
 000F D082              POP     DPL
 0011 D083              POP     DPH
 0013 D0E0              POP     ACC
@@ -2332,74 +2359,72 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
              ; FUNCTION ISR_Sutok (END)
 
              ; FUNCTION ISR_Sof (BEGIN)
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 38  
-
 0000 C0E0              PUSH    ACC
 0002 C083              PUSH    DPH
 0004 C082              PUSH    DPL
 0006 C0D0              PUSH    PSW
 0008 75D000            MOV     PSW,#00H
 000B C007              PUSH    AR7
-                                           ; SOURCE LINE # 377
-;---- Variable 'dum' assigned to Register 'R7' ----
-                                           ; SOURCE LINE # 380
-000D 750000      R     MOV     Led_Flag,#00H
-                                           ; SOURCE LINE # 381
-0010 5391EF            ANL     EXIF,#0EFH
                                            ; SOURCE LINE # 382
+;---- Variable 'dum' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 385
+000D 750000      R     MOV     Led_Flag,#00H
+                                           ; SOURCE LINE # 386
+0010 5391EF            ANL     EXIF,#0EFH
+                                           ; SOURCE LINE # 387
 0013 900000      E     MOV     DPTR,#USBIRQ
 0016 7402              MOV     A,#02H
 0018 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 384
-0019 D50005      R     DJNZ    inblink,?C0022
-                                           ; SOURCE LINE # 385
+                                           ; SOURCE LINE # 389
+0019 D50005      R     DJNZ    inblink,?C0025
+                                           ; SOURCE LINE # 390
 001C 908000            MOV     DPTR,#D2OFF
 001F E0                MOVX    A,@DPTR
 0020 FF                MOV     R7,A
-0021         ?C0022:
-                                           ; SOURCE LINE # 386
-0021 D50004      R     DJNZ    outblink,?C0023
-                                           ; SOURCE LINE # 387
+0021         ?C0025:
+                                           ; SOURCE LINE # 391
+0021 D50004      R     DJNZ    outblink,?C0026
+                                           ; SOURCE LINE # 392
 0024 909000            MOV     DPTR,#D3OFF
 0027 E0                MOVX    A,@DPTR
-0028         ?C0023:
-                                           ; SOURCE LINE # 393
+0028         ?C0026:
+                                           ; SOURCE LINE # 398
 0028 0500        R     INC     LEDCounter+01H
 002A E500        R     MOV     A,LEDCounter+01H
-002C 7002              JNZ     ?C0069
+002C 7002              JNZ     ?C0074
 002E 0500        R     INC     LEDCounter
-0030         ?C0069:
-                                           ; SOURCE LINE # 394
+0030         ?C0074:
+                                           ; SOURCE LINE # 399
 0030 D3                SETB    C
 0031 94E8              SUBB    A,#0E8H
 0033 E500        R     MOV     A,LEDCounter
 0035 6480              XRL     A,#080H
 0037 9483              SUBB    A,#083H
-0039 4006              JC      ?C0024
-                                           ; SOURCE LINE # 395
+0039 4006              JC      ?C0027
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 39  
+
+                                           ; SOURCE LINE # 400
 003B 750000      R     MOV     LEDCounter,#00H
 003E 750000      R     MOV     LEDCounter+01H,#00H
-0041         ?C0024:
-                                           ; SOURCE LINE # 396
+0041         ?C0027:
+                                           ; SOURCE LINE # 401
 0041 C3                CLR     C
 0042 E500        R     MOV     A,LEDCounter+01H
 0044 94F4              SUBB    A,#0F4H
 0046 E500        R     MOV     A,LEDCounter
 0048 6480              XRL     A,#080H
 004A 9481              SUBB    A,#081H
-004C 5006              JNC     ?C0025
-                                           ; SOURCE LINE # 397
+004C 5006              JNC     ?C0028
+                                           ; SOURCE LINE # 402
 004E 90B000            MOV     DPTR,#D5OFF
 0051 E0                MOVX    A,@DPTR
-0052 8004              SJMP    ?C0027
-0054         ?C0025:
-                                           ; SOURCE LINE # 399
+0052 8004              SJMP    ?C0030
+0054         ?C0028:
+                                           ; SOURCE LINE # 404
 0054 90B800            MOV     DPTR,#D5ON
 0057 E0                MOVX    A,@DPTR
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 39  
-
-                                           ; SOURCE LINE # 400
-0058         ?C0027:
+                                           ; SOURCE LINE # 405
+0058         ?C0030:
 0058 D007              POP     AR7
 005A D0D0              POP     PSW
 005C D082              POP     DPL
@@ -2412,34 +2437,36 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0000 C0E0              PUSH    ACC
 0002 C083              PUSH    DPH
 0004 C082              PUSH    DPL
-                                           ; SOURCE LINE # 402
-                                           ; SOURCE LINE # 405
+                                           ; SOURCE LINE # 407
+                                           ; SOURCE LINE # 410
 0006 850000      E     MOV     pConfigDscr,pFullSpeedConfigDscr
 0009 850000      E     MOV     pConfigDscr+01H,pFullSpeedConfigDscr+01H
-                                           ; SOURCE LINE # 406
+                                           ; SOURCE LINE # 411
 000C 850082      E     MOV     DPL,pConfigDscr+01H
 000F 850083      E     MOV     DPH,pConfigDscr
 0012 A3                INC     DPTR
 0013 7402              MOV     A,#02H
 0015 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 407
+                                           ; SOURCE LINE # 412
 0016 850000      E     MOV     pOtherConfigDscr,pHighSpeedConfigDscr
 0019 850000      E     MOV     pOtherConfigDscr+01H,pHighSpeedConfigDscr+01H
-                                           ; SOURCE LINE # 408
+                                           ; SOURCE LINE # 413
 001C 850082      E     MOV     DPL,pOtherConfigDscr+01H
 001F 850083      E     MOV     DPH,pOtherConfigDscr
 0022 A3                INC     DPTR
 0023 7407              MOV     A,#07H
 0025 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 410
+                                           ; SOURCE LINE # 415
 0026 5391EF            ANL     EXIF,#0EFH
-                                           ; SOURCE LINE # 411
+                                           ; SOURCE LINE # 416
 0029 900000      E     MOV     DPTR,#USBIRQ
 002C 7410              MOV     A,#010H
 002E F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 412
+                                           ; SOURCE LINE # 417
 002F D082              POP     DPL
 0031 D083              POP     DPH
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 40  
+
 0033 D0E0              POP     ACC
 0035 32                RETI    
              ; FUNCTION ISR_Ures (END)
@@ -2448,20 +2475,18 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0000 C0E0              PUSH    ACC
 0002 C083              PUSH    DPH
 0004 C082              PUSH    DPL
-                                           ; SOURCE LINE # 414
-                                           ; SOURCE LINE # 416
+                                           ; SOURCE LINE # 419
+                                           ; SOURCE LINE # 421
 0006 D200        E     SETB    Sleep
-                                           ; SOURCE LINE # 417
+                                           ; SOURCE LINE # 422
 0008 5391EF            ANL     EXIF,#0EFH
-                                           ; SOURCE LINE # 418
+                                           ; SOURCE LINE # 423
 000B 900000      E     MOV     DPTR,#USBIRQ
 000E 7408              MOV     A,#08H
 0010 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 419
+                                           ; SOURCE LINE # 424
 0011 D082              POP     DPL
 0013 D083              POP     DPH
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 40  
-
 0015 D0E0              POP     ACC
 0017 32                RETI    
              ; FUNCTION ISR_Susp (END)
@@ -2470,80 +2495,80 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0000 C0E0              PUSH    ACC
 0002 C083              PUSH    DPH
 0004 C082              PUSH    DPL
-                                           ; SOURCE LINE # 421
-                                           ; SOURCE LINE # 423
+                                           ; SOURCE LINE # 426
+                                           ; SOURCE LINE # 428
 0006 900000      E     MOV     DPTR,#USBCS
 0009 E0                MOVX    A,@DPTR
-000A 30E720            JNB     ACC.7,?C0030
-                                           ; SOURCE LINE # 424
-                                           ; SOURCE LINE # 425
+000A 30E720            JNB     ACC.7,?C0033
+                                           ; SOURCE LINE # 429
+                                           ; SOURCE LINE # 430
 000D 850000      E     MOV     pConfigDscr,pHighSpeedConfigDscr
 0010 850000      E     MOV     pConfigDscr+01H,pHighSpeedConfigDscr+01H
-                                           ; SOURCE LINE # 426
+                                           ; SOURCE LINE # 431
 0013 850082      E     MOV     DPL,pConfigDscr+01H
 0016 850083      E     MOV     DPH,pConfigDscr
 0019 A3                INC     DPTR
 001A 7402              MOV     A,#02H
 001C F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 427
+                                           ; SOURCE LINE # 432
 001D 850000      E     MOV     pOtherConfigDscr,pFullSpeedConfigDscr
 0020 850000      E     MOV     pOtherConfigDscr+01H,pFullSpeedConfigDscr+01H
-                                           ; SOURCE LINE # 428
+                                           ; SOURCE LINE # 433
 0023 850082      E     MOV     DPL,pOtherConfigDscr+01H
 0026 850083      E     MOV     DPH,pOtherConfigDscr
 0029 A3                INC     DPTR
 002A 7407              MOV     A,#07H
 002C F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 429
-002D         ?C0030:
-                                           ; SOURCE LINE # 431
+                                           ; SOURCE LINE # 434
+002D         ?C0033:
+                                           ; SOURCE LINE # 436
 002D 5391EF            ANL     EXIF,#0EFH
-                                           ; SOURCE LINE # 432
+                                           ; SOURCE LINE # 437
 0030 900000      E     MOV     DPTR,#USBIRQ
 0033 7420              MOV     A,#020H
 0035 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 433
+                                           ; SOURCE LINE # 438
 0036 D082              POP     DPL
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 41  
+
 0038 D083              POP     DPH
 003A D0E0              POP     ACC
 003C 32                RETI    
              ; FUNCTION ISR_Highspeed (END)
 
              ; FUNCTION ISR_Ep0ack (BEGIN)
-                                           ; SOURCE LINE # 434
-                                           ; SOURCE LINE # 436
+                                           ; SOURCE LINE # 439
+                                           ; SOURCE LINE # 441
 0000 32                RETI    
              ; FUNCTION ISR_Ep0ack (END)
 
              ; FUNCTION ISR_Stub (BEGIN)
-                                           ; SOURCE LINE # 437
-                                           ; SOURCE LINE # 439
+                                           ; SOURCE LINE # 442
+                                           ; SOURCE LINE # 444
 0000 32                RETI    
              ; FUNCTION ISR_Stub (END)
 
              ; FUNCTION ISR_Ep0in (BEGIN)
-                                           ; SOURCE LINE # 440
-                                           ; SOURCE LINE # 442
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 41  
-
+                                           ; SOURCE LINE # 445
+                                           ; SOURCE LINE # 447
 0000 32                RETI    
              ; FUNCTION ISR_Ep0in (END)
 
              ; FUNCTION ISR_Ep0out (BEGIN)
-                                           ; SOURCE LINE # 443
-                                           ; SOURCE LINE # 445
+                                           ; SOURCE LINE # 448
+                                           ; SOURCE LINE # 450
 0000 32                RETI    
              ; FUNCTION ISR_Ep0out (END)
 
              ; FUNCTION ISR_Ep1in (BEGIN)
-                                           ; SOURCE LINE # 446
-                                           ; SOURCE LINE # 448
+                                           ; SOURCE LINE # 451
+                                           ; SOURCE LINE # 453
 0000 32                RETI    
              ; FUNCTION ISR_Ep1in (END)
 
              ; FUNCTION ISR_Ep1out (BEGIN)
-                                           ; SOURCE LINE # 449
-                                           ; SOURCE LINE # 451
+                                           ; SOURCE LINE # 454
+                                           ; SOURCE LINE # 456
 0000 32                RETI    
              ; FUNCTION ISR_Ep1out (END)
 
@@ -2551,29 +2576,31 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0000 C0E0              PUSH    ACC
 0002 C083              PUSH    DPH
 0004 C082              PUSH    DPL
-                                           ; SOURCE LINE # 452
-                                           ; SOURCE LINE # 455
+                                           ; SOURCE LINE # 457
+                                           ; SOURCE LINE # 460
 0006 5391EF            ANL     EXIF,#0EFH
-                                           ; SOURCE LINE # 456
+                                           ; SOURCE LINE # 461
 0009 900000      E     MOV     DPTR,#EPIRQ
 000C 7410              MOV     A,#010H
 000E F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 457
+                                           ; SOURCE LINE # 462
 000F 909800            MOV     DPTR,#D3ON
 0012 E0                MOVX    A,@DPTR
 0013 F500        R     MOV     dum,A
-                                           ; SOURCE LINE # 458
+                                           ; SOURCE LINE # 463
 0015 7500C8      R     MOV     outblink,#0C8H
-                                           ; SOURCE LINE # 459
+                                           ; SOURCE LINE # 464
 0018 D082              POP     DPL
 001A D083              POP     DPH
 001C D0E0              POP     ACC
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 42  
+
 001E 32                RETI    
              ; FUNCTION ISR_Ep2inout (END)
 
              ; FUNCTION ISR_Ep4inout (BEGIN)
-                                           ; SOURCE LINE # 460
-                                           ; SOURCE LINE # 462
+                                           ; SOURCE LINE # 465
+                                           ; SOURCE LINE # 467
 0000 32                RETI    
              ; FUNCTION ISR_Ep4inout (END)
 
@@ -2581,22 +2608,20 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0000 C0E0              PUSH    ACC
 0002 C083              PUSH    DPH
 0004 C082              PUSH    DPL
-                                           ; SOURCE LINE # 463
-                                           ; SOURCE LINE # 466
+                                           ; SOURCE LINE # 468
+                                           ; SOURCE LINE # 471
 0006 5391EF            ANL     EXIF,#0EFH
-                                           ; SOURCE LINE # 467
+                                           ; SOURCE LINE # 472
 0009 900000      E     MOV     DPTR,#EPIRQ
 000C 7440              MOV     A,#040H
 000E F0                MOVX    @DPTR,A
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 42  
-
-                                           ; SOURCE LINE # 468
+                                           ; SOURCE LINE # 473
 000F 908800            MOV     DPTR,#D2ON
 0012 E0                MOVX    A,@DPTR
 0013 F500        R     MOV     dum,A
-                                           ; SOURCE LINE # 469
+                                           ; SOURCE LINE # 474
 0015 7500C8      R     MOV     inblink,#0C8H
-                                           ; SOURCE LINE # 470
+                                           ; SOURCE LINE # 475
 0018 D082              POP     DPL
 001A D083              POP     DPH
 001C D0E0              POP     ACC
@@ -2604,172 +2629,174 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
              ; FUNCTION ISR_Ep6inout (END)
 
              ; FUNCTION ISR_Ep8inout (BEGIN)
-                                           ; SOURCE LINE # 471
-                                           ; SOURCE LINE # 473
+                                           ; SOURCE LINE # 476
+                                           ; SOURCE LINE # 478
 0000 32                RETI    
              ; FUNCTION ISR_Ep8inout (END)
 
              ; FUNCTION ISR_Ibn (BEGIN)
-                                           ; SOURCE LINE # 474
-                                           ; SOURCE LINE # 476
+                                           ; SOURCE LINE # 479
+                                           ; SOURCE LINE # 481
 0000 32                RETI    
              ; FUNCTION ISR_Ibn (END)
 
              ; FUNCTION ISR_Ep0pingnak (BEGIN)
-                                           ; SOURCE LINE # 477
-                                           ; SOURCE LINE # 479
+                                           ; SOURCE LINE # 482
+                                           ; SOURCE LINE # 484
 0000 32                RETI    
              ; FUNCTION ISR_Ep0pingnak (END)
 
              ; FUNCTION ISR_Ep1pingnak (BEGIN)
-                                           ; SOURCE LINE # 480
-                                           ; SOURCE LINE # 482
+                                           ; SOURCE LINE # 485
+                                           ; SOURCE LINE # 487
 0000 32                RETI    
              ; FUNCTION ISR_Ep1pingnak (END)
 
              ; FUNCTION ISR_Ep2pingnak (BEGIN)
-                                           ; SOURCE LINE # 483
-                                           ; SOURCE LINE # 485
+                                           ; SOURCE LINE # 488
+                                           ; SOURCE LINE # 490
 0000 32                RETI    
              ; FUNCTION ISR_Ep2pingnak (END)
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 43  
+
 
              ; FUNCTION ISR_Ep4pingnak (BEGIN)
-                                           ; SOURCE LINE # 486
-                                           ; SOURCE LINE # 488
+                                           ; SOURCE LINE # 491
+                                           ; SOURCE LINE # 493
 0000 32                RETI    
              ; FUNCTION ISR_Ep4pingnak (END)
 
              ; FUNCTION ISR_Ep6pingnak (BEGIN)
-                                           ; SOURCE LINE # 489
-                                           ; SOURCE LINE # 491
+                                           ; SOURCE LINE # 494
+                                           ; SOURCE LINE # 496
 0000 32                RETI    
              ; FUNCTION ISR_Ep6pingnak (END)
 
              ; FUNCTION ISR_Ep8pingnak (BEGIN)
-                                           ; SOURCE LINE # 492
-                                           ; SOURCE LINE # 494
+                                           ; SOURCE LINE # 497
+                                           ; SOURCE LINE # 499
 0000 32                RETI    
              ; FUNCTION ISR_Ep8pingnak (END)
 
              ; FUNCTION ISR_Errorlimit (BEGIN)
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 43  
-
-                                           ; SOURCE LINE # 495
-                                           ; SOURCE LINE # 497
+                                           ; SOURCE LINE # 500
+                                           ; SOURCE LINE # 502
 0000 32                RETI    
              ; FUNCTION ISR_Errorlimit (END)
 
              ; FUNCTION ISR_Ep2piderror (BEGIN)
-                                           ; SOURCE LINE # 498
-                                           ; SOURCE LINE # 500
+                                           ; SOURCE LINE # 503
+                                           ; SOURCE LINE # 505
 0000 32                RETI    
              ; FUNCTION ISR_Ep2piderror (END)
 
              ; FUNCTION ISR_Ep4piderror (BEGIN)
-                                           ; SOURCE LINE # 501
-                                           ; SOURCE LINE # 503
+                                           ; SOURCE LINE # 506
+                                           ; SOURCE LINE # 508
 0000 32                RETI    
              ; FUNCTION ISR_Ep4piderror (END)
 
              ; FUNCTION ISR_Ep6piderror (BEGIN)
-                                           ; SOURCE LINE # 504
-                                           ; SOURCE LINE # 506
+                                           ; SOURCE LINE # 509
+                                           ; SOURCE LINE # 511
 0000 32                RETI    
              ; FUNCTION ISR_Ep6piderror (END)
 
              ; FUNCTION ISR_Ep8piderror (BEGIN)
-                                           ; SOURCE LINE # 507
-                                           ; SOURCE LINE # 509
+                                           ; SOURCE LINE # 512
+                                           ; SOURCE LINE # 514
 0000 32                RETI    
              ; FUNCTION ISR_Ep8piderror (END)
 
              ; FUNCTION ISR_Ep2pflag (BEGIN)
-                                           ; SOURCE LINE # 510
-                                           ; SOURCE LINE # 512
+                                           ; SOURCE LINE # 515
+                                           ; SOURCE LINE # 517
 0000 32                RETI    
              ; FUNCTION ISR_Ep2pflag (END)
 
              ; FUNCTION ISR_Ep4pflag (BEGIN)
-                                           ; SOURCE LINE # 513
-                                           ; SOURCE LINE # 515
+                                           ; SOURCE LINE # 518
+                                           ; SOURCE LINE # 520
 0000 32                RETI    
              ; FUNCTION ISR_Ep4pflag (END)
 
              ; FUNCTION ISR_Ep6pflag (BEGIN)
-                                           ; SOURCE LINE # 516
-                                           ; SOURCE LINE # 518
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 44  
+
+                                           ; SOURCE LINE # 521
+                                           ; SOURCE LINE # 523
 0000 32                RETI    
              ; FUNCTION ISR_Ep6pflag (END)
 
              ; FUNCTION ISR_Ep8pflag (BEGIN)
-                                           ; SOURCE LINE # 519
-                                           ; SOURCE LINE # 521
+                                           ; SOURCE LINE # 524
+                                           ; SOURCE LINE # 526
 0000 32                RETI    
              ; FUNCTION ISR_Ep8pflag (END)
 
              ; FUNCTION ISR_Ep2eflag (BEGIN)
-                                           ; SOURCE LINE # 522
-                                           ; SOURCE LINE # 524
+                                           ; SOURCE LINE # 527
+                                           ; SOURCE LINE # 529
 0000 32                RETI    
              ; FUNCTION ISR_Ep2eflag (END)
 
              ; FUNCTION ISR_Ep4eflag (BEGIN)
-                                           ; SOURCE LINE # 525
-                                           ; SOURCE LINE # 527
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 44  
-
+                                           ; SOURCE LINE # 530
+                                           ; SOURCE LINE # 532
 0000 32                RETI    
              ; FUNCTION ISR_Ep4eflag (END)
 
              ; FUNCTION ISR_Ep6eflag (BEGIN)
-                                           ; SOURCE LINE # 528
-                                           ; SOURCE LINE # 530
+                                           ; SOURCE LINE # 533
+                                           ; SOURCE LINE # 535
 0000 32                RETI    
              ; FUNCTION ISR_Ep6eflag (END)
 
              ; FUNCTION ISR_Ep8eflag (BEGIN)
-                                           ; SOURCE LINE # 531
-                                           ; SOURCE LINE # 533
+                                           ; SOURCE LINE # 536
+                                           ; SOURCE LINE # 538
 0000 32                RETI    
              ; FUNCTION ISR_Ep8eflag (END)
 
              ; FUNCTION ISR_Ep2fflag (BEGIN)
-                                           ; SOURCE LINE # 534
-                                           ; SOURCE LINE # 536
+                                           ; SOURCE LINE # 539
+                                           ; SOURCE LINE # 541
 0000 32                RETI    
              ; FUNCTION ISR_Ep2fflag (END)
 
              ; FUNCTION ISR_Ep4fflag (BEGIN)
-                                           ; SOURCE LINE # 537
-                                           ; SOURCE LINE # 539
+                                           ; SOURCE LINE # 542
+                                           ; SOURCE LINE # 544
 0000 32                RETI    
              ; FUNCTION ISR_Ep4fflag (END)
 
              ; FUNCTION ISR_Ep6fflag (BEGIN)
-                                           ; SOURCE LINE # 540
-                                           ; SOURCE LINE # 542
+                                           ; SOURCE LINE # 545
+                                           ; SOURCE LINE # 547
 0000 32                RETI    
              ; FUNCTION ISR_Ep6fflag (END)
 
              ; FUNCTION ISR_Ep8fflag (BEGIN)
-                                           ; SOURCE LINE # 543
-                                           ; SOURCE LINE # 545
+                                           ; SOURCE LINE # 548
+                                           ; SOURCE LINE # 550
 0000 32                RETI    
              ; FUNCTION ISR_Ep8fflag (END)
 
              ; FUNCTION ISR_GpifComplete (BEGIN)
-                                           ; SOURCE LINE # 546
-                                           ; SOURCE LINE # 548
+                                           ; SOURCE LINE # 551
+                                           ; SOURCE LINE # 553
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 45  
+
 0000 32                RETI    
              ; FUNCTION ISR_GpifComplete (END)
 
              ; FUNCTION ISR_GpifWaveform (BEGIN)
-                                           ; SOURCE LINE # 549
-                                           ; SOURCE LINE # 551
+                                           ; SOURCE LINE # 554
+                                           ; SOURCE LINE # 556
 0000 32                RETI    
              ; FUNCTION ISR_GpifWaveform (END)
 
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 45  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 46  
 
 NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
 ====                                    =====   ======  ====    ======  ====
@@ -2790,6 +2817,7 @@ ISR_Ep0in. . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
 ISR_Ep1in. . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
 TD_Init. . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
   dum. . . . . . . . . . . . . . . . .  * REG *  DATA   U_CHAR   0007H  1
+  i. . . . . . . . . . . . . . . . . .  * REG *  DATA   INT      0006H  2
 ISR_Ep0out . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
 ISR_Ep1out . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
 TD_Poll. . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
@@ -2827,12 +2855,11 @@ DR_GetStatus . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
 ISR_Ep0pingnak . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
 ISR_Ep1pingnak . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
 EP0BUF . . . . . . . . . . . . . . . .  EXTERN   XDATA  ARRAY    -----  64
-EPIE . . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
 ISR_GpifWaveform . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
 ISR_Ep2piderror. . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
 ISR_Ep2pingnak . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
 ISR_Ep4piderror. . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 46  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 47  
 
 NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
 ====                                    =====   ======  ====    ======  ====
@@ -2895,7 +2922,7 @@ DEVICEDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  18
   spec_ver_major . . . . . . . . . . .  MEMBER   -----  U_CHAR   0003H  1
   dev_class. . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0004H  1
   sub_class. . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0005H  1
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 47  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 48  
 
 NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
 ====                                    =====   ======  ====    ======  ====
@@ -2958,7 +2985,7 @@ INTRFCDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  9
   class. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0005H  1
   sub_class. . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0006H  1
   protocol . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0007H  1
-C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 22:26:05 PAGE 48  
+C51 COMPILER V9.54   BULKLOOP                                                              08/10/2015 23:47:13 PAGE 49  
 
 NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
 ====                                    =====   ======  ====    ======  ====
@@ -2968,7 +2995,6 @@ NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
 ISR_Sof. . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
   dum. . . . . . . . . . . . . . . . .  * REG *  DATA   U_CHAR   0007H  1
   Led_Flag . . . . . . . . . . . . . .  AUTO     DATA   U_CHAR   0000H  1
-USBIE. . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
 ENDPNTDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  7
   length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
   type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
@@ -2983,7 +3009,7 @@ ISR_Susp . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    661    ----
+   CODE SIZE        =    679    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =     16    ----
    PDATA SIZE       =   ----    ----

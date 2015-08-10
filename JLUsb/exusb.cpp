@@ -59,10 +59,17 @@ QImage *ExUSB::ExUSBShow()
     {
         b = 512;
         if (ExUSBBlukInEP->XferData(ubuf,b,pktInfos,true))
+        {
         //if (ExUSBBlukInEP->XferData())
             a = 1;
+            UCHAR t = ubuf[4];
+            if (t > 0)
+                t = 2;
+        }
         else
+        {
              a = 2;
+        }
     }
     //OVERLAPPED * overla = new OVERLAPPED;
     //ExUSBBlukInEP->BeginDataXfer(ubuf,512,overla);
@@ -71,4 +78,15 @@ QImage *ExUSB::ExUSBShow()
     return img;
 
 } // QImage ExUSB::ExUSBShow()
+void ExUSB::WriteIIC(QString FileName)
+{
+    char* filename;
+    QByteArray name = FileName.toLatin1();
+    filename=name.data();
+    CCyFX3Device *lfxdev = (CCyFX3Device*)ExUSBDevice;
+
+    FX3_FWDWNLOAD_ERROR_CODE a = lfxdev->DownloadFw(filename,I2CE2PROM);
+    if (a > 0)
+        int b = 10;
+}
 

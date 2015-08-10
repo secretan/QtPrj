@@ -19,3 +19,8 @@ void JLWidget::on_pushButton_clicked()
 {
     exusb->ExUSBShow();
 }
+
+void JLWidget::on_pushButton_2_clicked()
+{
+    //exusb->WriteIIC("F:/Project/Ham/USBStudy/QtPrj/QtPrj/JLUsb/CYStream.iic");
+}

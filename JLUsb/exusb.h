@@ -3,6 +3,7 @@
 
 #include <CyAPI.h>
 #include <QImage>
+#include <QFile>
 
 class ExUSB
 {
@@ -10,6 +11,7 @@ public:
     ExUSB();
     ~ExUSB();
     QImage *ExUSBShow();
+    void WriteIIC(QString FileName);
 private:
     CCyUSBDevice *ExUSBDevice;
     CCyIsocEndPoint *ExUSBIsocInEP;

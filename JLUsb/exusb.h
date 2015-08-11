@@ -11,6 +11,7 @@ public:
     ExUSB();
     ~ExUSB();
     QImage *ExUSBShow();
+    void GetBlockData(UCHAR *data,int *size);
     void WriteIIC(QString FileName);
 private:
     CCyUSBDevice *ExUSBDevice;

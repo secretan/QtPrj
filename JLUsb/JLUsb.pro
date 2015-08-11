@@ -14,10 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         jlwidget.cpp \
-    exusb.cpp
+    exusb.cpp \
+    exusbthread.cpp
 
 HEADERS  += jlwidget.h \
-    exusb.h
+    exusb.h \
+    exusbthread.h
 
 FORMS    += jlwidget.ui
 

@@ -23,7 +23,24 @@ ExUSB::ExUSB()
         else if (lUSBEP[i]->Attributes == 2)       // Bluk
         {
             if (lUSBEP[i]->bIn)
+            {
                 ExUSBBlukInEP = ExUSBDevice->BulkInEndPt;
+                /*
+                PUCHAR ubuf = (PUCHAR)malloc(512);
+                UCHAR buf[512] = {0};
+                memset(ubuf,0,512);
+                LONG b = 0;
+
+                if (ExUSBBlukInEP->XferData(ubuf,b))
+                {
+                    for (int j = 0; j < 512; j++)
+                    {
+                        buf[j] = ubuf[j];
+                    }
+                }
+                free(ubuf);
+                */
+            }
             else
                 ExUSBBlukOutEP = ExUSBDevice->BulkOutEndPt;
         }
@@ -38,7 +55,20 @@ ExUSB::~ExUSB()
         delete(ExUSBDevice);
     }
 }
+void ExUSB::GetBlockData(UCHAR *data,int *size)
+{
+    PUCHAR ubuf = (PUCHAR)malloc(512);
+    memset(ubuf,0,512);
+    CCyIsoPktInfo *pktInfos = new CCyIsoPktInfo();
+    LONG b = 512;
 
+    if (ExUSBBlukInEP->XferData(ubuf,b,pktInfos,true))
+    {
+        *size = (int)b;
+        memcpy(data,ubuf,(int)b);
+    }
+    free(ubuf);
+}
 
 QImage *ExUSB::ExUSBShow()
 {
@@ -61,8 +91,13 @@ QImage *ExUSB::ExUSBShow()
         if (ExUSBBlukInEP->XferData(ubuf,b,pktInfos,true))
         {
         //if (ExUSBBlukInEP->XferData())
+            UCHAR bbuf[b] = {0};
             a = 1;
             UCHAR t = ubuf[4];
+            for (int i = 0; i < b; i++)
+            {
+                bbuf[i]= ubuf[i];
+            }
             if (t > 0)
                 t = 2;
         }

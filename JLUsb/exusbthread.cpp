@@ -1,4 +1,5 @@
 #include "exusbthread.h"
+#include <QDateTime>
 
 ExUSBThread::ExUSBThread()
 {
@@ -20,12 +21,30 @@ void ExUSBThread::run()
     while(true)
     {
         c_exusb->GetBlockData(&image[image_nptr], &size);
-        memcpy(buf,&image[image_nptr],size);
         image_nptr = image_nptr + size;
         if (image_nptr > 320*240*2)
         {
             //signal()
 
+        }
+        if (image_nptr >= 512*1)
+        {
+            QDateTime mCurTime;
+            QString strtime = mCurTime.currentDateTime().toString();
+
+            memcpy(buf,image,512);
+            QFile mFile("D:\\Qt\\a.txt");
+            if (mFile.exists())
+            {
+                //mFile.write((char*)buf,512);
+                QByteArray a  = mFile.readAll();
+                if (a.isEmpty())
+                    a.clear();
+            }
+            mFile.flush();
+            mFile.close();
+            image_nptr = 0;
+            //memset(image,0,width*height*2);
         }
     }
 }
@@ -43,7 +62,7 @@ void ExUSBThread::image_init()
     {
         width = 320;
         height = 240;
-        image = (unsigned char *)malloc(width*height);
+        image = (unsigned char *)malloc(width*height*2);
     }
 }
 

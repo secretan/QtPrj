@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <Project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="project_proj.xsd">
 
-  <SchemaVersion>1.0</SchemaVersion>
+  <SchemaVersion>1.1</SchemaVersion>
 
   <Header>### uVision Project, (C) Keil Software</Header>
 
@@ -29,10 +29,12 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <UseEnv>1</UseEnv>
-          <BinPath>D:\Program Files (x86)\keil\C51\BIN\</BinPath>
-          <IncludePath>C:\Keil\C51\INC\;..\inc</IncludePath>
-          <LibPath>D:\Program Files (x86)\keil\C51\LIB\</LibPath>
+          <SFDFile></SFDFile>
+          <bCustSvd>0</bCustSvd>
+          <UseEnv>0</UseEnv>
+          <BinPath>C:\Keil\C51\BIN\</BinPath>
+          <IncludePath>C:\Keil\C51\INC\</IncludePath>
+          <LibPath>C:\Keil\C51\LIB\</LibPath>
           <RegisterFilePath>Cypress\</RegisterFilePath>
           <DBRegisterFilePath>Cypress\</DBRegisterFilePath>
           <TargetStatus>
@@ -60,6 +62,8 @@
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
+            <nStopU1X>0</nStopU1X>
+            <nStopU2X>0</nStopU2X>
           </BeforeCompile>
           <BeforeMake>
             <RunUserProg1>0</RunUserProg1>
@@ -68,14 +72,18 @@
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
+            <nStopB1X>0</nStopB1X>
+            <nStopB2X>0</nStopB2X>
           </BeforeMake>
           <AfterMake>
             <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>hex2bix -i -f 0xC2 -o ..\bulkloop.iic bulkloop.hex</UserProg1Name>
+            <UserProg1Name>hex2bix -i -f 0xC2 -o bulkloop.iic bulkloop.hex</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
+            <nStopA1X>0</nStopA1X>
+            <nStopA2X>0</nStopA2X>
           </AfterMake>
           <SelectedForBatchBuild>0</SelectedForBatchBuild>
           <SVCSIdString></SVCSIdString>
@@ -94,6 +102,7 @@
           <StopOnExitCode>3</StopOnExitCode>
           <CustomArgument></CustomArgument>
           <IncludeLibraryModules></IncludeLibraryModules>
+          <ComprImg>0</ComprImg>
           <BankNo>65535</BankNo>
         </CommonProperty>
         <DllOption>
@@ -124,6 +133,7 @@
             <RestoreFunctions>1</RestoreFunctions>
             <RestoreToolbox>1</RestoreToolbox>
             <LimitSpeedToRealTime>0</LimitSpeedToRealTime>
+            <RestoreSysVw>0</RestoreSysVw>
           </Simulator>
           <Target>
             <UseTarget>1</UseTarget>
@@ -134,6 +144,8 @@
             <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
             <RestoreFunctions>0</RestoreFunctions>
             <RestoreToolbox>1</RestoreToolbox>
+            <RestoreTracepoints>0</RestoreTracepoints>
+            <RestoreSysVw>0</RestoreSysVw>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
           <TargetSelection>0</TargetSelection>
@@ -162,9 +174,14 @@
             <Capability>0</Capability>
             <DriverSelection>0</DriverSelection>
           </Flash1>
+          <bUseTDR>0</bUseTDR>
           <Flash2></Flash2>
           <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
+          <pFcarmOut></pFcarmOut>
+          <pFcarmGrp></pFcarmGrp>
+          <pFcArmRoot></pFcArmRoot>
+          <FcArmLst>0</FcArmLst>
         </Utilities>
         <Target51>
           <Target51Misc>
@@ -347,29 +364,29 @@
           <GroupName>Source Group 1</GroupName>
           <Files>
             <File>
-              <FileName>bulkloop.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\bulkloop.c</FilePath>
-            </File>
-            <File>
               <FileName>fw.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\src\fw.c</FilePath>
+              <FilePath>.\fw.c</FilePath>
+            </File>
+            <File>
+              <FileName>bulkloop.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\bulkloop.c</FilePath>
             </File>
             <File>
               <FileName>dscr.a51</FileName>
               <FileType>2</FileType>
-              <FilePath>..\lib\dscr.a51</FilePath>
-            </File>
-            <File>
-              <FileName>EZUSB.LIB</FileName>
-              <FileType>4</FileType>
-              <FilePath>..\lib\EZUSB.LIB</FilePath>
+              <FilePath>.\dscr.a51</FilePath>
             </File>
             <File>
               <FileName>USBJmpTb.OBJ</FileName>
               <FileType>3</FileType>
-              <FilePath>..\lib\USBJmpTb.OBJ</FilePath>
+              <FilePath>.\USBJmpTb.OBJ</FilePath>
+            </File>
+            <File>
+              <FileName>EZUSB.LIB</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\EZUSB.LIB</FilePath>
             </File>
           </Files>
         </Group>

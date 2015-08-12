@@ -24,10 +24,10 @@ void JLWidget::on_pushButton_clicked()
 void JLWidget::on_pushButton_2_clicked()
 {
     //exusb->WriteIIC("F:/Project/Ham/USBStudy/QtPrj/QtPrj/JLUsb/CYStream.iic");
-    /*ExUSBThread *lusbthread = new ExUSBThread(exusb);
+    ExUSBThread *lusbthread = new ExUSBThread(exusb);
     lusbthread->start(QThread::Priority());
-    */
     //unsigned char buf[512] = {0,};
+    /*
     unsigned char *buf = (unsigned char *)malloc(512);
     memset(buf,0,512);
     unsigned char bbuf[512] = {0,};
@@ -40,4 +40,5 @@ void JLWidget::on_pushButton_2_clicked()
         bbuf[i] = buf[i];
     }
     free(buf);
+    */
 }

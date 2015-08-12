@@ -15,14 +15,18 @@ ExUSBThread::ExUSBThread(ExUSB *musb)
 void ExUSBThread::run()
 {
     int size;
-    uchar buf[1024] = {0};
-    c_exusb->GetBlockData(&image[image_nptr], &size);
-    memcpy(buf,image,size);
-    image_nptr = image_nptr + size;
-    if (image_nptr > 320*240*2)
-    {
-        //signal()
+    uchar buf[512] = {0};
 
+    while(true)
+    {
+        c_exusb->GetBlockData(&image[image_nptr], &size);
+        memcpy(buf,&image[image_nptr],size);
+        image_nptr = image_nptr + size;
+        if (image_nptr > 320*240*2)
+        {
+            //signal()
+
+        }
     }
 }
 ExUSBThread::~ExUSBThread()

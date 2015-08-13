@@ -6,46 +6,45 @@ ExUSB::ExUSB()
     ExUSBDevice = new CCyUSBDevice(NULL);
 
     if (ExUSBDevice->DeviceCount() <= 0)
-        return;
-    ExUSBDevice->Open(0);
-    int EPNumbers = ExUSBDevice->EndPointCount();
-
-    CCyUSBEndPoint **lUSBEP = ExUSBDevice->EndPoints;
-    for (int i = 0; i < EPNumbers; i++)
     {
-        if (lUSBEP[i]->Attributes == 1)        //Isoc
+        // No Devices
+        return;
+    }
+    // initilize once
+    if (ExUSBDevice->Open(0))
+    {
+        deviceFlag = true;
+        // Get endPoints
+        int EPNumbers = ExUSBDevice->EndPointCount();
+        CCyUSBEndPoint **lUSBEP = ExUSBDevice->EndPoints;
+        for (int i = 0; i < EPNumbers; i++)
         {
-            if (lUSBEP[i]->bIn)
-                ExUSBIsocInEP = ExUSBDevice->IsocInEndPt;
-            else
-                ExUSBIsocOutEP = ExUSBDevice->IsocOutEndPt;
-        }
-        else if (lUSBEP[i]->Attributes == 2)       // Bluk
-        {
-            if (lUSBEP[i]->bIn)
+            if (lUSBEP[i]->Attributes == 1)        //Isoc
             {
-                ExUSBBlukInEP = ExUSBDevice->BulkInEndPt;
-                /*
-                PUCHAR ubuf = (PUCHAR)malloc(512);
-                UCHAR buf[512] = {0};
-                memset(ubuf,0,512);
-                LONG b = 0;
-
-                if (ExUSBBlukInEP->XferData(ubuf,b))
+                if (lUSBEP[i]->bIn)
                 {
-                    for (int j = 0; j < 512; j++)
-                    {
-                        buf[j] = ubuf[j];
-                    }
+                    ExUSBIsocInEP = ExUSBDevice->IsocInEndPt;
                 }
-                free(ubuf);
-                */
+                else
+                {
+                    ExUSBIsocOutEP = ExUSBDevice->IsocOutEndPt;
+                }
             }
-            else
-                ExUSBBlukOutEP = ExUSBDevice->BulkOutEndPt;
-        }
-    } // end of for (int i = 0; i < EPNumbers; i++)
+            else if (lUSBEP[i]->Attributes == 2)       // Bluk
+            {
+                if (lUSBEP[i]->bIn)
+                {
+                    ExUSBBlukInEP = ExUSBDevice->BulkInEndPt;
+                }
+                else
+                {
+                    ExUSBBlukOutEP = ExUSBDevice->BulkOutEndPt;
+                }
+            }
+        } // end of for (int i = 0; i < EPNumbers; i++)
+    } //if (ExUSBDevice->Open(0))
 } //end of ExUSB::ExUSB()
+
 
 ExUSB::~ExUSB()
 {
@@ -55,6 +54,7 @@ ExUSB::~ExUSB()
         delete(ExUSBDevice);
     }
 }
+// get USB InBulk Data
 void ExUSB::GetBlockData(UCHAR *data,int *size)
 {
     PUCHAR ubuf = (PUCHAR)malloc(512);
@@ -62,10 +62,17 @@ void ExUSB::GetBlockData(UCHAR *data,int *size)
     CCyIsoPktInfo *pktInfos = new CCyIsoPktInfo();
     LONG b = 512;
 
-    if (ExUSBBlukInEP->XferData(ubuf,b,pktInfos,true))
+    if (deviceFlag)
     {
-        *size = (int)b;
-        memcpy(data,ubuf,(int)b);
+        if (ExUSBBlukInEP->XferData(ubuf,b,pktInfos,true))
+        {
+            *size = (int)b;
+            memcpy(data,ubuf,(int)b);
+        }
+        else
+        {
+            *size = 0;
+        }
     }
     free(ubuf);
 }
@@ -125,3 +132,106 @@ void ExUSB::WriteIIC(QString FileName)
         int b = 10;
 }
 
+bool ExUSB::GetUSBDeviceOnFlag()
+{
+    return deviceFlag;
+}
+
+// QThread for detecte/remove devices
+void ExUSB::run()
+{
+    while(true)
+    {
+        UCHAR ldevcount= ExUSBDevice->DeviceCount();
+        if (!deviceFlag)
+        {
+            if (ldevcount > 0)
+            {
+                if (ExUSBDevice->Open(0))
+                {
+                    deviceFlag = true;
+                    // Get endPoints
+                    int EPNumbers = ExUSBDevice->EndPointCount();
+                    CCyUSBEndPoint **lUSBEP = ExUSBDevice->EndPoints;
+                    for (int i = 0; i < EPNumbers; i++)
+                    {
+                        if (lUSBEP[i]->Attributes == 1)        //Isoc
+                        {
+                            if (lUSBEP[i]->bIn)
+                            {
+                                ExUSBIsocInEP = ExUSBDevice->IsocInEndPt;
+                            }
+                            else
+                            {
+                                ExUSBIsocOutEP = ExUSBDevice->IsocOutEndPt;
+                            }
+                        }
+                        else if (lUSBEP[i]->Attributes == 2)       // Bluk
+                        {
+                            if (lUSBEP[i]->bIn)
+                            {
+                                ExUSBBlukInEP = ExUSBDevice->BulkInEndPt;
+                            }
+                            else
+                            {
+                                ExUSBBlukOutEP = ExUSBDevice->BulkOutEndPt;
+                            }
+                        }
+                    } // end of for (int i = 0; i < EPNumbers; i++)
+                } //if (ExUSBDevice->Open(0))
+            } // if (ldevcount > 0)
+        }
+        else
+        {
+            if (ldevcount == 0)
+            {
+                deviceFlag = false;
+                ExUSBDevice->Close();
+            }
+            else
+            {
+                deviceFlag=true;
+            }
+        }
+    } //while(true)
+}
+int ExUSB::JLProtocolCmd(QString cmd,QString data)
+{
+    PUCHAR send_buf = (PUCHAR)malloc(266);
+    LONG send_size = 0;
+    int retsize = 0;
+    int i;
+
+    if (deviceFlag)
+    {
+        //head
+        QByteArray lcmd = cmd.toLocal8Bit();
+        for (i = 0; i < lcmd.length();i++)
+        {
+            send_buf[i] = (UCHAR)lcmd.data()[1];
+        }
+        send_buf[2] = 0xff;
+        QByteArray ldata = data.toLatin1();
+        // length
+        send_buf[3] = ((ldata.length()>>16)&0xff);
+        send_buf[4] = ((ldata.length()>>8)&0xff);
+        send_buf[5] = ((ldata.length()>>0)&0xff);
+        // data
+        for (i = 0;i < ldata.length();i++)
+        {
+            send_buf[i+6] = (UCHAR)ldata.data()[1];
+        }
+        // tail
+        send_buf[i+6] = 0xff;
+        send_buf[i+7] = 0xff;
+        send_buf[i+8] = 0xff;
+        send_buf[i+9] = 0x88;
+
+
+        // send data
+        send_size = (LONG)(i+9);
+        retsize =  ExUSBBlukOutEP->XferData(send_buf,send_size);
+    }
+    free(send_buf);
+    return retsize;
+}

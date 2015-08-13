@@ -12,13 +12,16 @@ public:
     ~ExUSBThread();
     int SetImageWidth(int iwidth);
     int SetImageHeight(int iheight);
+    unsigned char *oImage;
+signals:
+    void GetFrameOK();
 protected:
     void run();
 private:
     ExUSB *c_exusb;
+    unsigned char *image;
     int width;  // image width
     int height; // image height
-    unsigned char *image;
     int image_nptr; // image number pointer
     void image_init();
 };

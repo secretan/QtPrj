@@ -1,6 +1,9 @@
 #include "jlwidget.h"
 #include "ui_jlwidget.h"
 #include "exusbthread.h"
+#include <QGraphicsView>
+#include <QImage>
+#include <QColor>
 
 JLWidget::JLWidget(QWidget *parent) :
     QWidget(parent),
@@ -8,24 +11,49 @@ JLWidget::JLWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     exusb = new ExUSB();
+    exusb->start();
+    exusbthread = new ExUSBThread(exusb);
+
+    //connect(exusbthread,SIGNAL(exusbthread->GetFrameOK()),this,SLOT(flush_image));
+    connect(exusbthread,SIGNAL(exusbthread->GetFrameOK()),this,SLOT(flush_image()));
+
+    //mVideoWidget.setParent(this);
+    /*
+    mVideoWidget = new QVideoWidget();
+    mMediaPlayer = new QMediaPlayer;
+    QMediaContent mp = QUrl::fromLocalFile("E:\\zlj_bd.mp4");
+    mMediaPlayer->setMedia(mp);
+
+    mMediaPlayer->setVideoOutput(mVideoWidget);
+    //mVideoWidget->setBaseSize(1024,576);
+    mVideoWidget->setGeometry(0,0,1024,576);
+    mVideoWidget->show();
+    mMediaPlayer->play();
+    */
 }
 
 JLWidget::~JLWidget()
 {
     delete ui;
+    exusb->terminate();
     exusb->~ExUSB();
+    //mMediaPlayer->destroyed();
 }
 
 void JLWidget::on_pushButton_clicked()
 {
-    exusb->ExUSBShow();
+    //exusb->ExUSBShow();
+    //mMediaPlayer->play();
+    exusbthread->msleep(1000);
+    flush_image();
 }
 
 void JLWidget::on_pushButton_2_clicked()
 {
+    //mMediaPlayer->pause();
     //exusb->WriteIIC("F:/Project/Ham/USBStudy/QtPrj/QtPrj/JLUsb/CYStream.iic");
-    ExUSBThread *lusbthread = new ExUSBThread(exusb);
-    lusbthread->start(QThread::Priority());
+    //ExUSBThread *lusbthread = new ExUSBThread(exusb);
+    exusbthread->start(QThread::Priority());
     //unsigned char buf[512] = {0,};
     /*
     unsigned char *buf = (unsigned char *)malloc(512);
@@ -41,4 +69,25 @@ void JLWidget::on_pushButton_2_clicked()
     }
     free(buf);
     */
+}
+void JLWidget::flush_image()
+{
+    QImage *img = new QImage(320,240,QImage::Format_RGB32);
+    unsigned char valh = 0;
+    unsigned char vall = 0;
+    for (int i = 0; i < 320; i++)
+    {
+        for (int j = 0; j < 240; j++)
+        {
+            valh = exusbthread->oImage[i*2*240+j];
+            vall = exusbthread->oImage[i*2*240+j+1];
+            int val = valh+vall*256;
+            int rgbv = qRgb(val,val,val);
+            img->setPixel(i,j,rgbv);
+        }
+    }
+    QGraphicsScene *scene = new QGraphicsScene;
+    scene->addPixmap(QPixmap::fromImage(*img));
+    ui->graphicsView->setScene(scene);
+    ui->graphicsView->show();
 }

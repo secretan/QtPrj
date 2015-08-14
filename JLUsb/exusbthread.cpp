@@ -12,7 +12,6 @@ ExUSBThread::ExUSBThread(ExUSB *musb)
 {
     image_nptr = 0;
     c_exusb = musb;
-    connect(this,SIGNAL(test_fun()),this,SLOT(GetFrameOK()));
     image_init();
 }
 void ExUSBThread::run()
@@ -62,7 +61,7 @@ void ExUSBThread::run()
                 //mFile.write((char*)&image[i*512+6],480);
                 memcpy(oImage,&image[i*512+6],480);
             }
-            GetFrameOK();
+            emit GetFrameOK();
             #endif
 
             image_nptr = 0;
@@ -93,15 +92,5 @@ void ExUSBThread::image_init()
 
 void ExUSBThread::GetFrameOK()
 {
-    emit test_fun();
 }
 
-void ExUSBThread::test_fun()
-{
-    int a = 10;
-    int b = 11;
-
-    int c = a > b ?0:1;
-    if (c > 0)
-        a = 12;
-}

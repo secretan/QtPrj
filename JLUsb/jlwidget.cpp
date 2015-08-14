@@ -4,6 +4,7 @@
 #include <QGraphicsView>
 #include <QImage>
 #include <QColor>
+#include <Qt>
 
 JLWidget::JLWidget(QWidget *parent) :
     QWidget(parent),
@@ -15,8 +16,8 @@ JLWidget::JLWidget(QWidget *parent) :
     exusbthread = new ExUSBThread(exusb);
 
     //connect(exusbthread,SIGNAL(exusbthread->GetFrameOK()),this,SLOT(flush_image));
-    //connect(exusbthread,SIGNAL(GetFrameOK()),this,SLOT(flush_image()));
-
+    connect(exusbthread,SIGNAL(GetFrameOK()),this,SLOT(flush_image()),Qt::DirectConnection);
+    //connect(this,SIGNAL(flush_image()),exusbthread,SLOT(GetFrameOK()),Qt::DirectConnection);
     //mVideoWidget.setParent(this);
     /*
     mVideoWidget = new QVideoWidget();

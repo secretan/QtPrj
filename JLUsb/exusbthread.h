@@ -14,8 +14,6 @@ public:
     int SetImageHeight(int iheight);
     unsigned char *oImage;
 signals:
-    void test_fun();
-private slots:
     void GetFrameOK();
 protected:
     void run();

@@ -205,7 +205,7 @@ int ExUSB::JLProtocolCmd(QString cmd,QString data)
     if (deviceFlag)
     {
         //head
-        QByteArray lcmd = cmd.toLocal8Bit();
+        QByteArray lcmd = cmd.toLatin1();
         for (i = 0; i < lcmd.length();i++)
         {
             send_buf[i] = (UCHAR)lcmd.data()[1];

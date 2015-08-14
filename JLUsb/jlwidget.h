@@ -25,6 +25,8 @@ private slots:
 //signals:
     void flush_image();
 
+    void on_pushButton_3_clicked();
+
 private:
     Ui::JLWidget *ui;
     ExUSB *exusb;

@@ -15,7 +15,7 @@ JLWidget::JLWidget(QWidget *parent) :
     exusbthread = new ExUSBThread(exusb);
 
     //connect(exusbthread,SIGNAL(exusbthread->GetFrameOK()),this,SLOT(flush_image));
-    connect(exusbthread,SIGNAL(exusbthread->GetFrameOK()),this,SLOT(flush_image()));
+    //connect(exusbthread,SIGNAL(GetFrameOK()),this,SLOT(flush_image()));
 
     //mVideoWidget.setParent(this);
     /*
@@ -34,9 +34,9 @@ JLWidget::JLWidget(QWidget *parent) :
 
 JLWidget::~JLWidget()
 {
-    delete ui;
     exusb->terminate();
     exusb->~ExUSB();
+    delete ui;
     //mMediaPlayer->destroyed();
 }
 
@@ -45,6 +45,7 @@ void JLWidget::on_pushButton_clicked()
     //exusb->ExUSBShow();
     //mMediaPlayer->play();
     exusbthread->msleep(1000);
+    //emit exusbthread->GetFrameOK();
     flush_image();
 }
 
@@ -79,8 +80,8 @@ void JLWidget::flush_image()
     {
         for (int j = 0; j < 240; j++)
         {
-            valh = exusbthread->oImage[i*2*240+j];
-            vall = exusbthread->oImage[i*2*240+j+1];
+            valh = exusbthread->oImage[i*2*240+j*2];
+            vall = exusbthread->oImage[i*2*240+j*2+1];
             int val = valh+vall*256;
             int rgbv = qRgb(val,val,val);
             img->setPixel(i,j,rgbv);

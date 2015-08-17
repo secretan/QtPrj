@@ -13,7 +13,7 @@ ExUSBThread::ExUSBThread(ExUSB *musb)
     image_nptr = 0;
     c_exusb = musb;
     image_init();
-    connect(this,SIGNAL(GetFrameOK(int)),this,SLOT(test_recv()));
+    //connect(this,SIGNAL(GetFrameOK(int)),this,SLOT(test_recv()));
 }
 void ExUSBThread::run()
 {
@@ -51,7 +51,8 @@ void ExUSBThread::run()
                 //mFile.write((char*)&image[i*512+6],480);
                 memcpy(&oImage[i*480],&image[i*512+6],480);
             }
-            test_sig();
+            emit GetFrameOK(10);
+            //test_sig();
             /* /
             QFile mFile("D:\\Qt\\c.txt");
             if (mFile.exists())
@@ -91,15 +92,16 @@ void ExUSBThread::image_init()
         oImage = (unsigned char *)malloc(width*height*2);
     }
 }
+/*
 void ExUSBThread::GetFrameOK(int num)
 {
     for (int i = 0; i < num; i++)
         if (i == 5)
             return;
-}
+}*/
 void ExUSBThread::test_sig()
 {
-    emit GetFrameOK(10);
+    //emit GetFrameOK(10);
 }
 
 void ExUSBThread::test_recv()
@@ -108,3 +110,5 @@ void ExUSBThread::test_recv()
         if (i == 5)
             return;
 }
+
+

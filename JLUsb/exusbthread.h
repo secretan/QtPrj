@@ -1,11 +1,11 @@
 #ifndef EXUSBTHREAD_H
 #define EXUSBTHREAD_H
-
+#include <exusb.h>
 #include <QThread>
-#include "exusb.h"
 
 class ExUSBThread : public QThread
 {
+    Q_OBJECT
 public:
     ExUSBThread();
     ExUSBThread(ExUSB *musb);
@@ -13,8 +13,6 @@ public:
     int SetImageWidth(int iwidth);
     int SetImageHeight(int iheight);
     unsigned char *oImage;
-signals:
-    void GetFrameOK(int num);
 private slots:
     void test_recv();
 protected:
@@ -27,6 +25,8 @@ private:
     int image_nptr; // image number pointer
     void image_init();
     void test_sig();
+signals:
+    void GetFrameOK(int num);
 };
 
 #endif // EXUSBTHREAD_H

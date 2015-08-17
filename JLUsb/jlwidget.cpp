@@ -1,6 +1,5 @@
 #include "jlwidget.h"
 #include "ui_jlwidget.h"
-#include "exusbthread.h"
 #include <QGraphicsView>
 #include <QImage>
 #include <QColor>
@@ -16,7 +15,7 @@ JLWidget::JLWidget(QWidget *parent) :
     exusbthread = new ExUSBThread(exusb);
 
     //connect(exusbthread,SIGNAL(exusbthread->GetFrameOK()),this,SLOT(flush_image));
-    //connect(exusbthread,SIGNAL(GetFrameOK(int)),this,SLOT(flush_image()));
+    connect(exusbthread,SIGNAL(GetFrameOK(int)),this,SLOT(flush_image()),Qt::QueuedConnection);
     //connect(exusbthread,SIGNAL(exusbthread->GetFrameOK(int)),exusbthread,SLOT(test_recv()));
     //,Qt::QueuedConnection);
     //connect(this,SIGNAL(flush_image()),exusbthread,SLOT(GetFrameOK()),Qt::DirectConnection);
@@ -37,6 +36,8 @@ JLWidget::JLWidget(QWidget *parent) :
 
 JLWidget::~JLWidget()
 {
+    exusbthread->terminate();
+    exusbthread->~ExUSBThread();
     exusb->terminate();
     exusb->~ExUSB();
     delete ui;
@@ -47,7 +48,7 @@ void JLWidget::on_pushButton_clicked()
 {
     //exusb->ExUSBShow();
     //mMediaPlayer->play();
-    exusbthread->msleep(1000);
+    //exusbthread->msleep(1000);
     //emit exusbthread->GetFrameOK();
     flush_image();
 }
@@ -58,7 +59,8 @@ void JLWidget::on_pushButton_2_clicked()
     //exusb->WriteIIC("F:/Project/Ham/USBStudy/QtPrj/QtPrj/JLUsb/CYStream.iic");
     //ExUSBThread *lusbthread = new ExUSBThread(exusb);
 
-    exusbthread->start(QThread::Priority());
+    //exusbthread->start(QThread::Priority());
+    exusbthread->start();
     //unsigned char buf[512] = {0,};
     /*
     unsigned char *buf = (unsigned char *)malloc(512);
@@ -89,6 +91,8 @@ void JLWidget::flush_image()
             //vall = exusbthread->oImage[i*2*480+j*2+1];
             valh = exusbthread->oImage[(j*640+i)*2];
             vall = exusbthread->oImage[(j*640+i)*2+1];
+            //valh = exusbthread.oImage[(j*640+i)*2];
+            //vall = exusbthread.oImage[(j*640+i)*2+1];
             int val = valh+vall*256;
             if (val >= 256)
                 val = 255;

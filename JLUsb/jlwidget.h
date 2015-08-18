@@ -6,6 +6,7 @@
 #include <QVideoWidget>
 #include "exusb.h"
 #include "exusbthread.h"
+#include "jlopencv.h"
 
 namespace Ui {
 class JLWidget;
@@ -31,6 +32,9 @@ private:
     Ui::JLWidget *ui;
     ExUSB *exusb;
     ExUSBThread *exusbthread;
+
+    JLOpenCV *jlopencv;
+
     QMediaPlayer *mMediaPlayer;
     QVideoWidget *mVideoWidget;
 };

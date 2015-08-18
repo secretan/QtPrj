@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22                                                        08/11/2015  04:38:52  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22                                                        08/14/2015  15:33:18  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
@@ -59,7 +59,7 @@ LINK MAP OF MODULE:  bulkloop (BULKLOOP)
                     9001H     07FFH                  *** GAP ***
             XDATA   9800H     0001H     ABSOLUTE     
                     9801H     07FFH                  *** GAP ***
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 2
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 2
 
 
             XDATA   A000H     0001H     ABSOLUTE     
@@ -119,7 +119,7 @@ LINK MAP OF MODULE:  bulkloop (BULKLOOP)
             XDATA   E62EH     0001H     ABSOLUTE     
             XDATA   E62FH     0001H     ABSOLUTE     
             XDATA   E630H     0001H     ABSOLUTE     
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 3
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 3
 
 
             XDATA   E631H     0001H     ABSOLUTE     
@@ -179,7 +179,7 @@ LINK MAP OF MODULE:  bulkloop (BULKLOOP)
             XDATA   E680H     0001H     ABSOLUTE     
             XDATA   E681H     0001H     ABSOLUTE     
             XDATA   E682H     0001H     ABSOLUTE     
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 4
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 4
 
 
             XDATA   E683H     0001H     ABSOLUTE     
@@ -239,7 +239,7 @@ LINK MAP OF MODULE:  bulkloop (BULKLOOP)
             XDATA   E6C6H     0001H     ABSOLUTE     
             XDATA   E6C7H     0001H     ABSOLUTE     
             XDATA   E6C8H     0001H     ABSOLUTE     
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 5
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 5
 
 
             XDATA   E6C9H     0001H     ABSOLUTE     
@@ -299,7 +299,7 @@ LINK MAP OF MODULE:  bulkloop (BULKLOOP)
             CODE    0043H     0003H     ABSOLUTE     
                     0046H     0005H                  *** GAP ***
             CODE    004BH     0003H     ABSOLUTE     
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 6
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 6
 
 
                     004EH     0005H                  *** GAP ***
@@ -359,7 +359,7 @@ LINK MAP OF MODULE:  bulkloop (BULKLOOP)
             CODE    0B8FH     0001H     UNIT         ?PR?ISR_EP1PINGNAK?BULKLOOP
             CODE    0B90H     0001H     UNIT         ?PR?ISR_EP2PINGNAK?BULKLOOP
             CODE    0B91H     0001H     UNIT         ?PR?ISR_EP4PINGNAK?BULKLOOP
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 7
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 7
 
 
             CODE    0B92H     0001H     UNIT         ?PR?ISR_EP6PINGNAK?BULKLOOP
@@ -419,7 +419,7 @@ SEGMENT                                      BIT_GROUP          DATA_GROUP
 
 ?PR?EZUSB_DISCON?DISCON                   0020H.4  0000H.1    -----    -----
   +--> ?PR?_EZUSB_DELAY?DELAY
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 8
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 8
 
 
 
@@ -479,7 +479,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:0B96H         PUBLIC        ISR_Ep4piderror
   C:0B91H         PUBLIC        ISR_Ep4pingnak
   C:0B97H         PUBLIC        ISR_Ep6piderror
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 9
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 9
 
 
   C:0B92H         PUBLIC        ISR_Ep6pingnak
@@ -539,7 +539,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   -------         PROC          TD_INIT
   -------         DO            
   D:0007H         SYMBOL        dum
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 10
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 10
 
 
   D:0006H         SYMBOL        i
@@ -599,7 +599,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   -------         ENDPROC       TD_POLL
   -------         PROC          TD_SUSPEND
   C:05FDH         LINE#         292
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 11
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 11
 
 
   C:05FDH         LINE#         293
@@ -659,7 +659,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:0B7FH         LINE#         349
   -------         ENDPROC       DR_GETSTATUS
   -------         PROC          DR_CLEARFEATURE
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 12
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 12
 
 
   C:0B80H         LINE#         351
@@ -719,7 +719,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:094AH         LINE#         415
   C:0954H         LINE#         416
   C:095AH         LINE#         417
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 13
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 13
 
 
   C:0964H         LINE#         419
@@ -779,7 +779,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:0AB0H         LINE#         465
   C:0AB6H         LINE#         466
   C:0ABCH         LINE#         467
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 14
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 14
 
 
   C:0ABFH         LINE#         468
@@ -839,7 +839,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:0B95H         LINE#         507
   C:0B95H         LINE#         509
   -------         ENDPROC       ISR_EP2PIDERROR
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 15
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 15
 
 
   -------         PROC          ISR_EP4PIDERROR
@@ -899,7 +899,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:0BA3H         LINE#         551
   -------         ENDPROC       ISR_EP6FFLAG
   -------         PROC          ISR_EP8FFLAG
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 16
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 16
 
 
   C:0BA4H         LINE#         552
@@ -959,7 +959,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:02DAH         LINE#         117
   C:02E0H         LINE#         118
   C:02E6H         LINE#         119
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 17
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 17
 
 
   C:02ECH         LINE#         126
@@ -1019,7 +1019,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:06F5H         LINE#         220
   C:06FCH         LINE#         221
   C:06FEH         LINE#         223
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 18
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 18
 
 
   C:06FFH         LINE#         224
@@ -1079,7 +1079,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:0139H         LINE#         286
   C:013CH         LINE#         287
   C:013FH         LINE#         288
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 19
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 19
 
 
   C:013FH         LINE#         289
@@ -1139,7 +1139,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:0264H         LINE#         351
   C:0266H         LINE#         352
   C:0266H         LINE#         353
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 20
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 20
 
 
   C:029DH         LINE#         354
@@ -1199,7 +1199,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:0A09H         PUBLIC        EZUSB_Resume
   -------         PROC          EZUSB_RESUME
   C:0A09H         LINE#         38
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 21
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 21
 
 
   C:0A09H         LINE#         39
@@ -1259,7 +1259,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   X:E643H         PUBLIC        EP8ISOINPKTS
   X:E694H         PUBLIC        EP4BCH
   X:E68BH         PUBLIC        EP0BCL
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 22
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 22
 
 
   X:E612H         PUBLIC        EP2CFG
@@ -1319,7 +1319,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   X:E6ABH         PUBLIC        EP2FIFOBCH
   X:E7C0H         PUBLIC        EP1INBUF
   X:E6C6H         PUBLIC        FLOWSTATE
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 23
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 23
 
 
   X:E6ADH         PUBLIC        EP4FIFOBCH
@@ -1379,7 +1379,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   X:E480H         PUBLIC        RES_WAVEDATA_END
   X:E6EBH         PUBLIC        EP8GPIFPFSTOP
   X:E679H         PUBLIC        I2DAT
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 24
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 24
 
 
   X:E635H         PUBLIC        EP6FIFOPFL
@@ -1439,7 +1439,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:041FH         PUBLIC        i2c_isr
   C:0B72H         PUBLIC        EZUSB_InitI2C
   D:0037H         PUBLIC        I2CPckt
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 25
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 25
 
 
   C:0906H         PUBLIC        _EZUSB_WaitForEEPROMWrite
@@ -1499,7 +1499,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:097DH         LINE#         105
   C:0981H         LINE#         106
   C:0981H         LINE#         107
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 26
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 26
 
 
   C:0988H         LINE#         108
@@ -1559,7 +1559,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:0000H         SYMBOL        _ICE_DUMMY_
   C:0A35H         PUBLIC        _EZUSB_GetStringDscr
   -------         PROC          _EZUSB_GETSTRINGDSCR
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 27
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 27
 
 
   D:0001H         SYMBOL        StrIdx
@@ -1619,7 +1619,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   X:E62BH         SYMBOL        ECC1B1
   X:E62CH         SYMBOL        ECC1B2
   X:E62DH         SYMBOL        ECC2B0
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 28
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 28
 
 
   X:E62EH         SYMBOL        ECC2B1
@@ -1679,7 +1679,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   X:E613H         SYMBOL        EP4CFG
   X:E6A4H         SYMBOL        EP4CS
   X:E6ADH         SYMBOL        EP4FIFOBCH
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 29
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 29
 
 
   X:E6AEH         SYMBOL        EP4FIFOBCL
@@ -1739,7 +1739,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   X:E6D1H         SYMBOL        EP8GPIFTCL
   X:E6ECH         SYMBOL        EP8GPIFTRIG
   X:E643H         SYMBOL        EP8ISOINPKTS
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 30
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 30
 
 
   X:E65EH         SYMBOL        EPIE
@@ -1799,7 +1799,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   X:E679H         SYMBOL        I2DAT
   X:E658H         SYMBOL        IBNIE
   X:E659H         SYMBOL        IBNIRQ
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 31
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 31
 
 
   D:00A8H         SYMBOL        IE
@@ -1859,7 +1859,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   B:00A0H.7       SYMBOL        PC7
   D:0087H         SYMBOL        PCON
   B:00B0H.0       SYMBOL        PD0
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 32
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 32
 
 
   B:00B0H.1       SYMBOL        PD1
@@ -1919,7 +1919,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   X:E681H         SYMBOL        SUSPEND
   D:00C8H         SYMBOL        T2CON
   B:0098H.3       SYMBOL        TB8
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 33
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 33
 
 
   B:00C0H.3       SYMBOL        TB81
@@ -1979,7 +1979,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   -------         PROC          _EZUSB_DELAY
   D:001BH         SYMBOL        ms
   C:05B3H         LINE#         39
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 34
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 34
 
 
   C:05B7H         LINE#         40
@@ -2039,7 +2039,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   X:E629H         SYMBOL        ECCRESET
   B:00E8H.1       SYMBOL        EI2C
   D:00D8H         SYMBOL        EICON
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 35
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 35
 
 
   D:00E8H         SYMBOL        EIE
@@ -2099,7 +2099,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   X:E6A8H         SYMBOL        EP4FIFOFLGS
   X:E652H         SYMBOL        EP4FIFOIE
   X:E653H         SYMBOL        EP4FIFOIRQ
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 36
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 36
 
 
   X:E632H         SYMBOL        EP4FIFOPFH
@@ -2159,7 +2159,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   X:E664H         SYMBOL        ERRCNTLIM
   C:0A84H         SYMBOL        ER_END
   B:00A8H.4       SYMBOL        ES0
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 37
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 37
 
 
   B:00A8H.6       SYMBOL        ES1
@@ -2219,7 +2219,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   X:E601H         SYMBOL        IFCONFIG
   X:E648H         SYMBOL        INPKTEND
   D:00A1H         SYMBOL        INT2CLR
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 38
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 38
 
 
   X:E666H         SYMBOL        INT2IVEC
@@ -2279,7 +2279,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   B:00B0H.3       SYMBOL        PD3
   B:00B0H.4       SYMBOL        PD4
   B:00B0H.5       SYMBOL        PD5
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 39
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 39
 
 
   B:00B0H.6       SYMBOL        PD6
@@ -2339,7 +2339,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   X:E6F9H         SYMBOL        TESTCFG
   B:0088H.5       SYMBOL        TF0
   B:0088H.7       SYMBOL        TF1
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 40
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 40
 
 
   B:00C8H.7       SYMBOL        TF2
@@ -2399,7 +2399,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
   C:0614H         LINE#         71
   C:0618H         LINE#         73
   C:061CH         LINE#         75
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 41
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 41
 
 
   C:0620H         LINE#         77
@@ -2459,7 +2459,7 @@ SYMBOL TABLE OF MODULE:  bulkloop (BULKLOOP)
 
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_EZUSB_WRITEI2C_?I2C
-BL51 BANKED LINKER/LOCATER V6.22                                                      08/11/2015  04:38:52  PAGE 42
+BL51 BANKED LINKER/LOCATER V6.22                                                      08/14/2015  15:33:18  PAGE 42
 
 
 

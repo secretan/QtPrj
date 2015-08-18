@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   BULKLOOP                                                              08/11/2015 04:38:52 PAGE 1   
+C51 COMPILER V9.01   BULKLOOP                                                              08/14/2015 15:33:18 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE BULKLOOP
@@ -62,7 +62,7 @@ line level    source
   52          //      Initialization:
   53          //              FX2LP is initialized in the TD_Init function, which is called once at startup.
   54          //              The two endpoints defined in the descriptor file are be configured using these statements:
-C51 COMPILER V9.01   BULKLOOP                                                              08/11/2015 04:38:52 PAGE 2   
+C51 COMPILER V9.01   BULKLOOP                                                              08/14/2015 15:33:18 PAGE 2   
 
   55          //
   56          //              EP2CFG = 0xA2;  // EP2 is BULK-OUT, double-buffered
@@ -126,7 +126,7 @@ line level    source
  114          //
  115          //                      count = (EP2BCH << 8) + EP2BCL; // The count value is loaded from the byte 
  116          //                                                      // count registers
-C51 COMPILER V9.01   BULKLOOP                                                              08/11/2015 04:38:52 PAGE 3   
+C51 COMPILER V9.01   BULKLOOP                                                              08/14/2015 15:33:18 PAGE 3   
 
  117          //
  118          //                      The data transfer is carried out by the execution of the loop below. 
@@ -190,7 +190,7 @@ line level    source
  175          xdata volatile BYTE D5OFF _at_ 0xB000;
  176          xdata volatile BYTE D4OFF _at_ 0xA000;
  177          xdata volatile BYTE D3OFF _at_ 0x9000;
-C51 COMPILER V9.01   BULKLOOP                                                              08/11/2015 04:38:52 PAGE 4   
+C51 COMPILER V9.01   BULKLOOP                                                              08/14/2015 15:33:18 PAGE 4   
 
  178          xdata volatile BYTE D2OFF _at_ 0x8000;
  179          xdata volatile BYTE D5ON  _at_ 0xB800;
@@ -254,7 +254,7 @@ line level    source
  236   1      
  237   1        //USBIE |= bmSOF;                             // Enable the SOF IRQ to serve as LED timers
  238   1        //EPIE = bmEP6IRQ | bmEP2IRQ; // Enable EP6 and EP2 Interrupts to turn on transfer LEDS
-C51 COMPILER V9.01   BULKLOOP                                                              08/11/2015 04:38:52 PAGE 5   
+C51 COMPILER V9.01   BULKLOOP                                                              08/14/2015 15:33:18 PAGE 5   
 
  239   1      }
  240          
@@ -318,7 +318,7 @@ line level    source
  297          BOOL TD_Resume(void)          // Called after the device resumes
  298          {
  299   1         return(TRUE);
-C51 COMPILER V9.01   BULKLOOP                                                              08/11/2015 04:38:52 PAGE 6   
+C51 COMPILER V9.01   BULKLOOP                                                              08/14/2015 15:33:18 PAGE 6   
 
  300   1      }
  301          
@@ -382,7 +382,7 @@ line level    source
  359   1      }
  360          
  361          BOOL DR_VendorCmnd(void)
-C51 COMPILER V9.01   BULKLOOP                                                              08/11/2015 04:38:52 PAGE 7   
+C51 COMPILER V9.01   BULKLOOP                                                              08/14/2015 15:33:18 PAGE 7   
 
  362          {
  363   1        return(TRUE);
@@ -446,7 +446,7 @@ line level    source
  421   1      }
  422          
  423          void ISR_Susp(void) interrupt 0
-C51 COMPILER V9.01   BULKLOOP                                                              08/11/2015 04:38:52 PAGE 8   
+C51 COMPILER V9.01   BULKLOOP                                                              08/14/2015 15:33:18 PAGE 8   
 
  424          {
  425   1         Sleep = TRUE;
@@ -510,7 +510,7 @@ line level    source
  483          void ISR_Ibn(void) interrupt 0
  484          {
  485   1      }
-C51 COMPILER V9.01   BULKLOOP                                                              08/11/2015 04:38:52 PAGE 9   
+C51 COMPILER V9.01   BULKLOOP                                                              08/14/2015 15:33:18 PAGE 9   
 
  486          void ISR_Ep0pingnak(void) interrupt 0
  487          {
@@ -574,7 +574,7 @@ line level    source
  545   1      }
  546          void ISR_Ep4fflag(void) interrupt 0
  547          {
-C51 COMPILER V9.01   BULKLOOP                                                              08/11/2015 04:38:52 PAGE 10  
+C51 COMPILER V9.01   BULKLOOP                                                              08/14/2015 15:33:18 PAGE 10  
 
  548   1      }
  549          void ISR_Ep6fflag(void) interrupt 0

@@ -13,6 +13,7 @@ JLWidget::JLWidget(QWidget *parent) :
     exusb = new ExUSB();
     exusb->start();
     exusbthread = new ExUSBThread(exusb);
+    jlopencv = new JLOpenCV();
 
     //connect(exusbthread,SIGNAL(exusbthread->GetFrameOK()),this,SLOT(flush_image));
     connect(exusbthread,SIGNAL(GetFrameOK(int)),this,SLOT(flush_image()),Qt::QueuedConnection);
@@ -96,8 +97,8 @@ void JLWidget::flush_image()
             int val = valh+vall*256;
             if (val >= 256)
                 val = 255;
-            else
-                val= val*6;
+            //else
+                //val= val*6;
             if (val > max)
                 max = val;
             int rgbv = qRgb(val,val,val);

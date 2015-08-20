@@ -2,12 +2,10 @@
 #define JLWIDGET_H
 
 #include <QWidget>
-#include <QMediaPlayer>
-#include <QVideoWidget>
 #include <QImage>
-#include "exusb.h"
-#include "exusbthread.h"
-#include "jlopencv.h"
+#include "cypress/user/exusb.h"
+#include "cypress/user/exusbthread.h"
+#include "opencv/user/jlopencv.h"
 
 namespace Ui {
 class JLWidget;
@@ -24,7 +22,6 @@ public:
 private slots:
     void on_pushButton_clicked();
     void on_pushButton_2_clicked();
-//signals:
     void flush_image();
 
     void on_pushButton_3_clicked();
@@ -33,12 +30,8 @@ private:
     Ui::JLWidget *ui;
     ExUSB *exusb;
     ExUSBThread *exusbthread;
-
-    JLOpenCV *jlopencv;
-    QImage *img;
-
-    QMediaPlayer *mMediaPlayer;
-    QVideoWidget *mVideoWidget;
+    JLOpenCV *jl;
+    //QImage *img;
 };
 
 #endif // JLWIDGET_H

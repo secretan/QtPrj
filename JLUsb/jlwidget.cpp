@@ -10,11 +10,12 @@ JLWidget::JLWidget(QWidget *parent) :
     ui(new Ui::JLWidget)
 {
     ui->setupUi(this);
+
     exusb = new ExUSB();
     exusb->start();
     exusbthread = new ExUSBThread(exusb);
-    jlopencv = new JLOpenCV(10);
-    img = new QImage(640,480,QImage::Format_RGB32);
+    jl = new JLOpenCV();
+    //img = new QImage(640,480,QImage::Format_RGB32);
 
     //connect(exusbthread,SIGNAL(exusbthread->GetFrameOK()),this,SLOT(flush_image));
     connect(exusbthread,SIGNAL(GetFrameOK(int)),this,SLOT(flush_image()),Qt::QueuedConnection);
@@ -53,6 +54,7 @@ void JLWidget::on_pushButton_clicked()
     //exusbthread->msleep(1000);
     //emit exusbthread->GetFrameOK();
     flush_image();
+    jl->test();
 }
 
 void JLWidget::on_pushButton_2_clicked()
@@ -84,6 +86,7 @@ void JLWidget::flush_image()
     unsigned char valh = 0;
     unsigned char vall = 0;
     int max = 0;
+    QImage *img = new QImage(640,480,QImage::Format_RGB32);
     for (int i = 0; i < 640; i++)
     {
         for (int j = 0; j < 480; j++)
@@ -110,6 +113,7 @@ void JLWidget::flush_image()
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
     ui->SendtextBrowser->setText(QString::number(max,10));
+
 }
 
 void JLWidget::on_pushButton_3_clicked()

@@ -1,6 +1,6 @@
 #ifndef EXUSBTHREAD_H
 #define EXUSBTHREAD_H
-#include <exusb.h>
+#include "exusb.h"
 #include <QThread>
 
 class ExUSBThread : public QThread

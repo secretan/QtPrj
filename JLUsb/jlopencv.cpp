@@ -1,38 +1,12 @@
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include "jlopencv.h"
 
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-
-JLOpenCV::JLOpenCV()
+using namespace std;
+using namespace cv;
+JLOpenCV::JLOpenCV(int a)
 {
-    mImage = new Mat();
+    //cv::Mat image = imread("F:/Project/Ham/Qt/build-qt_opencv-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/a.jpg",1);
+    //cv::imshow("hello",image);
 }
 
-JLOpenCV::~JLOpenCV()
-{
-
-}
-
-void JLOpenCV::test()
-{/*
-    //声明IplImage指针
-
-        IplImage*pImg;
-
-        //载入图片
-        pImg=cvLoadImage("E:/OpenCV/FirstOpenCV/home.jpg",1);
-        //创建窗口
-        cvNamedWindow("Image",1);
-        //显示图像
-        cvShowImage("Image",pImg);
-        //等待按键
-        cvWaitKey(0);
-        //销毁窗口
-        cvDestroyWindow("Image");
-        //释放图像
-        cvReleaseImage(&pImg);
-*/
-        Mat Image = imread("a.jpg",1);
-        imshow("HELLO",Image);
-        return;
-}

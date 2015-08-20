@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QMediaPlayer>
 #include <QVideoWidget>
+#include <QImage>
 #include "exusb.h"
 #include "exusbthread.h"
 #include "jlopencv.h"
@@ -34,6 +35,7 @@ private:
     ExUSBThread *exusbthread;
 
     JLOpenCV *jlopencv;
+    QImage *img;
 
     QMediaPlayer *mMediaPlayer;
     QVideoWidget *mVideoWidget;

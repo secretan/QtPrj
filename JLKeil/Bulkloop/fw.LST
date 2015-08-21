@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   FW                                                                    08/14/2015 15:33:18 PAGE 1   
+C51 COMPILER V9.01   FW                                                                    08/21/2015 08:50:29 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE FW
@@ -62,7 +62,7 @@ line level    source
   52          void TD_Init(void);
   53          void TD_Poll(void);
   54          BOOL TD_Suspend(void);
-C51 COMPILER V9.01   FW                                                                    08/14/2015 15:33:18 PAGE 2   
+C51 COMPILER V9.01   FW                                                                    08/21/2015 08:50:29 PAGE 2   
 
   55          BOOL TD_Resume(void);
   56          
@@ -126,7 +126,7 @@ line level    source
  114   1         // to be located in external memory.
  115   1         pDeviceDscr = (WORD)&DeviceDscr;
  116   1         pDeviceQualDscr = (WORD)&DeviceQualDscr;
-C51 COMPILER V9.01   FW                                                                    08/14/2015 15:33:18 PAGE 3   
+C51 COMPILER V9.01   FW                                                                    08/21/2015 08:50:29 PAGE 3   
 
  117   1         pHighSpeedConfigDscr = (WORD)&HighSpeedConfigDscr;
  118   1         pFullSpeedConfigDscr = (WORD)&FullSpeedConfigDscr;
@@ -190,7 +190,7 @@ line level    source
  176   1         {
  177   2            // Poll User Device
  178   2            TD_Poll();
-C51 COMPILER V9.01   FW                                                                    08/14/2015 15:33:18 PAGE 4   
+C51 COMPILER V9.01   FW                                                                    08/21/2015 08:50:29 PAGE 4   
 
  179   2      
  180   2            // Check for pending SETUP
@@ -254,7 +254,7 @@ line level    source
  237   3                     case GD_DEVICE:            // Device
  238   3                        SUDPTRH = MSB(pDeviceDscr);
  239   3                        SUDPTRL = LSB(pDeviceDscr);
-C51 COMPILER V9.01   FW                                                                    08/14/2015 15:33:18 PAGE 5   
+C51 COMPILER V9.01   FW                                                                    08/21/2015 08:50:29 PAGE 5   
 
  240   3                        break;
  241   3                     case GD_DEVICE_QUALIFIER:            // Device Qualifier
@@ -318,7 +318,7 @@ line level    source
  299   3                        EP0BUF[0] = 0;
  300   3                        EP0BUF[1] = 0;
  301   3                        EP0BCH = 0;
-C51 COMPILER V9.01   FW                                                                    08/14/2015 15:33:18 PAGE 6   
+C51 COMPILER V9.01   FW                                                                    08/21/2015 08:50:29 PAGE 6   
 
  302   3                        EP0BCL = 2;
  303   3                        break;
@@ -382,7 +382,7 @@ line level    source
  361   2                  EZUSB_STALL_EP0();            // Stall End Point 0
  362   2         }
  363   1      
-C51 COMPILER V9.01   FW                                                                    08/14/2015 15:33:18 PAGE 7   
+C51 COMPILER V9.01   FW                                                                    08/21/2015 08:50:29 PAGE 7   
 
  364   1         // Acknowledge handshake phase of device request
  365   1         EP0CS |= bmHSNAK;

@@ -4,6 +4,7 @@
 #include <QImage>
 #include <QColor>
 #include <Qt>
+#include <QtSerialPort/QSerialPort>
 
 JLWidget::JLWidget(QWidget *parent) :
     QWidget(parent),
@@ -35,6 +36,13 @@ JLWidget::JLWidget(QWidget *parent) :
     mVideoWidget->show();
     mMediaPlayer->play();
     */
+    QSerialPort *mPort = new QSerialPort();
+    mPort->setPortName("COM4");
+    mPort->setBaudRate(mPort->Baud115200);
+    if (mPort->open(QIODevice::ReadWrite))
+    {
+        mPort->write("hello");
+    }
 }
 
 JLWidget::~JLWidget()

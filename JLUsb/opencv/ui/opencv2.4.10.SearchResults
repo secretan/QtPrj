@@ -1,0 +1,5 @@
+---- Contrib.hpp Matches (4 in 3 files) ----
+Contrib.hpp (z:\inc\opencv2\contrib):#ifndef __OPENCV_CONTRIB_HPP__
+Contrib.hpp (z:\inc\opencv2\contrib):#define __OPENCV_CONTRIB_HPP__
+Cvaux.h (z:\inc\opencv):#include "opencv2/contrib/contrib.hpp"
+Opencv.hpp (z:\inc\opencv2):#include "opencv2/contrib/contrib.hpp"

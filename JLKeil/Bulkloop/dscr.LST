@@ -1,4 +1,4 @@
-A51 MACRO ASSEMBLER  DSCR                                                                 08/14/2015 15:33:18 PAGE     1
+A51 MACRO ASSEMBLER  DSCR                                                                 08/21/2015 08:50:29 PAGE     1
 
 
 MACRO ASSEMBLER A51 V8.02
@@ -65,7 +65,7 @@ LOC  OBJ            LINE     SOURCE
 000F 02               53           db   2         ;; Product string index
 0010 00               54           db   0         ;; Serial number string index
 0011 01               55           db   1         ;; Number of configurations
-A51 MACRO ASSEMBLER  DSCR                                                                 08/14/2015 15:33:18 PAGE     2
+A51 MACRO ASSEMBLER  DSCR                                                                 08/21/2015 08:50:29 PAGE     2
 
                       56     
 0012                  57     DeviceQualDscr:
@@ -133,7 +133,7 @@ LOC  OBJ            LINE     SOURCE
 0044 32              119           db   50      ;; Power requirement (div 2 ma)
                      120     
                      121     ;; Interface Descriptor
-A51 MACRO ASSEMBLER  DSCR                                                                 08/14/2015 15:33:18 PAGE     3
+A51 MACRO ASSEMBLER  DSCR                                                                 08/21/2015 08:50:29 PAGE     3
 
 0045 09              122           db   DSCR_INTRFC_LEN      ;; Descriptor length
 0046 04              123           db   DSCR_INTRFC         ;; Descriptor type
@@ -200,7 +200,7 @@ LOC  OBJ            LINE     SOURCE
 007E 0000            184           dw   0000H
                      185           end
                                    
-A51 MACRO ASSEMBLER  DSCR                                                                 08/14/2015 15:33:18 PAGE     4
+A51 MACRO ASSEMBLER  DSCR                                                                 08/21/2015 08:50:29 PAGE     4
 
 SYMBOL TABLE LISTING
 ------ ----- -------

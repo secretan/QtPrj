@@ -216,9 +216,9 @@ void TD_Init(void)             // Called once at startup
 // b[1:0]	Buffering (00=quad, 10=double, 11=triple)		
 //
 
-  EP2CFG = 0xA2;	// Valid, BULK-OUT, 512 byte buffer, double-buffered
+  EP2CFG = 0xa2;	// Valid, BULK-OUT, 512 byte buffer, double-buffered
   SYNCDELAY;		// Some regs take longer to update, see TRM Section 15.14.                    
-  EP6CFG = 0xE2;	// Valid, BULK-IN, 512 byte buffer, double-buffered
+  EP6CFG = 0xd2;	// Valid, BULK-IN, 512 byte buffer, double-buffered
   SYNCDELAY;                    
 
   // OUT endpoints do not come up armed
@@ -227,10 +227,10 @@ void TD_Init(void)             // Called once at startup
   SYNCDELAY;                    
   EP2BCL = 0x80;	// again
   SYNCDELAY;                    
-	for (i = 0; i < 512; i++)
-	{
-		EP6FIFOBUF[i] = i+2;
-	}
+//	for (i = 0; i < 512; i++)
+//	{
+//		EP6FIFOBUF[i] = i+2;
+//	}
   // enable dual autopointer feature
   AUTOPTRSETUP |= 0x01;
 

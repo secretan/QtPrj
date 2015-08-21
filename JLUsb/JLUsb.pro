@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui multimedia multimediawidgets widgets
+QT       += core gui multimedia multimediawidgets widgets serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,12 +16,14 @@ SOURCES += main.cpp\
     jlwidget.cpp \
     cypress/user/exusb.cpp \
     cypress/user/exusbthread.cpp \
-    opencv/user/jlopencv.cpp
+    opencv/user/jlopencv.cpp \
+    jlpaint.cpp
 
 HEADERS  += jlwidget.h \
     cypress/user/exusb.h \
     cypress/user/exusbthread.h \
-    opencv/user/jlopencv.h
+    opencv/user/jlopencv.h \
+    jlpaint.h
 
 FORMS    += jlwidget.ui
 

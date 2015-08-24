@@ -42,6 +42,8 @@ ExUSB::ExUSB()
                 }
             }
         } // end of for (int i = 0; i < EPNumbers; i++)
+
+        pktInfos = new CCyIsoPktInfo();
     } //if (ExUSBDevice->Open(0))
 } //end of ExUSB::ExUSB()
 
@@ -53,18 +55,22 @@ ExUSB::~ExUSB()
         ExUSBDevice->Close();
         delete(ExUSBDevice);
     }
+    delete pktInfos;
 }
 // get USB InBulk Data
 void ExUSB::GetBlockData(UCHAR *data,int *size)
 {
-    PUCHAR ubuf = (PUCHAR)malloc(512);
-    memset(ubuf,0,512);
-    CCyIsoPktInfo *pktInfos = new CCyIsoPktInfo();
-    LONG b = 512;
+    PUCHAR ubuf = (PUCHAR)malloc(4096);
+    memset(ubuf,0,4096);
+    LONG b = 4096;
 
     if (deviceFlag)
     {
+        //ExUSBIsocInEP->XferData(ubuf,b,pktInfos,true);
+        //ExUSBIsocInEP->XferData(ubuf,b,pktInfos);
         if (ExUSBBlukInEP->XferData(ubuf,b,pktInfos,true))
+        //if (b > 0)
+        //if (pktInfos->Length)
         {
             *size = (int)b;
             memcpy(data,ubuf,(int)b);
@@ -149,7 +155,6 @@ void ExUSB::run()
             {
                 if (ExUSBDevice->Open(0))
                 {
-                    deviceFlag = true;
                     // Get endPoints
                     int EPNumbers = ExUSBDevice->EndPointCount();
                     CCyUSBEndPoint **lUSBEP = ExUSBDevice->EndPoints;
@@ -159,6 +164,7 @@ void ExUSB::run()
                         {
                             if (lUSBEP[i]->bIn)
                             {
+                                deviceFlag = true;
                                 ExUSBIsocInEP = ExUSBDevice->IsocInEndPt;
                             }
                             else

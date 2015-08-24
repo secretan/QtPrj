@@ -2,6 +2,7 @@
 #define JLWIDGET_H
 
 #include <QWidget>
+#include <QGraphicsScene>
 #include <QImage>
 #include "cypress/user/exusb.h"
 #include "cypress/user/exusbthread.h"
@@ -31,6 +32,8 @@ private:
     ExUSB *exusb;
     ExUSBThread *exusbthread;
     JLOpenCV *jl;
+    QImage *img;
+    QGraphicsScene *scence;
     //QImage *img;
 };
 

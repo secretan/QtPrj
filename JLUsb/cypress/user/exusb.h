@@ -28,6 +28,7 @@ private:
     CCyBulkEndPoint *ExUSBBlukInEP;
     CCyBulkEndPoint *ExUSBBlukOutEP;
 
+    CCyIsoPktInfo *pktInfos;
     // QThread for detecte/remove devices
     bool deviceFlag;
     void run();

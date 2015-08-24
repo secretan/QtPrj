@@ -36,6 +36,10 @@ JLWidget::JLWidget(QWidget *parent) :
     mVideoWidget->show();
     mMediaPlayer->play();
     */
+    // image
+    img = new QImage(640,480,QImage::Format_RGB32);
+    scence = new QGraphicsScene;
+    // serialport
     QSerialPort *mPort = new QSerialPort();
     mPort->setPortName("COM4");
     mPort->setBaudRate(mPort->Baud115200);
@@ -51,6 +55,8 @@ JLWidget::~JLWidget()
     exusbthread->~ExUSBThread();
     exusb->terminate();
     exusb->~ExUSB();
+    delete img;
+    delete scence;
     delete ui;
     //mMediaPlayer->destroyed();
 }
@@ -94,10 +100,10 @@ void JLWidget::flush_image()
     unsigned char valh = 0;
     unsigned char vall = 0;
     int max = 0;
-    QImage *img = new QImage(640,480,QImage::Format_RGB32);
-    for (int i = 0; i < 640; i++)
+
+    for (int i = 0; i < 320; i++)
     {
-        for (int j = 0; j < 480; j++)
+        for (int j = 0; j < 240; j++)
         {
             //valh = exusbthread->oImage[i*2*480+j*2];
             //vall = exusbthread->oImage[i*2*480+j*2+1];
@@ -112,13 +118,17 @@ void JLWidget::flush_image()
                 //val= val*6;
             if (val > max)
                 max = val;
-            int rgbv = qRgb(val,val,val);
+            //int rgbv = qRgb(val,val,val);
+            int rgbv = qRgba(val,val,val,0x70);
+            if (rgbv<0)
+                rgbv = 0x7fffff;
+
             img->setPixel(i,j,rgbv);
         }
     }
-    QGraphicsScene *scene = new QGraphicsScene;
-    scene->addPixmap(QPixmap::fromImage(*img));
-    ui->graphicsView->setScene(scene);
+    scence->addPixmap(QPixmap::fromImage(*img));
+
+    ui->graphicsView->setScene(scence);
     ui->graphicsView->show();
     ui->SendtextBrowser->setText(QString::number(max,10));
 

@@ -184,10 +184,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>22</ColumnNumber>
+      <ColumnNumber>14</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>271</TopLine>
-      <CurrentLine>271</CurrentLine>
+      <TopLine>211</TopLine>
+      <CurrentLine>219</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\src\bulkloop.c</PathWithFileName>
       <FilenameWithoutPath>bulkloop.c</FilenameWithoutPath>
@@ -198,10 +198,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>10</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>145</TopLine>
+      <CurrentLine>145</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\src\fw.c</PathWithFileName>
       <FilenameWithoutPath>fw.c</FilenameWithoutPath>
@@ -212,10 +212,10 @@
       <FileType>2</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>17</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>154</TopLine>
+      <CurrentLine>180</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\lib\dscr.a51</PathWithFileName>
       <FilenameWithoutPath>dscr.a51</FilenameWithoutPath>
@@ -1595,9 +1595,21 @@
       <Documents>
         <Doc>
           <Name>..\src\bulkloop.c</Name>
-          <ColumnNumber>22</ColumnNumber>
-          <TopLine>271</TopLine>
-          <CurrentLine>271</CurrentLine>
+          <ColumnNumber>14</ColumnNumber>
+          <TopLine>211</TopLine>
+          <CurrentLine>219</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\src\fw.c</Name>
+          <ColumnNumber>10</ColumnNumber>
+          <TopLine>145</TopLine>
+          <CurrentLine>145</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\lib\dscr.a51</Name>
+          <ColumnNumber>17</ColumnNumber>
+          <TopLine>154</TopLine>
+          <CurrentLine>180</CurrentLine>
         </Doc>
       </Documents>
     </MDIGroup>

@@ -4,6 +4,7 @@
 #include <QImage>
 #include <QColor>
 #include <Qt>
+#include <QFile>
 #include <QtSerialPort/QSerialPort>
 
 JLWidget::JLWidget(QWidget *parent) :
@@ -39,6 +40,13 @@ JLWidget::JLWidget(QWidget *parent) :
     // image
     img = new QImage(640,480,QImage::Format_RGB32);
     scence = new QGraphicsScene;
+
+    QPainter mPainter(ui->histwidget);
+    mPainter.setPen(Qt::blue);
+    mPainter.drawText(rect(),Qt::AlignCenter,"Hello WOrld");
+
+
+
     // serialport
     QSerialPort *mPort = new QSerialPort();
     mPort->setPortName("COM4");
@@ -100,37 +108,42 @@ void JLWidget::flush_image()
     unsigned char valh = 0;
     unsigned char vall = 0;
     int max = 0;
+    QFile myfile("H:\\a.txt");
 
-    for (int i = 0; i < 320; i++)
+    for (int i = 0; i < 240; i++)
     {
-        for (int j = 0; j < 240; j++)
+        for (int j = 0; j < 320; j++)
         {
             //valh = exusbthread->oImage[i*2*480+j*2];
             //vall = exusbthread->oImage[i*2*480+j*2+1];
-            valh = exusbthread->oImage[(j*640+i)*2];
-            vall = exusbthread->oImage[(j*640+i)*2+1];
+            valh = exusbthread->oImage[(i*320+j)*2];
+            vall = exusbthread->oImage[(i*320+j)*2+1];
             //valh = exusbthread.oImage[(j*640+i)*2];
             //vall = exusbthread.oImage[(j*640+i)*2+1];
-            int val = valh+vall*256;
+            //int val = valh+vall*256;
+            int val = vall;
             if (val >= 256)
                 val = 255;
             //else
                 //val= val*6;
             if (val > max)
                 max = val;
-            //int rgbv = qRgb(val,val,val);
-            int rgbv = qRgba(val,val,val,0x70);
-            if (rgbv<0)
-                rgbv = 0x7fffff;
+            int rgbv = qRgb(val,val,val);
+            //int rgbv = qRgba(val,val,val,0x70);
+            //if (rgbv<0)
+                //rgbv = 0xffffffff;
 
-            img->setPixel(i,j,rgbv);
+            img->setPixel(j,i,rgbv);
+            myfile.write(exusbthread->oImage[i*320]);
         }
     }
+    /*
     scence->addPixmap(QPixmap::fromImage(*img));
 
     ui->graphicsView->setScene(scence);
     ui->graphicsView->show();
     ui->SendtextBrowser->setText(QString::number(max,10));
+    */
 
 }
 

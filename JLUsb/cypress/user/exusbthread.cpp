@@ -2,15 +2,11 @@
 #include <QTextStream>
 #include <Qt>
 
-ExUSBThread::ExUSBThread()
-{
-    image_nptr = 0;
-    image_init();
-}
 
 ExUSBThread::ExUSBThread(ExUSB *musb)
 {
     image_nptr = 0;
+    frame_start = false;
     c_exusb = musb;
     image_init();
     //connect(this,SIGNAL(GetFrameOK(int)),this,SLOT(test_recv()));
@@ -18,7 +14,7 @@ ExUSBThread::ExUSBThread(ExUSB *musb)
 void ExUSBThread::run()
 {
     int size;
-    //uchar buf[512] = {0};
+    uchar buf[16] = {0};
 
     while(true)
     {
@@ -29,12 +25,22 @@ void ExUSBThread::run()
         {
             //80 00 88 FF 80 00 80 00 80 00 80 00 80 88 80 00
             //E0 00 E4 00 E8 00 EC 00 F0 00 F4 00 F8 00 FB 00
-            if (image[image_nptr+2] == 0x88)
+            memcpy(buf,&image[image_nptr],16);
+            if (image[image_nptr+12] == 0x88)
+            {
+                if (frame_start)
+                {
+                    image_nptr = 0;
+                    frame_start = false;
+                    memcpy(oImage,&image[0],320*240*2);
+                    emit GetFrameOK(10);
+                    memset(image,0,width*height*2);
+                }
+            }
+            else if (image[image_nptr+12] == 0xe8)
             {
                 image_nptr = 0;
-                memcpy(oImage,&image[0],320*240*2);
-                emit GetFrameOK(10);
-                memset(image,0,width*height*2);
+                frame_start = true;
             }
         }
         else if (size > 0)
@@ -111,24 +117,6 @@ void ExUSBThread::image_init()
         image = (unsigned char *)malloc(width*height*2*512/480);
         oImage = (unsigned char *)malloc(width*height*2);
     }
-}
-/*
-void ExUSBThread::GetFrameOK(int num)
-{
-    for (int i = 0; i < num; i++)
-        if (i == 5)
-            return;
-}*/
-void ExUSBThread::test_sig()
-{
-    //emit GetFrameOK(10);
-}
-
-void ExUSBThread::test_recv()
-{
-    for (int i = 0; i < 10; i++)
-        if (i == 5)
-            return;
 }
 
 

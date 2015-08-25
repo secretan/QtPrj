@@ -184,10 +184,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>14</ColumnNumber>
+      <ColumnNumber>18</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>211</TopLine>
-      <CurrentLine>219</CurrentLine>
+      <TopLine>528</TopLine>
+      <CurrentLine>528</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\src\bulkloop.c</PathWithFileName>
       <FilenameWithoutPath>bulkloop.c</FilenameWithoutPath>
@@ -1595,9 +1595,9 @@
       <Documents>
         <Doc>
           <Name>..\src\bulkloop.c</Name>
-          <ColumnNumber>14</ColumnNumber>
-          <TopLine>211</TopLine>
-          <CurrentLine>219</CurrentLine>
+          <ColumnNumber>18</ColumnNumber>
+          <TopLine>528</TopLine>
+          <CurrentLine>528</CurrentLine>
         </Doc>
         <Doc>
           <Name>..\src\fw.c</Name>

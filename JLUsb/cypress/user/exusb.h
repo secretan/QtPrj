@@ -22,7 +22,6 @@ private:
 
     // used for video Isoc
     CCyIsocEndPoint *ExUSBIsocInEP;
-    CCyIsocEndPoint *ExUSBIsocOutEP;
 
     // used for test bulk
     CCyBulkEndPoint *ExUSBBlukInEP;
@@ -32,6 +31,8 @@ private:
     // QThread for detecte/remove devices
     bool deviceFlag;
     void run();
+    // detect devices
+    bool deviceDetect();
 };
 
 #endif // EXUSB_H

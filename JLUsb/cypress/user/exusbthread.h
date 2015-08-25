@@ -7,14 +7,11 @@ class ExUSBThread : public QThread
 {
     Q_OBJECT
 public:
-    ExUSBThread();
     ExUSBThread(ExUSB *musb);
     ~ExUSBThread();
     int SetImageWidth(int iwidth);
     int SetImageHeight(int iheight);
     unsigned char *oImage;
-private slots:
-    void test_recv();
 protected:
     void run();
 private:
@@ -23,6 +20,7 @@ private:
     int width;  // image width
     int height; // image height
     int image_nptr; // image number pointer
+    bool frame_start;
     void image_init();
     void test_sig();
 signals:

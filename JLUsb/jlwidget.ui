@@ -88,6 +88,16 @@
     <string>ResetDev</string>
    </property>
   </widget>
+  <widget class="QWidget" name="histwidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>350</y>
+     <width>211</width>
+     <height>171</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

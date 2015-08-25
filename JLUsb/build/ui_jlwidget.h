@@ -31,6 +31,7 @@ public:
     QTextBrowser *SendtextBrowser;
     QGraphicsView *graphicsView;
     QPushButton *pushButton_3;
+    QWidget *histwidget;
 
     void setupUi(QWidget *JLWidget)
     {
@@ -56,6 +57,9 @@ public:
         pushButton_3 = new QPushButton(JLWidget);
         pushButton_3->setObjectName(QStringLiteral("pushButton_3"));
         pushButton_3->setGeometry(QRect(30, 310, 75, 23));
+        histwidget = new QWidget(JLWidget);
+        histwidget->setObjectName(QStringLiteral("histwidget"));
+        histwidget->setGeometry(QRect(20, 350, 211, 171));
 
         retranslateUi(JLWidget);
 

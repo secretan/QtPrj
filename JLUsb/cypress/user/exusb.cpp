@@ -44,7 +44,7 @@ void ExUSB::GetBlockData(UCHAR *data,int *size)
         //if (pktInfos->Length)
         {
             *size = (int)b;
-            memcpy(data,ubuf,(int)b);
+            //memcpy(data,ubuf,(int)b);
         }
         else
         {
@@ -148,12 +148,14 @@ int ExUSB::JLProtocolCmd(QString cmd,QString data)
         {
             send_buf[i] = (UCHAR)lcmd.data()[1];
         }
+        send_buf[0] = 0x68;
+        send_buf[1] = 0x00;
         send_buf[2] = 0xff;
         QByteArray ldata = data.toLatin1();
         // length
-        send_buf[3] = ((ldata.length()>>16)&0xff);
-        send_buf[4] = ((ldata.length()>>8)&0xff);
-        send_buf[5] = ((ldata.length()>>0)&0xff);
+        send_buf[3] = (((ldata.length()+4)>>16)&0xff);
+        send_buf[4] = (((ldata.length()+4)>>8)&0xff);
+        send_buf[5] = (((ldata.length()+4)>>0)&0xff);
         // data
         for (i = 0;i < ldata.length();i++)
         {
@@ -167,7 +169,7 @@ int ExUSB::JLProtocolCmd(QString cmd,QString data)
 
 
         // send data
-        send_size = (LONG)(i+9);
+        send_size = (LONG)(i+10);
         retsize =  ExUSBBlukOutEP->XferData(send_buf,send_size);
     }
     free(send_buf);

@@ -4,7 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core gui multimedia multimediawidgets widgets serialport
+#QT       += core gui multimedia multimediawidgets widgets serialport
+QT       += core gui widgets serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

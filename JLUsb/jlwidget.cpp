@@ -107,9 +107,10 @@ void JLWidget::flush_image()
 {
     unsigned char valh = 0;
     unsigned char vall = 0;
-    int max = 0;
-    QFile myfile("H:\\a.txt");
-
+    static int max = 0;
+    //QFile myfile("H:\/a.txt");
+    //if (myfile.exists())
+    //    myfile.open(QFile::ReadWrite);
     for (int i = 0; i < 240; i++)
     {
         for (int j = 0; j < 320; j++)
@@ -121,12 +122,16 @@ void JLWidget::flush_image()
             //valh = exusbthread.oImage[(j*640+i)*2];
             //vall = exusbthread.oImage[(j*640+i)*2+1];
             //int val = valh+vall*256;
+            //myfile.write((char*)&vall,1);
+            //myfile.write((char*)&valh,1);
             int val = vall;
             if (val >= 256)
                 val = 255;
             //else
                 //val= val*6;
-            if (val > max)
+            //if (val > max)
+            //    max = val;
+            if ((i==0)&&(j==0))
                 max = val;
             int rgbv = qRgb(val,val,val);
             //int rgbv = qRgba(val,val,val,0x70);
@@ -134,17 +139,17 @@ void JLWidget::flush_image()
                 //rgbv = 0xffffffff;
 
             img->setPixel(j,i,rgbv);
-            myfile.write(exusbthread->oImage[i*320]);
         }
     }
-    /*
+
     scence->addPixmap(QPixmap::fromImage(*img));
 
     ui->graphicsView->setScene(scence);
     ui->graphicsView->show();
     ui->SendtextBrowser->setText(QString::number(max,10));
-    */
 
+    //if (myfile.exists())
+    //    myfile.close();
 }
 
 void JLWidget::on_pushButton_3_clicked()

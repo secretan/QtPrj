@@ -19,30 +19,29 @@ void ExUSBThread::run()
 
     while(true)
     {
-        for(int i = 0; i < 100000; i++)
-        {
-        }
         if (!c_exusb->GetUSBDeviceOnFlag())
             continue;
         c_exusb->GetBlockData(&image[image_nptr], &size);
-        /*
+
         if (size == 16)
         {
             //80 00 88 FF 80 00 80 00 80 00 80 00 80 88 80 00
             //E0 00 E4 00 E8 00 EC 00 F0 00 F4 00 F8 00 FB 00
-            memcpy(buf,&image[image_nptr],16);
-            if (image[image_nptr+1] == 0x85)
+            memcpy(buf,&image[image_nptr],size);
+            //if (image[image_nptr+1] == 0x85)
+            if (buf[1] == 0x85)
             {
                 if (frame_start)
                 {
                     image_nptr = 0;
                     frame_start = false;
-                    //memcpy(oImage,&image[0],320*240*2);
+                    memcpy(oImage,&image[0],320*240*2);
                     emit GetFrameOK(10);
                     memset(image,0,width*height*2);
                 }
             }
-            else if (image[image_nptr+1] == 0x68)
+            //else if (image[image_nptr+1] == 0x68)
+            else if (buf[1] == 0x68)
             {
                 image_nptr = 0;
                 frame_start = true;
@@ -56,11 +55,13 @@ void ExUSBThread::run()
                 image_nptr = 0;
             count++;
         }
-        if (image_nptr>320*240*2)
+        /*
+        image_nptr = image_nptr+size;
+        if (image_nptr>320*240)
         {
-            //memcpy(buf,&image[image_nptr-16],16);
-        }
-        */
+            memcpy(buf,&image[0],16);
+            image_nptr = 0;
+        }*/
         /*
         // check protocol
         if (size == 512)

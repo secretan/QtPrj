@@ -111,6 +111,7 @@ void JLWidget::flush_image()
     //QFile myfile("H:\/a.txt");
     //if (myfile.exists())
     //    myfile.open(QFile::ReadWrite);
+    //img->
     for (int i = 0; i < 240; i++)
     {
         for (int j = 0; j < 320; j++)
@@ -132,7 +133,7 @@ void JLWidget::flush_image()
             //if (val > max)
             //    max = val;
             if ((i==0)&&(j==0))
-                max = val;
+                max = valh*256+vall;
             int rgbv = qRgb(val,val,val);
             //int rgbv = qRgba(val,val,val,0x70);
             //if (rgbv<0)

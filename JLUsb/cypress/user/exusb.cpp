@@ -32,19 +32,19 @@ void ExUSB::GetBlockData(UCHAR *data,int *size)
     PUCHAR ubuf = (PUCHAR)malloc(4096);
     memset(ubuf,0,4096);
     LONG b = 4096;
+//    pktInfos->Length = b;
 
     if (deviceFlag)
     {
         // Allocate the IsoPktInfo objects, and find-out how many were allocated
         //pktInfos = ExUSBIsocInEP->CreatePktInfos(b,pkts);
-        //ExUSBIsocInEP->XferData(ubuf,b,pktInfos,true);
+        //bool realno = ExUSBIsocInEP->XferData(ubuf,b);
         //ExUSBIsocInEP->XferData(ubuf,b,pktInfos);
         if (ExUSBBlukInEP->XferData(ubuf,b,pktInfos,true))
-        //if (b > 0)
-        //if (pktInfos->Length)
+        //if ((b > 0)&&realno)
         {
             *size = (int)b;
-            //memcpy(data,ubuf,(int)b);
+            memcpy(data,ubuf,(int)b);
         }
         else
         {
